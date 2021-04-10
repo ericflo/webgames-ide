@@ -1,5 +1,7 @@
 import Head from 'next/head';
 
+import Testing123 from '../components/testing123';
+
 export default function Index() {
   return (
     <div>
@@ -8,8 +10,7 @@ export default function Index() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>
-        <h2>Webgames IDE</h2>
-        <h3>Hello, World!</h3>
+        <Testing123 />
       </main>
     </div>
   );
