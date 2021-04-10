@@ -5,7 +5,7 @@ type Props = {
 }
 
 const Console = ({ className }: Props) => (
-  <div className={className + ' bg-green-500'}><p>Console</p></div>
+  <div className={className}><p>Console</p></div>
 );
 
 export default Console;

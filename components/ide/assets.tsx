@@ -5,7 +5,7 @@ type Props = {
 }
 
 const Assets = ({ className }: Props) => (
-  <div className={className + ' bg-red-500'}><p>Assets</p></div>
+  <div className={className}><p>Assets</p></div>
 );
 
 export default Assets;
