@@ -1,11 +1,11 @@
 import React from 'react';
 
 type Props = {
-  title?: string
+  className?: string
 }
 
-const Assets = ({ title }: Props) => (
-  <div><p>Assets</p></div>
+const Assets = ({ className }: Props) => (
+  <div className={className + ' bg-red-500'}><p>Assets</p></div>
 );
 
 export default Assets;

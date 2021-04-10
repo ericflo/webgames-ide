@@ -1,11 +1,11 @@
 import React from 'react';
 
 type Props = {
-  title?: string
+  className?: string
 }
 
-const Editor = ({ title }: Props) => (
-  <div><p>Editor</p></div>
+const Editor = ({ className }: Props) => (
+  <div className={className + ' bg-blue-500'}><p>Editor</p></div>
 );
 
 export default Editor;
