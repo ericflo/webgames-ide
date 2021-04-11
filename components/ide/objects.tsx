@@ -1,13 +1,15 @@
 import React, { useState, useCallback } from 'react';
 import LayerChooser from './layerchooser';
-import { Scene, GameObject, Layer, Component } from './data';
+import { Scene, GameObject, Layer, Component } from '../data';
+import { API } from '../api';
 
 type Props = {
   className?: string;
   scene: Scene;
+  api: API;
 };
 
-const Objects = ({ className, scene }: Props) => {
+const Objects = ({ className, scene, api }: Props) => {
   if (!scene) {
     return null;
   }
@@ -20,6 +22,7 @@ const Objects = ({ className, scene }: Props) => {
       );
       if (nextIndex >= 0) {
         setLayerIndex(nextIndex);
+        //api.saveCurrentSceneData();
       }
     },
     [scene]

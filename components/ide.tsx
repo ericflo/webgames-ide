@@ -5,26 +5,25 @@ import SceneChooser from './ide/scenechooser';
 import Objects from './ide/objects';
 import Assets from './ide/assets';
 import Console from './ide/console';
-import { makeDefaultSceneData, Scene } from './ide/data';
+import { Scene } from './data';
 import { useAPI } from './api';
 
 const IDE = () => {
-  const [sceneData, setSceneData] = useState(makeDefaultSceneData());
   const api = useAPI();
-  const scene = sceneData.scenes.find(
+  const scene = api.currentSceneData.scenes.find(
     (value: Scene): Boolean => {
-      return value.name == sceneData.currentSceneName;
+      return value.name == api.currentSceneData.currentSceneName;
     }
   );
   const onSceneChanged = useCallback(
     (name: string) => {
       console.log('onSceneChanged', name);
-      setSceneData({
-        scenes: sceneData.scenes,
+      api.currentSceneData = {
+        scenes: api.currentSceneData.scenes,
         currentSceneName: name,
-      });
+      };
     },
-    [sceneData]
+    [api]
   );
   const handleLoginClick = useCallback(
     (ev: React.MouseEvent) => {
@@ -46,10 +45,12 @@ const IDE = () => {
         <div className="flex flex-col flex-1 max-w-xs">
           <SceneChooser
             className="flex-none bg-purple-500"
-            sceneNames={sceneData.scenes.map((scene: Scene) => scene.name)}
+            sceneNames={api.currentSceneData.scenes.map(
+              (scene: Scene) => scene.name
+            )}
             onChange={onSceneChanged}
           />
-          <Objects className="flex-1 bg-yellow-500" scene={scene} />
+          <Objects className="flex-1 bg-yellow-500" scene={scene} api={api} />
           <Assets className="flex-1 bg-red-500" />
         </div>
         <div className="flex flex-col flex-1">

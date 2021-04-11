@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 
 import { MySky, SkynetClient } from 'skynet-js';
 
+import { SceneData, makeDefaultSceneData } from './data';
+
 const CLIENT = new SkynetClient('https://siasky.net/');
 const DATA_DOMAIN = 'localhost';
 
@@ -14,6 +16,8 @@ export class API {
   _setLoggedIn: React.Dispatch<React.SetStateAction<boolean>>;
   _userId: string;
   _setUserId: React.Dispatch<React.SetStateAction<string>>;
+  _currentSceneData: SceneData;
+  _setCurrentSceneData: React.Dispatch<React.SetStateAction<SceneData>>;
 
   constructor(
     initialized: boolean,
@@ -23,11 +27,15 @@ export class API {
     loggedIn: boolean,
     setLoggedIn: React.Dispatch<React.SetStateAction<boolean>>,
     userId: string,
-    setUserId: React.Dispatch<React.SetStateAction<string>>
+    setUserId: React.Dispatch<React.SetStateAction<string>>,
+    currentSceneData: SceneData,
+    setCurrentSceneData: React.Dispatch<React.SetStateAction<SceneData>>
   ) {
     this.initialize = this.initialize.bind(this);
     this.login = this.login.bind(this);
     this.logout = this.logout.bind(this);
+    this.loadCurrentSceneData = this.loadCurrentSceneData.bind(this);
+    this.saveCurrentSceneData = this.saveCurrentSceneData.bind(this);
 
     this._initialized = initialized;
     this._setInitialized = setInitialized;
@@ -37,6 +45,8 @@ export class API {
     this._setLoggedIn = setLoggedIn;
     this._userId = userId;
     this._setUserId = setUserId;
+    this._currentSceneData = currentSceneData;
+    this._setCurrentSceneData = setCurrentSceneData;
   }
 
   get initialized(): boolean {
@@ -75,6 +85,15 @@ export class API {
     this._setUserId(value);
   }
 
+  get currentSceneData(): SceneData {
+    return this._currentSceneData;
+  }
+
+  set currentSceneData(value: SceneData) {
+    this._currentSceneData = value;
+    this._setCurrentSceneData(value);
+  }
+
   async initialize() {
     try {
       this.mySky = await CLIENT.loadMySky(DATA_DOMAIN);
@@ -82,6 +101,7 @@ export class API {
       this.loggedIn = await this.mySky.checkLogin();
       if (this.loggedIn) {
         this.userId = await this.mySky.userID();
+        this.currentSceneData = await this.loadCurrentSceneData();
       }
     } catch (e) {
       console.error(e);
@@ -94,6 +114,7 @@ export class API {
       this.loggedIn = await this.mySky.requestLoginAccess();
       if (this.loggedIn) {
         this.userId = await this.mySky.userID();
+        this.currentSceneData = await this.loadCurrentSceneData();
       }
     } catch (e) {
       console.error(e);
@@ -109,6 +130,23 @@ export class API {
       console.error(e);
     }
   }
+
+  async loadCurrentSceneData(): Promise<SceneData> {
+    const { data } = await this.mySky.getJSON('currentSceneData.json');
+    if (data) {
+      const sceneData = data as SceneData;
+      if (sceneData) {
+        console.log('Loaded scene data', sceneData);
+        return sceneData;
+      }
+    }
+    return makeDefaultSceneData();
+  }
+
+  async saveCurrentSceneData() {
+    await this.mySky.setJSON('currentSceneData.json', this.currentSceneData);
+    console.log('Saved scene data', this.currentSceneData);
+  }
 }
 
 export function useAPI(): API {
@@ -116,6 +154,9 @@ export function useAPI(): API {
   const [mySky, setMySky] = useState(null);
   const [loggedIn, setLoggedIn] = useState(false);
   const [userId, setUserId] = useState('');
+  const [currentSceneData, setCurrentSceneData] = useState(
+    makeDefaultSceneData()
+  );
   const api = new API(
     initialized,
     setInitialized,
@@ -124,7 +165,9 @@ export function useAPI(): API {
     loggedIn,
     setLoggedIn,
     userId,
-    setUserId
+    setUserId,
+    currentSceneData,
+    setCurrentSceneData
   );
   useEffect(() => {
     api.initialize();
