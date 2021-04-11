@@ -22,7 +22,6 @@ const Objects = ({ className, scene, api }: Props) => {
       );
       if (nextIndex >= 0) {
         setLayerIndex(nextIndex);
-        //api.saveCurrentSceneData();
       }
     },
     [scene]
