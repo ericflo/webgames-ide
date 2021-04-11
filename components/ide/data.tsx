@@ -1,4 +1,3 @@
-
 export enum ComponentType {
   Pos = 'pos',
   Scale = 'scale',
@@ -15,42 +14,47 @@ export enum ComponentType {
 }
 
 export type Component = {
-  type: ComponentType,
-}
+  type: ComponentType;
+};
 
 export type GameObject = {
-  components: Component[],
-}
+  components: Component[];
+};
 
 export type Layer = {
-  name: string,
-  gameObjects: GameObject[],
+  name: string;
+  gameObjects: GameObject[];
 };
 
 export type Scene = {
-  name: string,
-  layers: Layer[],
+  name: string;
+  layers: Layer[];
 };
 
 export type SceneData = {
-  scenes?: Scene[],
-  currentSceneName?: string,
+  scenes?: Scene[];
+  currentSceneName?: string;
 };
 
 export const DEFAULT_LAYERS: Layer[] = [
-  {name: 'obj', gameObjects: [
-    {
-      components: [
-        {type: ComponentType.Pos},
-        {type: ComponentType.Rect},
-        {type: ComponentType.Color},
-      ]
-    }
-  ]},
-  {name: 'bg', gameObjects: []},
-  {name: 'ui', gameObjects: []}
+  {
+    name: 'obj',
+    gameObjects: [
+      {
+        components: [
+          { type: ComponentType.Pos },
+          { type: ComponentType.Rect },
+          { type: ComponentType.Color },
+        ],
+      },
+    ],
+  },
+  { name: 'bg', gameObjects: [] },
+  { name: 'ui', gameObjects: [] },
 ];
-export const DEFAULT_SCENES: Scene[] = [{name: 'main', layers: DEFAULT_LAYERS}];
+export const DEFAULT_SCENES: Scene[] = [
+  { name: 'main', layers: DEFAULT_LAYERS },
+];
 export const DEFAULT_SCENE_NAME = 'main';
 
 export function makeDefaultSceneData(): SceneData {

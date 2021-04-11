@@ -1,11 +1,13 @@
 import React from 'react';
 
 type Props = {
-  className?: string
-}
+  className?: string;
+};
 
 const Editor = ({ className }: Props) => (
-  <iframe className={className} srcDoc={`<!DOCTYPE html>
+  <iframe
+    className={className}
+    srcDoc={`<!DOCTYPE html>
 <html>
   <head>
     <title>WebGame</title>
@@ -30,7 +32,8 @@ const Editor = ({ className }: Props) => (
     <script src="https://kaboomjs.com/lib/0.1.0/kaboom.js"></script>
     <h1>Editor</h1>
   </body>
-</html>`} />
+</html>`}
+  />
 );
 
 export default Editor;

@@ -1,11 +1,13 @@
 import React from 'react';
 
 type Props = {
-  className?: string
-}
+  className?: string;
+};
 
 const Assets = ({ className }: Props) => (
-  <div className={className}><p>Assets</p></div>
+  <div className={className}>
+    <p>Assets</p>
+  </div>
 );
 
 export default Assets;

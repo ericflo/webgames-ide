@@ -6,10 +6,14 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build && next export",
-    "start": "next start"
+    "start": "next start",
+    "prettier": "prettier 'components/**/*.ts*' 'pages/**/*.ts*' --write"
   },
   "author": "Eric Florenzano",
   "license": "MIT",
+  "prettier": {
+    "singleQuote": true
+  },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.35",
     "@fortawesome/free-solid-svg-icons": "^5.15.3",
@@ -24,6 +28,7 @@
     "autoprefixer": "^10.2.5",
     "esbuild-loader": "^2.11.0",
     "postcss": "^8.2.9",
+    "prettier": "2.2.1",
     "tailwindcss": "^2.1.1",
     "typescript": "^4.2.4"
   }

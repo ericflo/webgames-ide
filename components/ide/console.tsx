@@ -1,11 +1,13 @@
 import React from 'react';
 
 type Props = {
-  className?: string
-}
+  className?: string;
+};
 
 const Console = ({ className }: Props) => (
-  <div className={className}><p>Console</p></div>
+  <div className={className}>
+    <p>Console</p>
+  </div>
 );
 
 export default Console;
