@@ -17,12 +17,7 @@ const Objects = ({ className, scene, api }: Props) => {
   const gameObjects = scene.layers[layerIndex].gameObjects;
   const onLayerChange = useCallback(
     (name: string) => {
-      let nextIndex = scene.layers.findIndex(
-        (layer: Layer) => layer.name == name
-      );
-      if (nextIndex >= 0) {
-        setLayerIndex(nextIndex);
-      }
+      setLayerIndex(Math.max(scene.layers.findIndex((l: Layer) => l.name == name), 0));
     },
     [scene]
   );
