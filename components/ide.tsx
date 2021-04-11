@@ -36,7 +36,12 @@ const IDE = () => {
           <Objects className="flex-1 bg-yellow-500" scene={scene} />
           <Assets className="flex-1 bg-red-500" />
         </div>
-        <Editor className="flex-1 bg-blue-500" />
+        <div className="flex flex-col flex-1">
+          <div className="loginbar bg-green-200">
+            Login bar
+          </div>
+          <Editor className="flex-1 bg-blue-500" />
+        </div>
       </div>
       <Console className="flex-none h-36 bg-green-500" />
     </div>
