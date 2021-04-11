@@ -17,17 +17,27 @@ const Objects = ({ className, scene, api }: Props) => {
   const gameObjects = scene.layers[layerIndex].gameObjects;
   const onLayerChange = useCallback(
     (name: string) => {
-      setLayerIndex(Math.max(scene.layers.findIndex((l: Layer) => l.name == name), 0));
+      setLayerIndex(
+        Math.max(
+          scene.layers.findIndex((l: Layer) => l.name == name),
+          0
+        )
+      );
     },
     [scene]
   );
   return (
     <div className={className}>
-      <LayerChooser
-        className="flex-none"
-        layerNames={scene.layers.map((layer: Layer) => layer.name)}
-        onChange={onLayerChange}
-      />
+      <div className="flex">
+        <h3 className="flex-none m-2 font-light text-black text-opacity-70 w-14">
+          Objects
+        </h3>
+        <LayerChooser
+          className="flex-1"
+          layerNames={scene.layers.map((layer: Layer) => layer.name)}
+          onChange={onLayerChange}
+        />
+      </div>
       <ul>
         {gameObjects.map((gameObject: GameObject, i: number) => {
           return (

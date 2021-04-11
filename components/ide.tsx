@@ -100,7 +100,7 @@ const IDE = () => {
           />
           <Objects className="flex-1 bg-yellow-500" scene={scene} api={api} />
           <Assets
-            className="flex-1 bg-red-500"
+            className="flex-1 bg-red-500 max-h-72"
             assets={api.currentSceneData.assets || []}
           />
         </div>

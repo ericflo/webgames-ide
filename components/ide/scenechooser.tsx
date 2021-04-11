@@ -19,25 +19,30 @@ function handleChange(
 }
 
 const SceneChooser = ({ className, sceneNames, onChange }: Props) => (
-  <div className={className + ' flex flex-row'}>
-    <select
-      className="flex-1 rounded-full m-1"
-      onChange={handleChange.bind(null, onChange)}
-    >
-      {sceneNames.map((sceneName: string) => (
-        <option key={sceneName} value={sceneName}>
-          Scene: {sceneName}
-        </option>
-      ))}
-    </select>
-    <button className="flex-none m-2">
-      <FontAwesomeIcon icon={faPlusSquare} />
-    </button>
-    {sceneNames.length > 1 ? (
+  <div className={className + ' flex'}>
+    <h3 className="flex-none m-2 font-light text-black text-opacity-70 w-14">
+      Scene
+    </h3>
+    <div className="flex-1 flex flex-row">
+      <select
+        className="flex-1 rounded-full m-1"
+        onChange={handleChange.bind(null, onChange)}
+      >
+        {sceneNames.map((sceneName: string) => (
+          <option key={sceneName} value={sceneName}>
+            Scene: {sceneName}
+          </option>
+        ))}
+      </select>
       <button className="flex-none m-2">
-        <FontAwesomeIcon icon={faTrash} />
+        <FontAwesomeIcon icon={faPlusSquare} />
       </button>
-    ) : null}
+      {sceneNames.length > 1 ? (
+        <button className="flex-none m-2">
+          <FontAwesomeIcon icon={faTrash} />
+        </button>
+      ) : null}
+    </div>
   </div>
 );
 

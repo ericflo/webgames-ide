@@ -2,29 +2,23 @@ import React from 'react';
 
 import { Asset, AssetType } from '../data';
 
+import AssetRow from './assetrow';
+
 type Props = {
   className?: string;
   assets: Asset[];
 };
 
 const Assets = ({ className, assets }: Props) => (
-  <div className={className}>
-    <p>Assets</p>
-    <ul>
+  <div className={className + ' flex flex-col'}>
+    <h3 className="flex-none m-2 font-light text-black text-opacity-70">
+      Assets
+    </h3>
+    <div className="flex-1 overflow-y-scroll overflow-x-hide">
       {assets.map((asset: Asset, i: number) => {
-        return (
-          <li key={i} className="mb-1">
-            {asset.type == AssetType.Sprite ? (
-              <img
-                src={asset.skylink.replace('sia:', 'https://siasky.net/')}
-                className="w-8 h-8 inline mx-1"
-              />
-            ) : null}
-            {asset.name}
-          </li>
-        );
+        return <AssetRow key={i} asset={asset} />;
       })}
-    </ul>
+    </div>
   </div>
 );
 
