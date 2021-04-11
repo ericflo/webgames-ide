@@ -31,8 +31,21 @@ export type Scene = {
   layers: Layer[];
 };
 
+export enum AssetType {
+  Sprite = 'sprite',
+  Sound = 'sound',
+  Font = 'font',
+}
+
+export type Asset = {
+  name: string;
+  type: AssetType;
+  skylink: string;
+};
+
 export type SceneData = {
   scenes?: Scene[];
+  assets?: Asset[];
   currentSceneName?: string;
 };
 
@@ -60,6 +73,7 @@ export const DEFAULT_SCENE_NAME = 'main';
 export function makeDefaultSceneData(): SceneData {
   return {
     scenes: DEFAULT_SCENES,
+    assets: [],
     currentSceneName: DEFAULT_SCENE_NAME,
   };
 }

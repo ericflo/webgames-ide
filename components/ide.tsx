@@ -1,11 +1,15 @@
 import React, { useState, useCallback } from 'react';
 
+import { useDropzone, FileWithPath } from 'react-dropzone';
+
+import { UploadRequestResponse } from 'skynet-js';
+
 import Editor from './ide/editor';
 import SceneChooser from './ide/scenechooser';
 import Objects from './ide/objects';
 import Assets from './ide/assets';
 import Console from './ide/console';
-import { Scene } from './data';
+import { Scene, Asset, AssetType } from './data';
 import { useAPI } from './api';
 
 const IDE = () => {
@@ -39,8 +43,52 @@ const IDE = () => {
     },
     [api]
   );
+  const handleDrop = useCallback(
+    (acceptedFiles: FileWithPath[]) => {
+      acceptedFiles.forEach((acceptedFile: FileWithPath) => {
+        let assetType: AssetType;
+        if (
+          acceptedFile.name.endsWith('.png') ||
+          acceptedFile.name.endsWith('.jpg') ||
+          acceptedFile.name.endsWith('.jpeg')
+        ) {
+          assetType = AssetType.Sprite;
+        } else if (
+          acceptedFile.name.endsWith('.wav') ||
+          acceptedFile.name.endsWith('.ogg') ||
+          acceptedFile.name.endsWith('.mp3')
+        ) {
+          assetType = AssetType.Sound;
+        } else {
+          return;
+        }
+        api.client
+          .uploadFile(acceptedFile)
+          .then((response: UploadRequestResponse) => {
+            const asset: Asset = {
+              name: acceptedFile.name,
+              type: assetType,
+              skylink: response.skylink,
+            };
+            const sd = api.currentSceneData;
+            if (sd.assets) {
+              sd.assets.push(asset);
+            } else {
+              sd.assets = [asset];
+            }
+            api.currentSceneData = sd;
+            api.saveCurrentSceneData();
+          });
+      });
+    },
+    [api]
+  );
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop: handleDrop,
+    noClick: true,
+  });
   return (
-    <div className="flex flex-col h-screen w-screen">
+    <div className="flex flex-col h-screen w-screen" {...getRootProps()}>
       <div className="flex flex-row flex-1">
         <div className="flex flex-col flex-1 max-w-xs">
           <SceneChooser
@@ -51,7 +99,10 @@ const IDE = () => {
             onChange={onSceneChanged}
           />
           <Objects className="flex-1 bg-yellow-500" scene={scene} api={api} />
-          <Assets className="flex-1 bg-red-500" />
+          <Assets
+            className="flex-1 bg-red-500"
+            assets={api.currentSceneData.assets || []}
+          />
         </div>
         <div className="flex flex-col flex-1">
           <div className="loginbar bg-green-200">
@@ -70,6 +121,7 @@ const IDE = () => {
         </div>
       </div>
       <Console className="flex-none h-36 bg-green-500" />
+      <input {...getInputProps()} />
     </div>
   );
 };

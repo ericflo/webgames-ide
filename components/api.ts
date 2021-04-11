@@ -8,6 +8,7 @@ const CLIENT = new SkynetClient('https://siasky.net/');
 const DATA_DOMAIN = 'localhost';
 
 export class API {
+  client = CLIENT;
   _initialized: boolean;
   _setInitialized: React.Dispatch<React.SetStateAction<boolean>>;
   _mySky: MySky;
