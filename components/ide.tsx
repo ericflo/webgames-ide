@@ -6,9 +6,11 @@ import Objects from './ide/objects';
 import Assets from './ide/assets';
 import Console from './ide/console';
 import { makeDefaultSceneData, Scene } from './ide/data';
+import { useAPI } from './api';
 
 const IDE = () => {
   const [sceneData, setSceneData] = useState(makeDefaultSceneData());
+  const api = useAPI();
   const scene = sceneData.scenes.find(
     (value: Scene): Boolean => {
       return value.name == sceneData.currentSceneName;
@@ -24,6 +26,20 @@ const IDE = () => {
     },
     [sceneData]
   );
+  const handleLoginClick = useCallback(
+    (ev: React.MouseEvent) => {
+      ev.preventDefault();
+      api.login();
+    },
+    [api]
+  );
+  const handleLogoutClick = useCallback(
+    (ev: React.MouseEvent) => {
+      ev.preventDefault();
+      api.logout();
+    },
+    [api]
+  );
   return (
     <div className="flex flex-col h-screen w-screen">
       <div className="flex flex-row flex-1">
@@ -38,7 +54,16 @@ const IDE = () => {
         </div>
         <div className="flex flex-col flex-1">
           <div className="loginbar bg-green-200">
-            Login bar
+            {api.loggedIn ? null : (
+              <a href="#" onClick={handleLoginClick}>
+                Log in
+              </a>
+            )}
+            {api.loggedIn ? (
+              <a href="#" onClick={handleLogoutClick}>
+                Logout
+              </a>
+            ) : null}
           </div>
           <Editor className="flex-1 bg-blue-500" />
         </div>
