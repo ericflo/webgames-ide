@@ -43,6 +43,22 @@ const IDE = () => {
     },
     [api]
   );
+  const handleAssetDelete = useCallback(
+    (asset: Asset) => {
+      const sceneData = api.currentSceneData;
+      sceneData.assets = api.currentSceneData.assets || [];
+      let nextAssets: Asset[] = [];
+      sceneData.assets.forEach((a: Asset) => {
+        if (a.skylink != asset.skylink) {
+          nextAssets.push(a);
+        }
+      });
+      sceneData.assets = nextAssets;
+      api.currentSceneData = sceneData;
+      api.saveCurrentSceneData();
+    },
+    [api]
+  );
   const handleDrop = useCallback(
     (acceptedFiles: FileWithPath[]) => {
       acceptedFiles.forEach((acceptedFile: FileWithPath) => {
@@ -102,6 +118,7 @@ const IDE = () => {
           <Assets
             className="flex-1 bg-red-500 max-h-72"
             assets={api.currentSceneData.assets || []}
+            onAssetDelete={handleAssetDelete}
           />
         </div>
         <div className="flex flex-col flex-1">

@@ -91,8 +91,9 @@ export class API {
   }
 
   set currentSceneData(value: SceneData) {
-    this._currentSceneData = value;
-    this._setCurrentSceneData(value);
+    const cloneValue: () => SceneData = () => JSON.parse(JSON.stringify(value));
+    this._currentSceneData = cloneValue();
+    this._setCurrentSceneData(cloneValue());
   }
 
   async initialize() {
