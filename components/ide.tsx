@@ -1,13 +1,11 @@
 import React, { useState, useCallback } from 'react';
 
-import { useDropzone, FileWithPath } from 'react-dropzone';
-
-import { UploadRequestResponse } from 'skynet-js';
+import { useDropzone } from 'react-dropzone';
 
 import Editor from './ide/editor';
 import SceneChooser from './ide/scenechooser';
 import Objects from './ide/objects';
-import Assets from './ide/assets';
+import Assets, { useOnAssetDrop } from './ide/assets';
 import Console from './ide/console';
 import { Scene, Asset, AssetType } from './data';
 import { useAPI } from './api';
@@ -19,6 +17,9 @@ const IDE = () => {
       return value.name == api.currentSceneData.currentSceneName;
     }
   );
+
+  const [isUploading, setIsUploading] = useState(false);
+  const [addAssetModalActive, setAddAssetModalActive] = useState(false);
   const onSceneChanged = useCallback(
     (name: string) => {
       console.log('onSceneChanged', name);
@@ -59,45 +60,10 @@ const IDE = () => {
     },
     [api]
   );
-  const handleDrop = useCallback(
-    (acceptedFiles: FileWithPath[]) => {
-      acceptedFiles.forEach((acceptedFile: FileWithPath) => {
-        let assetType: AssetType;
-        if (
-          acceptedFile.name.endsWith('.png') ||
-          acceptedFile.name.endsWith('.jpg') ||
-          acceptedFile.name.endsWith('.jpeg')
-        ) {
-          assetType = AssetType.Sprite;
-        } else if (
-          acceptedFile.name.endsWith('.wav') ||
-          acceptedFile.name.endsWith('.ogg') ||
-          acceptedFile.name.endsWith('.mp3')
-        ) {
-          assetType = AssetType.Sound;
-        } else {
-          return;
-        }
-        api.client
-          .uploadFile(acceptedFile)
-          .then((response: UploadRequestResponse) => {
-            const asset: Asset = {
-              name: acceptedFile.name,
-              type: assetType,
-              skylink: response.skylink,
-            };
-            const sd = api.currentSceneData;
-            if (sd.assets) {
-              sd.assets.push(asset);
-            } else {
-              sd.assets = [asset];
-            }
-            api.currentSceneData = sd;
-            api.saveCurrentSceneData();
-          });
-      });
-    },
-    [api]
+  const handleDrop = useOnAssetDrop(
+    api,
+    setIsUploading,
+    setAddAssetModalActive
   );
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop: handleDrop,
@@ -119,6 +85,9 @@ const IDE = () => {
             className="flex-1 bg-red-500 max-h-72"
             assets={api.currentSceneData.assets || []}
             onAssetDelete={handleAssetDelete}
+            isUploading={isUploading}
+            addAssetModalActive={addAssetModalActive}
+            setAddAssetModalActive={setAddAssetModalActive}
           />
         </div>
         <div className="flex flex-col flex-1">

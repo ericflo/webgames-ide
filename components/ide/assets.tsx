@@ -1,16 +1,34 @@
 import React, { useCallback, useState } from 'react';
 
+import { FileWithPath } from 'react-dropzone';
+
+import { UploadRequestResponse } from 'skynet-js';
+
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPlusSquare } from '@fortawesome/free-solid-svg-icons';
+
 import { Asset, AssetType } from '../data';
 
 import AssetRow from './assetrow';
+import { API } from '../api';
 
 type Props = {
   className?: string;
   assets: Asset[];
   onAssetDelete: (asset: Asset) => void;
+  isUploading: Boolean;
+  addAssetModalActive: Boolean;
+  setAddAssetModalActive: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-const Assets = ({ className, assets, onAssetDelete }: Props) => {
+const Assets = ({
+  className,
+  assets,
+  isUploading,
+  addAssetModalActive,
+  setAddAssetModalActive,
+  onAssetDelete,
+}: Props) => {
   const [currentAsset, setCurrentAsset] = useState(null as Asset);
   const handleMoreClick = useCallback((asset: Asset) => {
     setCurrentAsset(asset);
@@ -19,6 +37,7 @@ const Assets = ({ className, assets, onAssetDelete }: Props) => {
   const handleClick = useCallback((ev: React.MouseEvent) => {
     if (!ev.defaultPrevented) {
       setCurrentAsset(null);
+      setAddAssetModalActive(false);
     }
   }, []);
   const handleDeleteAssetClick = useCallback(
@@ -31,12 +50,33 @@ const Assets = ({ className, assets, onAssetDelete }: Props) => {
     },
     [currentAsset]
   );
+  const handleAddAssetClick = useCallback((ev: React.MouseEvent) => {
+    ev.preventDefault();
+    setAddAssetModalActive(true);
+  }, []);
   return (
     <div
       className={className + ' flex flex-col relative'}
       onClick={handleClick}
     >
-      {hasCurrentAsset ? (
+      {isUploading ? (
+        <div className="absolute w-full h-full bg-black bg-opacity-80 flex flex-col place-content-center place-items-center">
+          <p className="text-white mx-8 mb-4">
+            Processing your asset upload now...
+          </p>
+        </div>
+      ) : null}
+      {addAssetModalActive && !isUploading ? (
+        <div className="absolute w-full h-full bg-black bg-opacity-80 flex flex-col place-content-center place-items-center">
+          <p className="text-white mx-8 mb-4">
+            Drag assets onto your browser and they will show up here.
+          </p>
+          <button className="w-2/3 h-1/6 bg-white display-block rounded-md text-black border-2 border-gray-300">
+            OK
+          </button>
+        </div>
+      ) : null}
+      {hasCurrentAsset && !isUploading ? (
         <div className="absolute w-full h-full bg-black bg-opacity-50 flex flex-col place-content-center place-items-center">
           {currentAsset.type == AssetType.Sprite ? (
             <img
@@ -56,8 +96,11 @@ const Assets = ({ className, assets, onAssetDelete }: Props) => {
           </button>
         </div>
       ) : null}
-      <h3 className="flex-none m-2 font-light text-black text-opacity-70">
-        Assets
+      <h3 className="flex flex-none m-2 font-light text-black text-opacity-70">
+        <span className="flex-1">Assets</span>
+        <button className="flex-none" onClick={handleAddAssetClick}>
+          <FontAwesomeIcon icon={faPlusSquare} />
+        </button>
       </h3>
       <div className="flex-1 overflow-y-scroll overflow-x-hide">
         {assets.map((asset: Asset, i: number) => {
@@ -69,5 +112,58 @@ const Assets = ({ className, assets, onAssetDelete }: Props) => {
     </div>
   );
 };
+
+export function useOnAssetDrop(
+  api: API,
+  setIsUploading: React.Dispatch<React.SetStateAction<boolean>>,
+  setAddAssetModalActive: React.Dispatch<React.SetStateAction<boolean>>
+) {
+  return useCallback(
+    (acceptedFiles: FileWithPath[]) => {
+      setIsUploading(true);
+      Promise.all(
+        acceptedFiles.map((acceptedFile: FileWithPath) => {
+          let assetType: AssetType;
+          if (
+            acceptedFile.name.endsWith('.png') ||
+            acceptedFile.name.endsWith('.jpg') ||
+            acceptedFile.name.endsWith('.jpeg')
+          ) {
+            assetType = AssetType.Sprite;
+          } else if (
+            acceptedFile.name.endsWith('.wav') ||
+            acceptedFile.name.endsWith('.ogg') ||
+            acceptedFile.name.endsWith('.mp3')
+          ) {
+            assetType = AssetType.Sound;
+          } else {
+            return null;
+          }
+          return api.client
+            .uploadFile(acceptedFile)
+            .then((response: UploadRequestResponse) => {
+              const asset: Asset = {
+                name: acceptedFile.name,
+                type: assetType,
+                skylink: response.skylink,
+              };
+              const sd = api.currentSceneData;
+              if (sd.assets) {
+                sd.assets.push(asset);
+              } else {
+                sd.assets = [asset];
+              }
+              api.currentSceneData = sd;
+            });
+        })
+      ).then(() => {
+        api.saveCurrentSceneData();
+        setIsUploading(false);
+        setAddAssetModalActive(false);
+      });
+    },
+    [api]
+  );
+}
 
 export default Assets;
