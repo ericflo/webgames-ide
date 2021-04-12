@@ -19,7 +19,7 @@ function handleChange(
 }
 
 const SceneChooser = ({ className, sceneNames, onChange }: Props) => (
-  <div className={className + ' flex'}>
+  <div className={className + ' flex pr-4'}>
     <h3 className="flex-none mx-4 font-light text-black text-opacity-70 w-14 self-center">
       Scene
     </h3>

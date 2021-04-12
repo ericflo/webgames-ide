@@ -19,7 +19,7 @@ function handleChange(
 }
 
 const LayerChooser = ({ className, layerNames, onChange }: Props) => (
-  <div className={className + ' flex flex-row'}>
+  <div className={className + ' flex flex-row mr-4'}>
     <select
       className="flex-1 rounded-full m-1"
       onChange={handleChange.bind(null, onChange)}
