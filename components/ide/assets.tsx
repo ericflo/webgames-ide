@@ -98,9 +98,6 @@ const Assets = ({
       ) : null}
       <h3 className="flex flex-none mx-5 my-2 font-light text-black text-opacity-70">
         <span className="flex-1">Assets</span>
-        <button className="flex-none" onClick={handleAddAssetClick}>
-          <FontAwesomeIcon icon={faPlusSquare} />
-        </button>
       </h3>
       <div className="flex-1 overflow-y-scroll overflow-x-hide">
         {assets.map((asset: Asset, i: number) => {
@@ -109,6 +106,14 @@ const Assets = ({
           );
         })}
       </div>
+      {isUploading || addAssetModalActive ? null : (
+        <button
+          className="absolute bottom-3 right-3 bg-white bg-opacity-60 w-10 h-10 rounded-full border border-gray-500 shadow-2xl"
+          onClick={handleAddAssetClick}
+        >
+          <FontAwesomeIcon icon={faPlusSquare} className="text-gray-800" />
+        </button>
+      )}
     </div>
   );
 };

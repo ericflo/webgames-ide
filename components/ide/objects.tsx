@@ -40,7 +40,9 @@ const Objects = ({
   const handleClick = useCallback(
     (gameObject: GameObject, i: number, ev: React.MouseEvent) => {
       setCurrentObject(
-        currentObject ? [null, ''] : [gameObject, 'Component ' + (i + 1)]
+        currentObject == gameObject
+          ? [null, '']
+          : [gameObject, 'Component ' + (i + 1)]
       );
     },
     [currentObject]
@@ -57,7 +59,7 @@ const Objects = ({
           onChange={onLayerChange}
         />
       </div>
-      <ul>
+      <ul className="flex-1 overflow-y-scroll overflow-x-hide">
         {gameObjects.map((gameObject: GameObject, i: number) => {
           return (
             <li

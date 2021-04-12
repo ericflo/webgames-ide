@@ -86,7 +86,7 @@ const IDE = () => {
             onChange={onSceneChanged}
           />
           <Objects
-            className="flex-1 bg-yellow-500"
+            className="flex flex-col flex-1 bg-yellow-500 max-h-72"
             scene={scene}
             api={api}
             currentObject={currentObject}
