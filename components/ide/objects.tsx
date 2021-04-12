@@ -29,7 +29,7 @@ const Objects = ({ className, scene, api }: Props) => {
   return (
     <div className={className}>
       <div className="flex">
-        <h3 className="flex-none m-2 font-light text-black text-opacity-70 w-14">
+        <h3 className="flex-none mx-4 font-light text-black text-opacity-70 w-14 self-center">
           Objects
         </h3>
         <LayerChooser

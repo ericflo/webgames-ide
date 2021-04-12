@@ -30,7 +30,6 @@ const Editor = ({ className }: Props) => {
   </head>
   <body>
     <script src="https://kaboomjs.com/lib/0.1.0/kaboom.js"></script>
-    <h1>Editor</h1>
   </body>
 </html>`);
   });

@@ -20,7 +20,7 @@ function handleChange(
 
 const SceneChooser = ({ className, sceneNames, onChange }: Props) => (
   <div className={className + ' flex'}>
-    <h3 className="flex-none m-2 font-light text-black text-opacity-70 w-14">
+    <h3 className="flex-none mx-4 font-light text-black text-opacity-70 w-14 self-center">
       Scene
     </h3>
     <div className="flex-1 flex flex-row">

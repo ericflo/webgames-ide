@@ -91,7 +91,7 @@ const IDE = () => {
           />
         </div>
         <div className="flex flex-col flex-1">
-          <div className="loginbar bg-green-200">
+          <div className="loginbar bg-green-200 px-4 py-2">
             {api.loggedIn ? null : (
               <a href="#" onClick={handleLoginClick}>
                 Log in
@@ -103,7 +103,7 @@ const IDE = () => {
               </a>
             ) : null}
           </div>
-          <Editor className="flex-1 bg-blue-500" />
+          <Editor className="flex-1 bg-gray-300" />
         </div>
       </div>
       <Console className="flex-none h-36 bg-green-500" />

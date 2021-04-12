@@ -96,7 +96,7 @@ const Assets = ({
           </button>
         </div>
       ) : null}
-      <h3 className="flex flex-none m-2 font-light text-black text-opacity-70">
+      <h3 className="flex flex-none mx-4 my-2 font-light text-black text-opacity-70">
         <span className="flex-1">Assets</span>
         <button className="flex-none" onClick={handleAddAssetClick}>
           <FontAwesomeIcon icon={faPlusSquare} />

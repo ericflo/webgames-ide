@@ -6,7 +6,7 @@ type Props = {
 
 const Console = ({ className }: Props) => (
   <div className={className}>
-    <h3 className="m-2 font-light text-black text-opacity-70">Console</h3>
+    <h3 className="mx-4 my-2 font-light text-black text-opacity-70">Console</h3>
   </div>
 );
 

@@ -23,11 +23,11 @@ const AssetRow = ({ asset, onMoreClick }: Props) => {
       {asset.type == AssetType.Sprite ? (
         <img
           src={asset.skylink.replace('sia:', 'https://siasky.net/')}
-          className="w-8 h-8 inline mx-1 flex-none"
+          className="w-8 h-8 inline ml-4 flex-none"
         />
       ) : null}
-      <span className="flex-1">{asset.name}</span>
-      <button className="float-right mx-3 flex-none" onClick={handleMoreClick}>
+      <span className="flex-1 ml-4">{asset.name}</span>
+      <button className="float-right mr-5 flex-none" onClick={handleMoreClick}>
         <FontAwesomeIcon icon={faEllipsisV} />
       </button>
     </div>
