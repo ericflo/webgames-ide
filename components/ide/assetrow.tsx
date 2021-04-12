@@ -19,7 +19,7 @@ const AssetRow = ({ asset, onMoreClick }: Props) => {
     [asset]
   );
   return (
-    <div className="mb-1 flex place-items-center">
+    <div className="mb-1 flex place-items-center select-none">
       {asset.type == AssetType.Sprite ? (
         <img
           src={asset.skylink.replace('sia:', 'https://siasky.net/')}
@@ -27,7 +27,10 @@ const AssetRow = ({ asset, onMoreClick }: Props) => {
         />
       ) : null}
       <span className="flex-1 ml-4">{asset.name}</span>
-      <button className="float-right mr-5 flex-none" onClick={handleMoreClick}>
+      <button
+        className="float-right mr-3 px-2.5 flex-none"
+        onClick={handleMoreClick}
+      >
         <FontAwesomeIcon icon={faEllipsisV} />
       </button>
     </div>

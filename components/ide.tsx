@@ -7,7 +7,8 @@ import SceneChooser from './ide/scenechooser';
 import Objects from './ide/objects';
 import Assets, { useOnAssetDrop } from './ide/assets';
 import Console from './ide/console';
-import { Scene, Asset, AssetType } from './data';
+import Meta from './ide/meta';
+import { Scene, Asset, AssetType, GameObject } from './data';
 import { useAPI } from './api';
 
 const IDE = () => {
@@ -20,6 +21,10 @@ const IDE = () => {
 
   const [isUploading, setIsUploading] = useState(false);
   const [addAssetModalActive, setAddAssetModalActive] = useState(false);
+  const [[currentObject, currentObjectTitle], setCurrentObject] = useState([
+    null as GameObject,
+    '',
+  ]);
   const onSceneChanged = useCallback(
     (name: string) => {
       console.log('onSceneChanged', name);
@@ -80,7 +85,13 @@ const IDE = () => {
             )}
             onChange={onSceneChanged}
           />
-          <Objects className="flex-1 bg-yellow-500" scene={scene} api={api} />
+          <Objects
+            className="flex-1 bg-yellow-500"
+            scene={scene}
+            api={api}
+            currentObject={currentObject}
+            setCurrentObject={setCurrentObject}
+          />
           <Assets
             className="flex-1 bg-red-500 max-h-72"
             assets={api.currentSceneData.assets || []}
@@ -103,7 +114,16 @@ const IDE = () => {
               </a>
             ) : null}
           </div>
-          <Editor className="flex-1 bg-gray-300" />
+          <div className="flex-1 flex flex-row">
+            <Editor className="flex-1 bg-gray-300" />
+            {currentObject ? (
+              <Meta
+                className="bg-gray-100 w-80"
+                gameObject={currentObject}
+                title={currentObjectTitle}
+              />
+            ) : null}
+          </div>
         </div>
       </div>
       <Console className="flex-none h-36 bg-green-500" />
