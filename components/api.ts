@@ -19,6 +19,10 @@ export class API {
   _setUserId: React.Dispatch<React.SetStateAction<string>>;
   _currentSceneData: SceneData;
   _setCurrentSceneData: React.Dispatch<React.SetStateAction<SceneData>>;
+  _saving: boolean;
+  _setSaving: React.Dispatch<React.SetStateAction<boolean>>;
+  _wantsSave: boolean;
+  _setWantsSave: React.Dispatch<React.SetStateAction<boolean>>;
 
   constructor(
     initialized: boolean,
@@ -30,7 +34,11 @@ export class API {
     userId: string,
     setUserId: React.Dispatch<React.SetStateAction<string>>,
     currentSceneData: SceneData,
-    setCurrentSceneData: React.Dispatch<React.SetStateAction<SceneData>>
+    setCurrentSceneData: React.Dispatch<React.SetStateAction<SceneData>>,
+    saving: boolean,
+    setSaving: React.Dispatch<React.SetStateAction<boolean>>,
+    wantsSave: boolean,
+    setWantsSave: React.Dispatch<React.SetStateAction<boolean>>
   ) {
     this.initialize = this.initialize.bind(this);
     this.login = this.login.bind(this);
@@ -48,6 +56,10 @@ export class API {
     this._setUserId = setUserId;
     this._currentSceneData = currentSceneData;
     this._setCurrentSceneData = setCurrentSceneData;
+    this._saving = saving;
+    this._setSaving = setSaving;
+    this._wantsSave = wantsSave;
+    this._setWantsSave = setWantsSave;
   }
 
   get initialized(): boolean {
@@ -94,6 +106,24 @@ export class API {
     const cloneValue: () => SceneData = () => JSON.parse(JSON.stringify(value));
     this._currentSceneData = cloneValue();
     this._setCurrentSceneData(cloneValue());
+  }
+
+  get saving(): boolean {
+    return this._saving;
+  }
+
+  set saving(value: boolean) {
+    this._saving = value;
+    this._setSaving(value);
+  }
+
+  get wantsSave(): boolean {
+    return this._wantsSave;
+  }
+
+  set wantsSave(value: boolean) {
+    this._wantsSave = value;
+    this._setWantsSave(value);
   }
 
   async initialize() {
@@ -146,8 +176,18 @@ export class API {
   }
 
   async saveCurrentSceneData() {
-    await this.mySky.setJSON('currentSceneData.json', this.currentSceneData);
-    console.log('Saved scene data', this.currentSceneData);
+    if (this.saving) {
+      this.wantsSave = true;
+    } else {
+      this.saving = true;
+      await this.mySky.setJSON('currentSceneData.json', this.currentSceneData);
+      this.saving = false;
+      console.log('Saved scene data', this.currentSceneData);
+      if (this.wantsSave) {
+        this.wantsSave = false;
+        this.saveCurrentSceneData();
+      }
+    }
   }
 }
 
@@ -159,6 +199,8 @@ export function useAPI(): API {
   const [currentSceneData, setCurrentSceneData] = useState(
     makeDefaultSceneData()
   );
+  const [saving, setSaving] = useState(false);
+  const [wantsSave, setWantsSave] = useState(false);
   const api = new API(
     initialized,
     setInitialized,
@@ -169,7 +211,11 @@ export function useAPI(): API {
     userId,
     setUserId,
     currentSceneData,
-    setCurrentSceneData
+    setCurrentSceneData,
+    saving,
+    setSaving,
+    wantsSave,
+    setWantsSave
   );
   useEffect(() => {
     api.initialize();

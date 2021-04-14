@@ -55,11 +55,11 @@ const IDE = () => {
       });
       tmp.currentSceneName = name;
       api.currentSceneData = tmp;
+      api.saveCurrentSceneData();
     }
   }, [api]);
   const handleSceneChanged = useCallback(
     (name: string) => {
-      console.log('handleSceneChanged', name);
       const tmp = api.currentSceneData;
       tmp.currentSceneName = name;
       api.currentSceneData = tmp;
@@ -84,6 +84,7 @@ const IDE = () => {
       tmp.scenes = scenes;
       tmp.currentSceneName = tmp.scenes[0].name;
       api.currentSceneData = tmp;
+      api.saveCurrentSceneData();
     }
   }, [api]);
   const handleNewLayer = useCallback(() => {
@@ -91,6 +92,7 @@ const IDE = () => {
     if (name && name.length > 0) {
       scene.layers.push({ name, gameObjects: [] });
       setLayerIndex(scene.layers.length - 1);
+      api.saveCurrentSceneData();
     }
   }, [api]);
   const handleDeleteLayer = useCallback(
@@ -104,6 +106,7 @@ const IDE = () => {
       ) {
         scene.layers.splice(idx, 1);
         setLayerIndex(0);
+        api.saveCurrentSceneData();
       }
     },
     [api]
