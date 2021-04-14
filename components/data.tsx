@@ -60,55 +60,6 @@ export const DEFAULT_LAYERS: Layer[] = [
           { type: ComponentType.Color },
         ],
       },
-      {
-        components: [
-          { type: ComponentType.Pos },
-          { type: ComponentType.Rect },
-          { type: ComponentType.Color },
-        ],
-      },
-      {
-        components: [
-          { type: ComponentType.Pos },
-          { type: ComponentType.Rect },
-          { type: ComponentType.Color },
-        ],
-      },
-      {
-        components: [
-          { type: ComponentType.Pos },
-          { type: ComponentType.Rect },
-          { type: ComponentType.Color },
-        ],
-      },
-      {
-        components: [
-          { type: ComponentType.Pos },
-          { type: ComponentType.Rect },
-          { type: ComponentType.Color },
-        ],
-      },
-      {
-        components: [
-          { type: ComponentType.Pos },
-          { type: ComponentType.Rect },
-          { type: ComponentType.Color },
-        ],
-      },
-      {
-        components: [
-          { type: ComponentType.Pos },
-          { type: ComponentType.Rect },
-          { type: ComponentType.Color },
-        ],
-      },
-      {
-        components: [
-          { type: ComponentType.Pos },
-          { type: ComponentType.Rect },
-          { type: ComponentType.Color },
-        ],
-      },
     ],
   },
   { name: 'bg', gameObjects: [] },

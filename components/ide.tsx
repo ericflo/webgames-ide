@@ -8,7 +8,7 @@ import Objects from './ide/objects';
 import Assets, { useOnAssetDrop } from './ide/assets';
 import Console from './ide/console';
 import Meta from './ide/meta';
-import { Scene, Asset, AssetType, GameObject } from './data';
+import { Scene, Asset, GameObject } from './data';
 import { useAPI } from './api';
 
 const IDE = () => {
@@ -25,16 +25,51 @@ const IDE = () => {
     null as GameObject,
     '',
   ]);
-  const onSceneChanged = useCallback(
+  const handleRequestNewScene = useCallback(() => {
+    const name = prompt('New scene name');
+    if (name && name.length > 0) {
+      const tmp = api.currentSceneData;
+      tmp.scenes.push({
+        name,
+        layers: [
+          { name: 'obj', gameObjects: [] },
+          { name: 'bg', gameObjects: [] },
+          { name: 'ui', gameObjects: [] },
+        ],
+      });
+      tmp.currentSceneName = name;
+      api.currentSceneData = tmp;
+    }
+  }, [api]);
+  const handleSceneChanged = useCallback(
     (name: string) => {
-      console.log('onSceneChanged', name);
-      api.currentSceneData = {
-        scenes: api.currentSceneData.scenes,
-        currentSceneName: name,
-      };
+      console.log('handleSceneChanged', name);
+      const tmp = api.currentSceneData;
+      tmp.currentSceneName = name;
+      api.currentSceneData = tmp;
     },
     [api]
   );
+  const handleDeleteScene = useCallback(() => {
+    if (
+      confirm(
+        'Are you sure you want to delete scene ' +
+          api.currentSceneData.currentSceneName +
+          '?'
+      )
+    ) {
+      const tmp = api.currentSceneData;
+      const scenes: Scene[] = [];
+      tmp.scenes.forEach((scene: Scene) => {
+        if (scene.name != tmp.currentSceneName) {
+          scenes.push(scene);
+        }
+      });
+      tmp.scenes = scenes;
+      tmp.currentSceneName = tmp.scenes[0].name;
+      api.currentSceneData = tmp;
+    }
+  }, [api]);
   const handleLoginClick = useCallback(
     (ev: React.MouseEvent) => {
       ev.preventDefault();
@@ -80,10 +115,13 @@ const IDE = () => {
         <div className="flex flex-col flex-1 max-w-xs">
           <SceneChooser
             className="flex-none bg-purple-500"
+            currentSceneName={api.currentSceneData.currentSceneName}
             sceneNames={api.currentSceneData.scenes.map(
               (scene: Scene) => scene.name
             )}
-            onChange={onSceneChanged}
+            onChange={handleSceneChanged}
+            onNew={handleRequestNewScene}
+            onDelete={handleDeleteScene}
           />
           <Objects
             className="flex flex-col flex-1 bg-yellow-500 max-h-72"
