@@ -49,18 +49,18 @@ export type SceneData = {
   currentSceneName?: string;
 };
 
+export const DEFAULT_GAME_OBJECT: GameObject = {
+  components: [
+    { type: ComponentType.Pos },
+    { type: ComponentType.Rect },
+    { type: ComponentType.Color },
+  ],
+};
+
 export const DEFAULT_LAYERS: Layer[] = [
   {
     name: 'obj',
-    gameObjects: [
-      {
-        components: [
-          { type: ComponentType.Pos },
-          { type: ComponentType.Rect },
-          { type: ComponentType.Color },
-        ],
-      },
-    ],
+    gameObjects: [DEFAULT_GAME_OBJECT],
   },
   { name: 'bg', gameObjects: [] },
   { name: 'ui', gameObjects: [] },

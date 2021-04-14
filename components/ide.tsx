@@ -8,7 +8,7 @@ import Objects from './ide/objects';
 import Assets, { useOnAssetDrop } from './ide/assets';
 import Console from './ide/console';
 import Meta from './ide/meta';
-import { Scene, Asset, GameObject } from './data';
+import { Scene, Asset, GameObject, DEFAULT_GAME_OBJECT } from './data';
 import { useAPI } from './api';
 
 const IDE = () => {
@@ -26,6 +26,21 @@ const IDE = () => {
     null as GameObject,
     '',
   ]);
+  const handleDeleteObject = useCallback(() => {
+    const gameObjects = scene.layers[layerIndex].gameObjects;
+    const idx = gameObjects.indexOf(currentObject);
+    if (idx >= 0) {
+      gameObjects.splice(idx, 1);
+      api.saveCurrentSceneData();
+    }
+  }, [api, currentObject, layerIndex]);
+  const handleAddObject = useCallback(() => {
+    const gameObjects = scene.layers[layerIndex].gameObjects;
+    const newObject = Object.assign({}, DEFAULT_GAME_OBJECT);
+    gameObjects.push(newObject);
+    setCurrentObject([newObject, 'Component ' + gameObjects.length]);
+    api.saveCurrentSceneData();
+  }, [scene, layerIndex]);
   const handleRequestNewScene = useCallback(() => {
     const name = prompt('New scene name');
     if (name && name.length > 0) {
@@ -74,18 +89,12 @@ const IDE = () => {
   const handleNewLayer = useCallback(() => {
     const name = prompt('New layer name');
     if (name && name.length > 0) {
-      const scene = api.currentSceneData.scenes.find((s: Scene) => {
-        return s.name == api.currentSceneData.currentSceneName;
-      });
       scene.layers.push({ name, gameObjects: [] });
       setLayerIndex(scene.layers.length - 1);
     }
   }, [api]);
   const handleDeleteLayer = useCallback(
     (idx: number) => {
-      const scene = api.currentSceneData.scenes.find((s: Scene) => {
-        return s.name == api.currentSceneData.currentSceneName;
-      });
       if (
         confirm(
           'Are you sure you want to delete layer ' +
@@ -157,9 +166,11 @@ const IDE = () => {
             scene={scene}
             api={api}
             currentObject={currentObject}
+            setCurrentObject={setCurrentObject}
+            onDeleteObject={handleDeleteObject}
+            onAddObject={handleAddObject}
             layerIndex={layerIndex}
             setLayerIndex={setLayerIndex}
-            setCurrentObject={setCurrentObject}
             onNewLayer={handleNewLayer}
             onDeleteLayer={handleDeleteLayer}
           />
