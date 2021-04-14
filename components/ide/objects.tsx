@@ -11,6 +11,10 @@ type Props = {
   api: API;
   currentObject: GameObject;
   setCurrentObject: React.Dispatch<React.SetStateAction<[GameObject, string]>>;
+  layerIndex: number;
+  setLayerIndex: React.Dispatch<React.SetStateAction<number>>;
+  onNewLayer: () => void;
+  onDeleteLayer: (idx: number) => void;
 };
 
 const Objects = ({
@@ -19,11 +23,14 @@ const Objects = ({
   api,
   currentObject,
   setCurrentObject,
+  layerIndex,
+  setLayerIndex,
+  onNewLayer,
+  onDeleteLayer,
 }: Props) => {
   if (!scene) {
     return null;
   }
-  const [layerIndex, setLayerIndex] = useState(0);
   const gameObjects = scene.layers[layerIndex].gameObjects || [];
   const onLayerChange = useCallback(
     (name: string) => {
@@ -56,7 +63,10 @@ const Objects = ({
         <LayerChooser
           className="flex-1"
           layerNames={scene.layers.map((layer: Layer) => layer.name)}
+          layerIndex={layerIndex}
           onChange={onLayerChange}
+          onNew={onNewLayer}
+          onDelete={onDeleteLayer.bind(null, layerIndex)}
         />
       </div>
       <ul className="flex-1 overflow-y-scroll overflow-x-hide">

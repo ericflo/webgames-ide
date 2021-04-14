@@ -20,6 +20,7 @@ const IDE = () => {
   );
 
   const [isUploading, setIsUploading] = useState(false);
+  const [layerIndex, setLayerIndex] = useState(0);
   const [addAssetModalActive, setAddAssetModalActive] = useState(false);
   const [[currentObject, currentObjectTitle], setCurrentObject] = useState([
     null as GameObject,
@@ -70,6 +71,34 @@ const IDE = () => {
       api.currentSceneData = tmp;
     }
   }, [api]);
+  const handleNewLayer = useCallback(() => {
+    const name = prompt('New layer name');
+    if (name && name.length > 0) {
+      const scene = api.currentSceneData.scenes.find((s: Scene) => {
+        return s.name == api.currentSceneData.currentSceneName;
+      });
+      scene.layers.push({ name, gameObjects: [] });
+      setLayerIndex(scene.layers.length - 1);
+    }
+  }, [api]);
+  const handleDeleteLayer = useCallback(
+    (idx: number) => {
+      const scene = api.currentSceneData.scenes.find((s: Scene) => {
+        return s.name == api.currentSceneData.currentSceneName;
+      });
+      if (
+        confirm(
+          'Are you sure you want to delete layer ' +
+            scene.layers[idx].name +
+            '?'
+        )
+      ) {
+        scene.layers.splice(idx, 1);
+        setLayerIndex(0);
+      }
+    },
+    [api]
+  );
   const handleLoginClick = useCallback(
     (ev: React.MouseEvent) => {
       ev.preventDefault();
@@ -128,7 +157,11 @@ const IDE = () => {
             scene={scene}
             api={api}
             currentObject={currentObject}
+            layerIndex={layerIndex}
+            setLayerIndex={setLayerIndex}
             setCurrentObject={setCurrentObject}
+            onNewLayer={handleNewLayer}
+            onDeleteLayer={handleDeleteLayer}
           />
           <Assets
             className="flex-1 bg-red-500 max-h-72"

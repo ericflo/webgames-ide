@@ -52,13 +52,10 @@ const SceneChooser = ({
         <select
           className="flex-1 rounded-full m-1"
           onChange={handleChange.bind(null, onChange)}
+          value={currentSceneName}
         >
           {sceneNames.map((sceneName: string) => (
-            <option
-              key={sceneName}
-              value={sceneName}
-              selected={sceneName == currentSceneName}
-            >
+            <option key={sceneName} value={sceneName}>
               Scene: {sceneName}
             </option>
           ))}
