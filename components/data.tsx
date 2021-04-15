@@ -13,9 +13,90 @@ export enum ComponentType {
   Layer = 'layer',
 }
 
-export type Component = {
-  type: ComponentType;
+export type ComponentPos = {
+  type: ComponentType.Pos;
+  x: number;
+  y: number;
 };
+
+export type ComponentScale = {
+  type: ComponentType.Scale;
+  x: number;
+  y: number;
+};
+
+export type ComponentRotate = {
+  type: ComponentType.Rotate;
+  angle: number;
+};
+
+export type ComponentColor = {
+  type: ComponentType.Color;
+  r: number;
+  g: number;
+  b: number;
+  a: number;
+};
+
+export type ComponentSprite = {
+  type: ComponentType.Sprite;
+  id: string;
+};
+
+export type ComponentText = {
+  type: ComponentType.Text;
+  text: string;
+  size: number;
+  width: number;
+  //font: string;
+};
+
+export type ComponentRect = {
+  type: ComponentType.Rect;
+  w: number;
+  h: number;
+};
+
+export type ComponentArea = {
+  type: ComponentType.Area;
+  p1: { x: number; y: number };
+  p2: { x: number; y: number };
+};
+
+export type ComponentBody = {
+  type: ComponentType.Body;
+  jumpForce: number;
+  maxVel: number;
+};
+
+export type ComponentSolid = {
+  type: ComponentType.Solid;
+};
+
+export type ComponentOrigin = {
+  type: ComponentType.Origin;
+  name: string;
+  custom: { x: number; y: number };
+};
+
+export type ComponentLayer = {
+  type: ComponentType.Layer;
+  name: string;
+};
+
+export type Component =
+  | ComponentPos
+  | ComponentScale
+  | ComponentRotate
+  | ComponentColor
+  | ComponentSprite
+  | ComponentText
+  | ComponentRect
+  | ComponentArea
+  | ComponentBody
+  | ComponentSolid
+  | ComponentOrigin
+  | ComponentLayer;
 
 export type GameObject = {
   components: Component[];
@@ -51,9 +132,9 @@ export type SceneData = {
 
 export const DEFAULT_GAME_OBJECT: GameObject = {
   components: [
-    { type: ComponentType.Pos },
-    { type: ComponentType.Rect },
-    { type: ComponentType.Color },
+    { type: ComponentType.Pos, x: 0, y: 0 },
+    { type: ComponentType.Rect, w: 4, h: 4 },
+    { type: ComponentType.Color, r: 0, g: 0, b: 1, a: 1 },
   ],
 };
 
