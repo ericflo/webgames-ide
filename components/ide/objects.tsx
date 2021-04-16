@@ -72,7 +72,7 @@ const Objects = ({
     (i: number, ev: React.MouseEvent) => {
       ev.preventDefault();
       if (
-        confirm('Are you sure you want to delete Component ' + (i + 1) + '?')
+        confirm('Are you sure you want to delete Game Object ' + (i + 1) + '?')
       ) {
         onDeleteObject();
       }
@@ -106,7 +106,8 @@ const Objects = ({
                 (isSelected ? 'bg-blue-200' : '')
               }
             >
-              <FontAwesomeIcon icon={faChevronCircleRight} /> Component {i + 1}
+              <FontAwesomeIcon icon={faChevronCircleRight} /> Game Object{' '}
+              {i + 1}
               {isSelected ? (
                 <span
                   className="float-right"

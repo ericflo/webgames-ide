@@ -228,7 +228,7 @@ const IDE = () => {
               <Meta
                 className="bg-gray-100 w-80"
                 gameObject={currentObject}
-                title={'Component ' + (currentObjectIndex + 1)}
+                title={'Game Object ' + (currentObjectIndex + 1)}
                 onChangeComponent={handleChangeComponent}
               />
             ) : null}
