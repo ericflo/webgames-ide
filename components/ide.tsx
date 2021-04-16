@@ -177,7 +177,7 @@ const IDE = () => {
       <div className="flex flex-row flex-1">
         <div className="flex flex-col flex-1 max-w-xs">
           <SceneChooser
-            className="flex-none bg-purple-500"
+            className="flex-none h-14 border-b border-r border-black"
             currentSceneName={api.currentSceneData.currentSceneName}
             sceneNames={api.currentSceneData.scenes.map(
               (scene: Scene) => scene.name
@@ -187,7 +187,7 @@ const IDE = () => {
             onDelete={handleDeleteScene}
           />
           <Objects
-            className="flex flex-col flex-1 bg-yellow-500 max-h-72"
+            className="flex flex-col flex-1 max-h-72 border-b border-r border-black"
             scene={scene}
             api={api}
             currentObjectIndex={currentObjectIndex}
@@ -200,7 +200,7 @@ const IDE = () => {
             onDeleteLayer={handleDeleteLayer}
           />
           <Assets
-            className="flex-1 bg-red-500 max-h-72"
+            className="flex-1 max-h-72 border-r border-black"
             assets={api.currentSceneData.assets || []}
             onAssetDelete={handleAssetDelete}
             isUploading={isUploading}
@@ -209,7 +209,7 @@ const IDE = () => {
           />
         </div>
         <div className="flex flex-col flex-1">
-          <div className="loginbar bg-green-200 px-4 py-2">
+          <div className="loginbar px-4 py-4 h-14 border-b border-black">
             {api.loggedIn ? null : (
               <a href="#" onClick={handleLoginClick}>
                 Log in
@@ -225,7 +225,7 @@ const IDE = () => {
             <Editor className="flex-1 bg-gray-300" />
             {currentObject ? (
               <Meta
-                className="bg-gray-100 w-80"
+                className="w-80 border-l border-black"
                 gameObject={currentObject}
                 title={'Game Object ' + (currentObjectIndex + 1)}
                 onChangeComponent={handleChangeComponent}
@@ -234,7 +234,7 @@ const IDE = () => {
           </div>
         </div>
       </div>
-      <Console className="flex-none h-36 bg-green-500" />
+      <Console className="flex-none h-36 border-t border-black" />
       <input {...getInputProps()} />
     </div>
   );
