@@ -180,7 +180,6 @@ export class API {
       this.wantsSave = true;
     } else {
       this.saving = true;
-      console.log('Saving', JSON.stringify(this.currentSceneData));
       await this.mySky.setJSON('currentSceneData.json', this.currentSceneData);
       this.saving = false;
       console.log('Saved scene data', this.currentSceneData);

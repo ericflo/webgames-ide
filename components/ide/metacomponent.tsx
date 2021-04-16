@@ -490,11 +490,14 @@ const MetaComponent = ({
   onChange,
   onDelete,
 }: Props) => {
-  const handleChange = useCallback((ev: React.ChangeEvent<HTMLFormElement>) => {
-    if (!ev.defaultPrevented) {
-      onChange(component);
-    }
-  }, []);
+  const handleChange = useCallback(
+    (ev: React.ChangeEvent<HTMLFormElement>) => {
+      if (!ev.defaultPrevented) {
+        onChange(component);
+      }
+    },
+    [component]
+  );
   const handleSubmit = useCallback((ev: React.FormEvent) => {
     ev.preventDefault();
   }, []);

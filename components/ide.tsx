@@ -168,7 +168,6 @@ const IDE = () => {
       const idx = tmp.scenes.indexOf(scene);
       tmp.scenes[idx] = scene;
       api.currentSceneData = tmp;
-      console.log('tmp2', component);
       api.saveCurrentSceneData();
     },
     [api, scene, layerIndex, currentObjectIndex]
