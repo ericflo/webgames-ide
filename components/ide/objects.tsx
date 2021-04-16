@@ -13,8 +13,8 @@ type Props = {
   className?: string;
   scene: Scene;
   api: API;
-  currentObject: GameObject;
-  setCurrentObject: React.Dispatch<React.SetStateAction<[GameObject, string]>>;
+  currentObjectIndex: number;
+  setCurrentObjectIndex: React.Dispatch<React.SetStateAction<number>>;
   onDeleteObject: () => void;
   onAddObject: () => void;
   layerIndex: number;
@@ -27,8 +27,8 @@ const Objects = ({
   className,
   scene,
   api,
-  currentObject,
-  setCurrentObject,
+  currentObjectIndex,
+  setCurrentObjectIndex,
   onDeleteObject,
   onAddObject,
   layerIndex,
@@ -48,22 +48,18 @@ const Objects = ({
           0
         )
       );
-      setCurrentObject([null, '']);
+      setCurrentObjectIndex(-1);
     },
-    [scene, currentObject]
+    [scene, currentObjectIndex]
   );
   const handleClick = useCallback(
     (gameObject: GameObject, i: number, ev: React.MouseEvent) => {
       if (ev.defaultPrevented) {
         return;
       }
-      setCurrentObject(
-        currentObject == gameObject
-          ? [null, '']
-          : [gameObject, 'Component ' + (i + 1)]
-      );
+      setCurrentObjectIndex(currentObjectIndex == i ? -1 : i);
     },
-    [currentObject]
+    [currentObjectIndex]
   );
   const handleAddObjectClick = useCallback(
     (ev: React.MouseEvent) => {
@@ -81,7 +77,7 @@ const Objects = ({
         onDeleteObject();
       }
     },
-    [currentObject]
+    [currentObjectIndex]
   );
   return (
     <div className={className + ' relative'}>
@@ -100,7 +96,7 @@ const Objects = ({
       </div>
       <ul className="flex-1 overflow-y-scroll overflow-x-hide">
         {gameObjects.map((gameObject: GameObject, i: number) => {
-          const isSelected = gameObject == currentObject;
+          const isSelected = i == currentObjectIndex;
           return (
             <li
               key={i}

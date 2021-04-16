@@ -8,7 +8,13 @@ import Objects from './ide/objects';
 import Assets, { useOnAssetDrop } from './ide/assets';
 import Console from './ide/console';
 import Meta from './ide/meta';
-import { Scene, Asset, GameObject, DEFAULT_GAME_OBJECT } from './data';
+import {
+  Scene,
+  Asset,
+  GameObject,
+  Component,
+  DEFAULT_GAME_OBJECT,
+} from './data';
 import { useAPI } from './api';
 
 const IDE = () => {
@@ -22,12 +28,10 @@ const IDE = () => {
   const [isUploading, setIsUploading] = useState(false);
   const [layerIndex, setLayerIndex] = useState(0);
   const [addAssetModalActive, setAddAssetModalActive] = useState(false);
-  const [[currentObject, currentObjectTitle], setCurrentObject] = useState([
-    null as GameObject,
-    '',
-  ]);
+  const [currentObjectIndex, setCurrentObjectIndex] = useState(-1);
+  const gameObjects = scene.layers[layerIndex].gameObjects;
+  const currentObject = gameObjects[currentObjectIndex];
   const handleDeleteObject = useCallback(() => {
-    const gameObjects = scene.layers[layerIndex].gameObjects;
     const idx = gameObjects.indexOf(currentObject);
     if (idx >= 0) {
       gameObjects.splice(idx, 1);
@@ -35,12 +39,11 @@ const IDE = () => {
     }
   }, [api, currentObject, layerIndex]);
   const handleAddObject = useCallback(() => {
-    const gameObjects = scene.layers[layerIndex].gameObjects;
     const newObject = Object.assign({}, DEFAULT_GAME_OBJECT);
     gameObjects.push(newObject);
-    setCurrentObject([newObject, 'Component ' + gameObjects.length]);
+    setCurrentObjectIndex(gameObjects.length - 1);
     api.saveCurrentSceneData();
-  }, [scene, layerIndex]);
+  }, [scene, layerIndex, gameObjects]);
   const handleRequestNewScene = useCallback(() => {
     const name = prompt('New scene name');
     if (name && name.length > 0) {
@@ -150,6 +153,22 @@ const IDE = () => {
     onDrop: handleDrop,
     noClick: true,
   });
+  const handleChangeComponent = useCallback(
+    (i: number, component: Component) => {
+      const objs = scene.layers[layerIndex].gameObjects;
+      const obj = objs[currentObjectIndex];
+      obj.components[i] = component;
+      objs[currentObjectIndex] = obj;
+      scene.layers[layerIndex].gameObjects = objs;
+      const tmp = api.currentSceneData;
+      const idx = tmp.scenes.indexOf(scene);
+      tmp.scenes[idx] = scene;
+      api.currentSceneData = tmp;
+      console.log('tmp2', component);
+      api.saveCurrentSceneData();
+    },
+    [api, scene, layerIndex, currentObjectIndex]
+  );
   return (
     <div className="flex flex-col h-screen w-screen" {...getRootProps()}>
       <div className="flex flex-row flex-1">
@@ -168,8 +187,8 @@ const IDE = () => {
             className="flex flex-col flex-1 bg-yellow-500 max-h-72"
             scene={scene}
             api={api}
-            currentObject={currentObject}
-            setCurrentObject={setCurrentObject}
+            currentObjectIndex={currentObjectIndex}
+            setCurrentObjectIndex={setCurrentObjectIndex}
             onDeleteObject={handleDeleteObject}
             onAddObject={handleAddObject}
             layerIndex={layerIndex}
@@ -205,7 +224,8 @@ const IDE = () => {
               <Meta
                 className="bg-gray-100 w-80"
                 gameObject={currentObject}
-                title={currentObjectTitle}
+                title={'Component ' + (currentObjectIndex + 1)}
+                onChangeComponent={handleChangeComponent}
               />
             ) : null}
           </div>
