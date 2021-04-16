@@ -11,6 +11,75 @@ export enum ComponentType {
   Solid = 'solid',
   Origin = 'origin',
   Layer = 'layer',
+  Tag = 'tag',
+}
+
+export function componentTypeName(componentType: ComponentType): string {
+  switch (componentType) {
+    case ComponentType.Pos:
+      return 'Position';
+    case ComponentType.Scale:
+      return 'Scale';
+    case ComponentType.Rotate:
+      return 'Rotate';
+    case ComponentType.Color:
+      return 'Color';
+    case ComponentType.Sprite:
+      return 'Sprite';
+    case ComponentType.Text:
+      return 'Text';
+    case ComponentType.Rect:
+      return 'Rect';
+    case ComponentType.Area:
+      return 'Area';
+    case ComponentType.Body:
+      return 'Body';
+    case ComponentType.Solid:
+      return 'Solid';
+    case ComponentType.Origin:
+      return 'Origin';
+    case ComponentType.Layer:
+      return 'Layer';
+    case ComponentType.Tag:
+      return 'Tag';
+  }
+}
+
+export function defaultComponentForType(
+  componentType: ComponentType
+): Component {
+  switch (componentType) {
+    case ComponentType.Pos:
+      return { type: componentType, x: 0, y: 0 };
+    case ComponentType.Scale:
+      return { type: componentType, x: 0, y: 0 };
+    case ComponentType.Rotate:
+      return { type: componentType, angle: 0 };
+    case ComponentType.Color:
+      return { type: componentType, r: 0, g: 0, b: 0, a: 1 };
+    case ComponentType.Sprite:
+      return { type: componentType, id: '' };
+    case ComponentType.Text:
+      return { type: componentType, text: '', size: 40, width: 0 };
+    case ComponentType.Rect:
+      return { type: componentType, w: 4, h: 4 };
+    case ComponentType.Area:
+      return {
+        type: componentType,
+        p1: { x: -0.25, y: -0.25 },
+        p2: { x: 0.25, y: 0.25 },
+      };
+    case ComponentType.Body:
+      return { type: componentType, jumpForce: 640, maxVel: 2400 };
+    case ComponentType.Solid:
+      return { type: componentType };
+    case ComponentType.Origin:
+      return { type: componentType, name: 'center', custom: { x: 0, y: 0 } };
+    case ComponentType.Layer:
+      return { type: componentType, name: 'obj' };
+    case ComponentType.Tag:
+      return { type: componentType, name: 'tagname' };
+  }
 }
 
 export type ComponentPos = {
@@ -84,6 +153,11 @@ export type ComponentLayer = {
   name: string;
 };
 
+export type ComponentTag = {
+  type: ComponentType.Tag;
+  name: string;
+};
+
 export type Component =
   | ComponentPos
   | ComponentScale
@@ -96,7 +170,8 @@ export type Component =
   | ComponentBody
   | ComponentSolid
   | ComponentOrigin
-  | ComponentLayer;
+  | ComponentLayer
+  | ComponentTag;
 
 export type GameObject = {
   components: Component[];

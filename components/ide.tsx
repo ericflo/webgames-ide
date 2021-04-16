@@ -157,7 +157,11 @@ const IDE = () => {
     (i: number, component: Component) => {
       const objs = scene.layers[layerIndex].gameObjects;
       const obj = objs[currentObjectIndex];
-      obj.components[i] = component;
+      if (component) {
+        obj.components[i] = component;
+      } else {
+        obj.components.splice(i, 1);
+      }
       objs[currentObjectIndex] = obj;
       scene.layers[layerIndex].gameObjects = objs;
       const tmp = api.currentSceneData;

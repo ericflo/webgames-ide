@@ -1,5 +1,8 @@
 import React, { useCallback } from 'react';
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTrash } from '@fortawesome/free-solid-svg-icons';
+
 import {
   GameObject,
   Component,
@@ -16,42 +19,16 @@ import {
   ComponentSolid,
   ComponentOrigin,
   ComponentLayer,
+  ComponentTag,
+  componentTypeName,
 } from '../data';
 
 type Props = {
   gameObject: GameObject;
   component: Component;
   onChange: (component: Component) => void;
+  onDelete: () => void;
 };
-
-function componentTypeName(component: Component): string {
-  switch (component.type) {
-    case ComponentType.Pos:
-      return 'Position';
-    case ComponentType.Scale:
-      return 'Scale';
-    case ComponentType.Rotate:
-      return 'Rotate';
-    case ComponentType.Color:
-      return 'Color';
-    case ComponentType.Sprite:
-      return 'Sprite';
-    case ComponentType.Text:
-      return 'Text';
-    case ComponentType.Rect:
-      return 'Rect';
-    case ComponentType.Area:
-      return 'Area';
-    case ComponentType.Body:
-      return 'Body';
-    case ComponentType.Solid:
-      return 'Solid';
-    case ComponentType.Origin:
-      return 'Origin';
-    case ComponentType.Layer:
-      return 'Layer';
-  }
-}
 
 function zeroFromNaN(i: number) {
   if (isNaN(i)) {
@@ -457,7 +434,26 @@ const FormLayer = (component: ComponentLayer): JSX.Element => {
   );
 };
 
-function componentForm(component: Component): JSX.Element {
+const FormTag = (component: ComponentTag): JSX.Element => {
+  const handleNameChange = useCallback(
+    (ev: React.ChangeEvent<HTMLInputElement>) => {
+      component.name = ev.target.value;
+    },
+    [component]
+  );
+  return (
+    <>
+      <label>Name:</label>
+      <input
+        type="text"
+        value={'' + component.name}
+        onChange={handleNameChange}
+      />
+    </>
+  );
+};
+
+function ComponentForm({ component }: { component: Component }): JSX.Element {
   switch (component.type) {
     case ComponentType.Pos:
       return FormPos(component);
@@ -483,30 +479,52 @@ function componentForm(component: Component): JSX.Element {
       return FormOrigin(component);
     case ComponentType.Layer:
       return FormLayer(component);
+    case ComponentType.Tag:
+      return FormTag(component);
   }
 }
 
-const MetaComponent = ({ gameObject, component, onChange }: Props) => {
-  const handleChange = useCallback(
-    (ev: React.ChangeEvent<HTMLFormElement>) => {
-      if (!ev.defaultPrevented) {
-        onChange(component);
+const MetaComponent = ({
+  gameObject,
+  component,
+  onChange,
+  onDelete,
+}: Props) => {
+  const handleChange = useCallback((ev: React.ChangeEvent<HTMLFormElement>) => {
+    if (!ev.defaultPrevented) {
+      onChange(component);
+    }
+  }, []);
+  const handleSubmit = useCallback((ev: React.FormEvent) => {
+    ev.preventDefault();
+  }, []);
+  const handleDeleteClick = useCallback(
+    (ev: React.MouseEvent) => {
+      ev.preventDefault();
+      if (
+        confirm(
+          'Are you sure you want to delete the ' +
+            component.type +
+            ' component?'
+        )
+      ) {
+        onDelete();
       }
     },
     [component]
   );
-  const handleSubmit = useCallback((ev: React.FormEvent) => {
-    ev.preventDefault();
-  }, []);
   return (
     <div className="mx-4 my-2 px-4 py-2 rounded-lg bg-gray-200">
-      {componentTypeName(component)}
+      <span className="float-right cursor-pointer" onClick={handleDeleteClick}>
+        <FontAwesomeIcon icon={faTrash} />
+      </span>
+      {componentTypeName(component.type)}
       <form
         className="flex place-items-center justify-around flex-nowrap"
         onChange={handleChange}
         onSubmit={handleSubmit}
       >
-        {componentForm(component)}
+        <ComponentForm component={component} />
       </form>
     </div>
   );

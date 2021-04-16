@@ -102,7 +102,11 @@ const Assets = ({
       <div className="flex-1 overflow-y-scroll overflow-x-hide">
         {assets.map((asset: Asset, i: number) => {
           return (
-            <AssetRow key={i} asset={asset} onMoreClick={handleMoreClick} />
+            <AssetRow
+              key={asset.skylink}
+              asset={asset}
+              onMoreClick={handleMoreClick}
+            />
           );
         })}
       </div>
