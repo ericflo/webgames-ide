@@ -222,7 +222,10 @@ const IDE = () => {
             ) : null}
           </div>
           <div className="flex-1 flex flex-row">
-            <Editor className="flex-1 bg-gray-300" />
+            <Editor
+              className="flex-1 bg-gray-300"
+              sceneData={api.currentSceneData}
+            />
             {currentObject ? (
               <Meta
                 className="w-80 border-l border-black"

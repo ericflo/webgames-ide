@@ -1,39 +1,20 @@
-import React, { useState, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
+
+import { SceneData } from '../data';
 
 type Props = {
   className?: string;
+  sceneData: SceneData;
 };
 
-const Editor = ({ className }: Props) => {
-  const [srcDoc, setSrcDoc] = useState(null);
-  useEffect(() => {
-    setSrcDoc(`<!DOCTYPE html>
-<html>
-  <head>
-    <title>WebGame</title>
-    <meta charset="utf-8">
-    <style>
-    * {
-      margin: 0;
-    }
-    html,
-    body {
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-    }
-    canvas {
-      display: block;
-      position: absolute;
-    }
-    </style>
-  </head>
-  <body>
-    <script src="https://kaboomjs.com/lib/0.1.0/kaboom.js"></script>
-  </body>
-</html>`);
-  });
-  return <iframe className={className} srcDoc={srcDoc} />;
+const Editor = ({ className, sceneData }: Props) => {
+  const encodedSceneData = encodeURIComponent(JSON.stringify(sceneData));
+  return (
+    <iframe
+      className={className}
+      src={'/editor?scenedata=' + encodedSceneData}
+    />
+  );
 };
 
 export default Editor;
