@@ -1,5 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 
+import { isProd } from '../buildconfig';
 import { SceneData } from '../data';
 
 type Props = {
@@ -12,7 +13,9 @@ const Editor = ({ className, sceneData }: Props) => {
   return (
     <iframe
       className={className}
-      src={'/editor?scenedata=' + encodedSceneData}
+      src={
+        (isProd ? 'editor.html' : '/editor') + '?scenedata=' + encodedSceneData
+      }
     />
   );
 };

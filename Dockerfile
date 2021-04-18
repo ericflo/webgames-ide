@@ -6,6 +6,7 @@ WORKDIR /usr/src/app
 COPY package.json ./
 RUN npm install
 COPY . .
+ENV NEXT_PUBLIC_IS_PROD=t
 RUN npm run build
 
 # STAGE 2

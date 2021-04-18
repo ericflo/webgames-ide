@@ -3,9 +3,10 @@ import React, { useEffect, useState } from 'react';
 import { MySky, SkynetClient } from 'skynet-js';
 
 import { SceneData, makeDefaultSceneData } from './data';
+import { isProd } from './buildconfig';
 
-const CLIENT = new SkynetClient('https://siasky.net/');
-const DATA_DOMAIN = 'localhost';
+const CLIENT = new SkynetClient(isProd ? undefined : 'https://siasky.net/');
+const DATA_DOMAIN = isProd ? 'webgames-ide' : 'localhost';
 
 export class API {
   client = CLIENT;
@@ -130,7 +131,10 @@ export class API {
 
   async initialize() {
     try {
-      this.mySky = await CLIENT.loadMySky(DATA_DOMAIN);
+      this.mySky = await CLIENT.loadMySky(
+        DATA_DOMAIN,
+        isProd ? { debug: true } : undefined
+      );
       // await mySky.loadDacs(contentRecord);
       this.loggedIn = await this.mySky.checkLogin();
       if (this.loggedIn) {
