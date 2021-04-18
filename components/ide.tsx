@@ -8,7 +8,7 @@ import Objects from './ide/objects';
 import Assets, { useOnAssetDrop } from './ide/assets';
 import Console from './ide/console';
 import Meta from './ide/meta';
-import {
+import SceneData, {
   Scene,
   Asset,
   GameObject,
@@ -47,25 +47,31 @@ const IDE = () => {
   const handleRequestNewScene = useCallback(() => {
     const name = prompt('New scene name');
     if (name && name.length > 0) {
-      const tmp = api.currentSceneData;
-      tmp.scenes.push({
-        name,
-        layers: [
-          { name: 'obj', gameObjects: [] },
-          { name: 'bg', gameObjects: [] },
-          { name: 'ui', gameObjects: [] },
-        ],
-      });
-      tmp.currentSceneName = name;
-      api.currentSceneData = tmp;
+      api.setCurrentSceneData(
+        (sd: SceneData): SceneData => {
+          sd.scenes.push({
+            name,
+            layers: [
+              { name: 'obj', gameObjects: [] },
+              { name: 'bg', gameObjects: [] },
+              { name: 'ui', gameObjects: [] },
+            ],
+          });
+          sd.currentSceneName = name;
+          return sd;
+        }
+      );
       api.saveCurrentSceneData();
     }
   }, [api]);
   const handleSceneChanged = useCallback(
     (name: string) => {
-      const tmp = api.currentSceneData;
-      tmp.currentSceneName = name;
-      api.currentSceneData = tmp;
+      api.setCurrentSceneData(
+        (sd: SceneData): SceneData => {
+          sd.currentSceneName = name;
+          return sd;
+        }
+      );
     },
     [api]
   );
@@ -77,16 +83,19 @@ const IDE = () => {
           '?'
       )
     ) {
-      const tmp = api.currentSceneData;
-      const scenes: Scene[] = [];
-      tmp.scenes.forEach((scene: Scene) => {
-        if (scene.name != tmp.currentSceneName) {
-          scenes.push(scene);
+      api.setCurrentSceneData(
+        (sd: SceneData): SceneData => {
+          const scenes: Scene[] = [];
+          sd.scenes.forEach((scene: Scene) => {
+            if (scene.name != sd.currentSceneName) {
+              scenes.push(scene);
+            }
+          });
+          sd.scenes = scenes;
+          sd.currentSceneName = sd.scenes[0].name;
+          return sd;
         }
-      });
-      tmp.scenes = scenes;
-      tmp.currentSceneName = tmp.scenes[0].name;
-      api.currentSceneData = tmp;
+      );
       api.saveCurrentSceneData();
     }
   }, [api]);
@@ -130,16 +139,18 @@ const IDE = () => {
   );
   const handleAssetDelete = useCallback(
     (asset: Asset) => {
-      const sceneData = api.currentSceneData;
-      sceneData.assets = api.currentSceneData.assets || [];
-      let nextAssets: Asset[] = [];
-      sceneData.assets.forEach((a: Asset) => {
-        if (a.skylink != asset.skylink) {
-          nextAssets.push(a);
+      api.setCurrentSceneData(
+        (sceneData: SceneData): SceneData => {
+          let nextAssets: Asset[] = [];
+          (sceneData.assets || []).forEach((a: Asset) => {
+            if (a.skylink != asset.skylink) {
+              nextAssets.push(a);
+            }
+          });
+          sceneData.assets = nextAssets;
+          return sceneData;
         }
-      });
-      sceneData.assets = nextAssets;
-      api.currentSceneData = sceneData;
+      );
       api.saveCurrentSceneData();
     },
     [api]
@@ -155,22 +166,24 @@ const IDE = () => {
   });
   const handleChangeComponent = useCallback(
     (i: number, component: Component) => {
-      const objs = scene.layers[layerIndex].gameObjects;
-      const obj = objs[currentObjectIndex];
-      if (component) {
-        obj.components[i] = component;
-      } else {
-        obj.components.splice(i, 1);
-      }
-      objs[currentObjectIndex] = obj;
-      scene.layers[layerIndex].gameObjects = objs;
-      const tmp = api.currentSceneData;
-      const idx = tmp.scenes.indexOf(scene);
-      tmp.scenes[idx] = scene;
-      api.currentSceneData = tmp;
+      api.setCurrentSceneData(
+        (sd: SceneData): SceneData => {
+          const obj = sd.scenes.find(
+            (value: Scene): Boolean => {
+              return value.name == sd.currentSceneName;
+            }
+          ).layers[layerIndex].gameObjects[currentObjectIndex];
+          if (component) {
+            obj.components[i] = component;
+          } else {
+            obj.components.splice(i, 1);
+          }
+          return sd;
+        }
+      );
       api.saveCurrentSceneData();
     },
-    [api, scene, layerIndex, currentObjectIndex]
+    [api, layerIndex, currentObjectIndex]
   );
   return (
     <div className="flex flex-col h-screen w-screen" {...getRootProps()}>

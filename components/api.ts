@@ -45,6 +45,7 @@ export class API {
     this.logout = this.logout.bind(this);
     this.loadCurrentSceneData = this.loadCurrentSceneData.bind(this);
     this.saveCurrentSceneData = this.saveCurrentSceneData.bind(this);
+    this.setCurrentSceneData = this.setCurrentSceneData.bind(this);
 
     this._initialized = initialized;
     this._setInitialized = setInitialized;
@@ -102,10 +103,11 @@ export class API {
     return this._currentSceneData;
   }
 
-  set currentSceneData(value: SceneData) {
-    const cloneValue: () => SceneData = () => JSON.parse(JSON.stringify(value));
-    this._currentSceneData = cloneValue();
-    this._setCurrentSceneData(cloneValue());
+  setCurrentSceneData(callback: (sceneData: SceneData) => SceneData) {
+    this._currentSceneData = callback(
+      JSON.parse(JSON.stringify(this._currentSceneData))
+    );
+    this._setCurrentSceneData(callback);
   }
 
   get saving(): boolean {
@@ -133,7 +135,12 @@ export class API {
       this.loggedIn = await this.mySky.checkLogin();
       if (this.loggedIn) {
         this.userId = await this.mySky.userID();
-        this.currentSceneData = await this.loadCurrentSceneData();
+        const sceneData = await this.loadCurrentSceneData();
+        this.setCurrentSceneData(
+          (_: SceneData): SceneData => {
+            return sceneData;
+          }
+        );
       }
     } catch (e) {
       console.error(e);
@@ -146,7 +153,12 @@ export class API {
       this.loggedIn = await this.mySky.requestLoginAccess();
       if (this.loggedIn) {
         this.userId = await this.mySky.userID();
-        this.currentSceneData = await this.loadCurrentSceneData();
+        const sceneData = await this.loadCurrentSceneData();
+        this.setCurrentSceneData(
+          (_: SceneData): SceneData => {
+            return sceneData;
+          }
+        );
       }
     } catch (e) {
       console.error(e);
@@ -179,7 +191,7 @@ export class API {
     if (this.saving) {
       this.wantsSave = true;
     } else {
-      this.currentSceneData = this.currentSceneData; // Used to trigger graph update
+      //this.currentSceneData = this.currentSceneData; // Used to trigger graph update
       this.saving = true;
       await this.mySky.setJSON('currentSceneData.json', this.currentSceneData);
       this.saving = false;

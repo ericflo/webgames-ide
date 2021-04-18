@@ -7,7 +7,7 @@ import { UploadRequestResponse } from 'skynet-js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlusSquare } from '@fortawesome/free-solid-svg-icons';
 
-import { Asset, AssetType } from '../data';
+import SceneData, { Asset, AssetType } from '../data';
 
 import AssetRow from './assetrow';
 import { API } from '../api';
@@ -156,13 +156,16 @@ export function useOnAssetDrop(
                 type: assetType,
                 skylink: response.skylink,
               };
-              const sd = api.currentSceneData;
-              if (sd.assets) {
-                sd.assets.push(asset);
-              } else {
-                sd.assets = [asset];
-              }
-              api.currentSceneData = sd;
+              api.setCurrentSceneData(
+                (sceneData: SceneData): SceneData => {
+                  if (sceneData.assets) {
+                    sceneData.assets.push(asset);
+                  } else {
+                    sceneData.assets = [asset];
+                  }
+                  return sceneData;
+                }
+              );
             });
         })
       ).then(() => {

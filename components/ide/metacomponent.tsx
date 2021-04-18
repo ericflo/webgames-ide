@@ -37,7 +37,7 @@ function zeroFromNaN(i: number) {
   return i;
 }
 
-const FormPos = (component: ComponentPos): JSX.Element => {
+const FormPos = ({ component }: { component: ComponentPos }) => {
   const handleXChange = useCallback(
     (ev: React.ChangeEvent<HTMLInputElement>) => {
       component.x = zeroFromNaN(parseFloat(ev.target.value));
@@ -70,7 +70,7 @@ const FormPos = (component: ComponentPos): JSX.Element => {
   );
 };
 
-const FormScale = (component: ComponentScale): JSX.Element => {
+const FormScale = ({ component }: { component: ComponentScale }) => {
   const handleXChange = useCallback(
     (ev: React.ChangeEvent<HTMLInputElement>) => {
       component.x = zeroFromNaN(parseFloat(ev.target.value));
@@ -103,7 +103,7 @@ const FormScale = (component: ComponentScale): JSX.Element => {
   );
 };
 
-const FormRotate = (component: ComponentRotate): JSX.Element => {
+const FormRotate = ({ component }: { component: ComponentRotate }) => {
   const handleAngleChange = useCallback(
     (ev: React.ChangeEvent<HTMLInputElement>) => {
       component.angle = zeroFromNaN(parseFloat(ev.target.value));
@@ -123,7 +123,7 @@ const FormRotate = (component: ComponentRotate): JSX.Element => {
   );
 };
 
-const FormColor = (component: ComponentColor): JSX.Element => {
+const FormColor = ({ component }: { component: ComponentColor }) => {
   const handleRChange = useCallback(
     (ev: React.ChangeEvent<HTMLInputElement>) => {
       component.r = zeroFromNaN(parseFloat(ev.target.value));
@@ -182,7 +182,7 @@ const FormColor = (component: ComponentColor): JSX.Element => {
   );
 };
 
-const FormSprite = (component: ComponentSprite): JSX.Element => {
+const FormSprite = ({ component }: { component: ComponentSprite }) => {
   const handleIDChange = useCallback(
     (ev: React.ChangeEvent<HTMLInputElement>) => {
       component.id = ev.target.value;
@@ -197,7 +197,7 @@ const FormSprite = (component: ComponentSprite): JSX.Element => {
   );
 };
 
-const FormText = (component: ComponentText): JSX.Element => {
+const FormText = ({ component }: { component: ComponentText }) => {
   const handleTextChange = useCallback(
     (ev: React.ChangeEvent<HTMLInputElement>) => {
       component.text = ev.target.value;
@@ -242,7 +242,7 @@ const FormText = (component: ComponentText): JSX.Element => {
   );
 };
 
-const FormRect = (component: ComponentRect): JSX.Element => {
+const FormRect = ({ component }: { component: ComponentRect }) => {
   const handleWChange = useCallback(
     (ev: React.ChangeEvent<HTMLInputElement>) => {
       component.w = zeroFromNaN(parseFloat(ev.target.value));
@@ -275,7 +275,7 @@ const FormRect = (component: ComponentRect): JSX.Element => {
   );
 };
 
-const FormArea = (component: ComponentArea): JSX.Element => {
+const FormArea = ({ component }: { component: ComponentArea }) => {
   const handleP1XChange = useCallback(
     (ev: React.ChangeEvent<HTMLInputElement>) => {
       component.p1.x = zeroFromNaN(parseFloat(ev.target.value));
@@ -334,7 +334,7 @@ const FormArea = (component: ComponentArea): JSX.Element => {
   );
 };
 
-const FormBody = (component: ComponentBody): JSX.Element => {
+const FormBody = ({ component }: { component: ComponentBody }) => {
   const handleJumpForceChange = useCallback(
     (ev: React.ChangeEvent<HTMLInputElement>) => {
       component.jumpForce = zeroFromNaN(parseFloat(ev.target.value));
@@ -366,11 +366,11 @@ const FormBody = (component: ComponentBody): JSX.Element => {
   );
 };
 
-const FormSolid = (component: ComponentSolid): JSX.Element => {
+const FormSolid = ({ component }: { component: ComponentSolid }) => {
   return null;
 };
 
-const FormOrigin = (component: ComponentOrigin): JSX.Element => {
+const FormOrigin = ({ component }: { component: ComponentOrigin }) => {
   const handleNameChange = useCallback(
     (ev: React.ChangeEvent<HTMLInputElement>) => {
       component.name = ev.target.value;
@@ -415,7 +415,7 @@ const FormOrigin = (component: ComponentOrigin): JSX.Element => {
   );
 };
 
-const FormLayer = (component: ComponentLayer): JSX.Element => {
+const FormLayer = ({ component }: { component: ComponentLayer }) => {
   const handleNameChange = useCallback(
     (ev: React.ChangeEvent<HTMLInputElement>) => {
       component.name = ev.target.value;
@@ -434,7 +434,7 @@ const FormLayer = (component: ComponentLayer): JSX.Element => {
   );
 };
 
-const FormTag = (component: ComponentTag): JSX.Element => {
+const FormTag = ({ component }: { component: ComponentTag }) => {
   const handleNameChange = useCallback(
     (ev: React.ChangeEvent<HTMLInputElement>) => {
       component.name = ev.target.value;
@@ -453,35 +453,36 @@ const FormTag = (component: ComponentTag): JSX.Element => {
   );
 };
 
-function ComponentForm({ component }: { component: Component }): JSX.Element {
+function ComponentForm({ component }: { component: Component }) {
   switch (component.type) {
     case ComponentType.Pos:
-      return FormPos(component);
+      return <FormPos key="comp-pos" component={component} />;
     case ComponentType.Scale:
-      return FormScale(component);
+      return <FormScale key="comp-scale" component={component} />;
     case ComponentType.Rotate:
-      return FormRotate(component);
+      return <FormRotate key="comp-rotate" component={component} />;
     case ComponentType.Color:
-      return FormColor(component);
+      return <FormColor key="comp-color" component={component} />;
     case ComponentType.Sprite:
-      return FormSprite(component);
+      return <FormSprite key="comp-sprite" component={component} />;
     case ComponentType.Text:
-      return FormText(component);
+      return <FormText key="comp-text" component={component} />;
     case ComponentType.Rect:
-      return FormRect(component);
+      return <FormRect key="comp-rect" component={component} />;
     case ComponentType.Area:
-      return FormArea(component);
+      return <FormArea key="comp-area" component={component} />;
     case ComponentType.Body:
-      return FormBody(component);
+      return <FormBody key="comp-body" component={component} />;
     case ComponentType.Solid:
-      return FormSolid(component);
+      return <FormSolid key="comp-solid" component={component} />;
     case ComponentType.Origin:
-      return FormOrigin(component);
+      return <FormOrigin key="comp-origin" component={component} />;
     case ComponentType.Layer:
-      return FormLayer(component);
+      return <FormLayer key="comp-layer" component={component} />;
     case ComponentType.Tag:
-      return FormTag(component);
+      return <FormTag key="comp-tag" component={component} />;
   }
+  return null;
 }
 
 const MetaComponent = ({
@@ -527,7 +528,7 @@ const MetaComponent = ({
         onChange={handleChange}
         onSubmit={handleSubmit}
       >
-        <ComponentForm component={component} />
+        <ComponentForm component={component} key="component-form" />
       </form>
     </div>
   );
