@@ -38,14 +38,11 @@ const Meta = ({ className, gameObject, title, onChangeComponent }: Props) => {
     },
     [gameObject]
   );
-  const handleDeleteComponent = useCallback(
-    (i: number) => {
-      //ev.preventDefault();
-      onChangeComponent(i, null);
-      //gameObject.components.splice(i, 1);
-    },
-    [gameObject]
-  );
+  const handleDeleteComponent = useCallback((i: number) => {
+    //ev.preventDefault();
+    onChangeComponent(i, null);
+    //gameObject.components.splice(i, 1);
+  }, []);
   const componentTypes = [
     ComponentType.Pos,
     ComponentType.Scale,

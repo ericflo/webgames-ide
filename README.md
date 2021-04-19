@@ -4,7 +4,6 @@ An in-browser IDE to build Kaboom.js-based webgames that can take advantage of t
 
 ## TODO
 
-* Fix issues with meta form changes being blocked
 * Add an "Actions" module where you can write code and assign it to actions
 * Add the ability to drag/drop Game Objects to change their order
 * Fix formatting on all the meta form fields
@@ -18,3 +17,7 @@ An in-browser IDE to build Kaboom.js-based webgames that can take advantage of t
 * Allow selection of game objects by clicking the editor window
 * Add controls for dragging game objects around in the editor window
 * Add controls for rotating game objects in the editor window
+
+## DONE
+
+* Fix issues with meta form changes being blocked

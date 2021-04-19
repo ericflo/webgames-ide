@@ -62,16 +62,16 @@ const FormPos = ({
     <>
       <label>X:</label>
       <input
-        className="w-12 text-center"
+        className="w-16 text-center"
         type="text"
-        value={'' + component.x}
+        defaultValue={'' + component.x}
         onChange={handleXChange}
       />
       <label>Y:</label>
       <input
-        className="w-12 text-center"
+        className="w-16 text-center"
         type="text"
-        value={'' + component.y}
+        defaultValue={'' + component.y}
         onChange={handleYChange}
       />
     </>
@@ -103,16 +103,16 @@ const FormScale = ({
     <>
       <label>X:</label>
       <input
-        className="w-12 text-center"
+        className="w-16 text-center"
         type="text"
-        value={'' + component.x}
+        defaultValue={'' + component.x}
         onChange={handleXChange}
       />
       <label>Y:</label>
       <input
-        className="w-12 text-center"
+        className="w-16 text-center"
         type="text"
-        value={'' + component.y}
+        defaultValue={'' + component.y}
         onChange={handleYChange}
       />
     </>
@@ -139,7 +139,7 @@ const FormRotate = ({
       <input
         className="w-12 text-center"
         type="text"
-        value={'' + component.angle}
+        defaultValue={'' + component.angle}
         onChange={handleAngleChange}
       />
     </>
@@ -189,21 +189,21 @@ const FormColor = ({
           <input
             className="w-10 text-center mx-1"
             type="text"
-            value={'' + component.r}
+            defaultValue={'' + component.r}
             onChange={handleRChange}
           />
           <label>G:</label>
           <input
             className="w-10 text-center mx-1"
             type="text"
-            value={'' + component.g}
+            defaultValue={'' + component.g}
             onChange={handleGChange}
           />
           <label>B:</label>
           <input
             className="w-10 text-center mx-1"
             type="text"
-            value={'' + component.b}
+            defaultValue={'' + component.b}
             onChange={handleBChange}
           />
         </div>
@@ -212,7 +212,7 @@ const FormColor = ({
           <input
             className="w-10 text-center ml-1"
             type="text"
-            value={'' + component.a}
+            defaultValue={'' + component.a}
             onChange={handleAChange}
           />
         </div>
@@ -238,7 +238,11 @@ const FormSprite = ({
   return (
     <>
       <label>ID:</label>
-      <input type="text" value={'' + component.id} onChange={handleIDChange} />
+      <input
+        type="text"
+        defaultValue={'' + component.id}
+        onChange={handleIDChange}
+      />
     </>
   );
 };
@@ -276,21 +280,21 @@ const FormText = ({
       <label>Text:</label>
       <input
         type="text"
-        value={'' + component.text}
+        defaultValue={'' + component.text}
         onChange={handleTextChange}
       />
       <label>Size:</label>
       <input
         className="w-12 text-center"
         type="text"
-        value={'' + component.size}
+        defaultValue={'' + component.size}
         onChange={handleSizeChange}
       />
       <label>Width:</label>
       <input
         className="w-12 text-center"
         type="text"
-        value={'' + component.width}
+        defaultValue={'' + component.width}
         onChange={handleWidthChange}
       />
     </>
@@ -324,14 +328,14 @@ const FormRect = ({
       <input
         className="w-12 text-center"
         type="text"
-        value={'' + component.w}
+        defaultValue={'' + component.w}
         onChange={handleWChange}
       />
       <label>H:</label>
       <input
         className="w-12 text-center"
         type="text"
-        value={'' + component.h}
+        defaultValue={'' + component.h}
         onChange={handleHChange}
       />
     </>
@@ -379,28 +383,28 @@ const FormArea = ({
       <input
         className="w-12 text-center"
         type="text"
-        value={'' + component.p1.x}
+        defaultValue={'' + component.p1.x}
         onChange={handleP1XChange}
       />
       <label>P1 Y:</label>
       <input
         className="w-12 text-center"
         type="text"
-        value={'' + component.p1.y}
+        defaultValue={'' + component.p1.y}
         onChange={handleP1YChange}
       />
       <label>P2 X:</label>
       <input
         className="w-12 text-center"
         type="text"
-        value={'' + component.p2.x}
+        defaultValue={'' + component.p2.x}
         onChange={handleP2XChange}
       />
       <label>P2 Y:</label>
       <input
         className="w-12 text-center"
         type="text"
-        value={'' + component.p2.y}
+        defaultValue={'' + component.p2.y}
         onChange={handleP2YChange}
       />
     </>
@@ -433,14 +437,14 @@ const FormBody = ({
       <label>Jump Force:</label>
       <input
         type="text"
-        value={'' + component.jumpForce}
+        defaultValue={'' + component.jumpForce}
         onChange={handleJumpForceChange}
       />
       <label>Max Vel:</label>
       <input
         className="w-12 text-center"
         type="text"
-        value={'' + component.maxVel}
+        defaultValue={'' + component.maxVel}
         onChange={handleMaxVelChange}
       />
     </>
@@ -490,21 +494,21 @@ const FormOrigin = ({
       <label>Name:</label>
       <input
         type="text"
-        value={'' + component.name}
+        defaultValue={'' + component.name}
         onChange={handleNameChange}
       />
       <label>Custom X:</label>
       <input
         className="w-12 text-center"
         type="text"
-        value={'' + component.custom.x}
+        defaultValue={'' + component.custom.x}
         onChange={handleCustomXChange}
       />
       <label>Custom Y:</label>
       <input
         className="w-12 text-center"
         type="text"
-        value={'' + component.custom.y}
+        defaultValue={'' + component.custom.y}
         onChange={handleCustomYChange}
       />
     </>
@@ -530,7 +534,7 @@ const FormLayer = ({
       <label>Name:</label>
       <input
         type="text"
-        value={'' + component.name}
+        defaultValue={'' + component.name}
         onChange={handleNameChange}
       />
     </>
@@ -556,7 +560,7 @@ const FormTag = ({
       <label>Name:</label>
       <input
         type="text"
-        value={'' + component.name}
+        defaultValue={'' + component.name}
         onChange={handleNameChange}
       />
     </>

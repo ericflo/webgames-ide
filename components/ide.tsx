@@ -23,13 +23,13 @@ const IDE = () => {
       return value.name == api.currentSceneData.currentSceneName;
     }
   );
-
   const [isUploading, setIsUploading] = useState(false);
   const [layerIndex, setLayerIndex] = useState(0);
   const [addAssetModalActive, setAddAssetModalActive] = useState(false);
   const [currentObjectIndex, setCurrentObjectIndex] = useState(-1);
   const gameObjects = scene.layers[layerIndex].gameObjects;
   const currentObject = gameObjects[currentObjectIndex];
+
   const handleDeleteObject = useCallback(() => {
     const idx = gameObjects.indexOf(currentObject);
     if (idx >= 0) {
@@ -37,12 +37,14 @@ const IDE = () => {
       api.saveCurrentSceneData();
     }
   }, [api, currentObject, layerIndex]);
+
   const handleAddObject = useCallback(() => {
     const newObject = JSON.parse(JSON.stringify(DEFAULT_GAME_OBJECT));
     gameObjects.push(newObject);
     setCurrentObjectIndex(gameObjects.length - 1);
     api.saveCurrentSceneData();
   }, [scene, layerIndex, gameObjects]);
+
   const handleRequestNewScene = useCallback(() => {
     const name = prompt('New scene name');
     if (name && name.length > 0) {
@@ -63,6 +65,7 @@ const IDE = () => {
       api.saveCurrentSceneData();
     }
   }, [api]);
+
   const handleSceneChanged = useCallback(
     (name: string) => {
       api.setCurrentSceneData(
@@ -74,6 +77,7 @@ const IDE = () => {
     },
     [api]
   );
+
   const handleDeleteScene = useCallback(() => {
     if (
       confirm(
@@ -98,6 +102,7 @@ const IDE = () => {
       api.saveCurrentSceneData();
     }
   }, [api]);
+
   const handleNewLayer = useCallback(() => {
     const name = prompt('New layer name');
     if (name && name.length > 0) {
@@ -106,6 +111,7 @@ const IDE = () => {
       api.saveCurrentSceneData();
     }
   }, [api]);
+
   const handleDeleteLayer = useCallback(
     (idx: number) => {
       if (
@@ -122,6 +128,7 @@ const IDE = () => {
     },
     [api]
   );
+
   const handleLoginClick = useCallback(
     (ev: React.MouseEvent) => {
       ev.preventDefault();
@@ -129,6 +136,7 @@ const IDE = () => {
     },
     [api]
   );
+
   const handleLogoutClick = useCallback(
     (ev: React.MouseEvent) => {
       ev.preventDefault();
@@ -136,6 +144,7 @@ const IDE = () => {
     },
     [api]
   );
+
   const handleAssetDelete = useCallback(
     (asset: Asset) => {
       api.setCurrentSceneData(
@@ -154,36 +163,37 @@ const IDE = () => {
     },
     [api]
   );
+
   const handleDrop = useOnAssetDrop(
     api,
     setIsUploading,
     setAddAssetModalActive
   );
+
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop: handleDrop,
     noClick: true,
   });
-  const handleChangeComponent = useCallback(
-    (i: number, component: Component) => {
-      api.setCurrentSceneData(
-        (sd: SceneData): SceneData => {
-          const obj = sd.scenes.find(
-            (value: Scene): Boolean => {
-              return value.name == sd.currentSceneName;
-            }
-          ).layers[layerIndex].gameObjects[currentObjectIndex];
-          if (component) {
-            obj.components[i] = component;
-          } else {
-            obj.components.splice(i, 1);
+
+  const handleChangeComponent = (i: number, component: Component) => {
+    api.setCurrentSceneData(
+      (sd: SceneData): SceneData => {
+        const obj = sd.scenes.find(
+          (value: Scene): Boolean => {
+            return value.name == sd.currentSceneName;
           }
-          return sd;
+        ).layers[layerIndex].gameObjects[currentObjectIndex];
+        if (component) {
+          obj.components[i] = component;
+        } else {
+          obj.components.splice(i, 1);
         }
-      );
-      api.saveCurrentSceneData();
-    },
-    [api, layerIndex, currentObjectIndex]
-  );
+        return sd;
+      }
+    );
+    api.saveCurrentSceneData();
+  };
+
   return (
     <div className="h-screen w-screen" {...getRootProps()}>
       <div className="flex flex-row">
@@ -243,6 +253,7 @@ const IDE = () => {
             </div>
             {currentObject ? (
               <Meta
+                key={currentObjectIndex}
                 className="w-80 flex-none overflow-hidden border-l border-black"
                 gameObject={currentObject}
                 title={'Game Object ' + (currentObjectIndex + 1)}

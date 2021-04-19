@@ -199,7 +199,6 @@ export class API {
     if (this.saving) {
       this.wantsSave = true;
     } else {
-      //this.currentSceneData = this.currentSceneData; // Used to trigger graph update
       this.saving = true;
       console.log('Saving scene data...');
       await this.mySky.setJSON('currentSceneData.json', this.currentSceneData);
