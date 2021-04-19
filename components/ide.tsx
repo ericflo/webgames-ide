@@ -11,7 +11,6 @@ import Meta from './ide/meta';
 import SceneData, {
   Scene,
   Asset,
-  GameObject,
   Component,
   DEFAULT_GAME_OBJECT,
 } from './data';

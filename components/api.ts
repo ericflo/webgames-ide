@@ -180,13 +180,17 @@ export class API {
   }
 
   async loadCurrentSceneData(): Promise<SceneData> {
+    console.log('Loading scene data...');
     const { data } = await this.mySky.getJSON('currentSceneData.json');
     if (data) {
+      console.log('Loaded scene data');
       const sceneData = data as SceneData;
       if (sceneData) {
         console.log('Loaded scene data', sceneData);
         return sceneData;
       }
+    } else {
+      console.log('Unable to load scene data');
     }
     return makeDefaultSceneData();
   }
@@ -197,9 +201,10 @@ export class API {
     } else {
       //this.currentSceneData = this.currentSceneData; // Used to trigger graph update
       this.saving = true;
+      console.log('Saving scene data...');
       await this.mySky.setJSON('currentSceneData.json', this.currentSceneData);
       this.saving = false;
-      console.log('Saved scene data', this.currentSceneData);
+      console.log('Saved scene data');
       if (this.wantsSave) {
         this.wantsSave = false;
         this.saveCurrentSceneData();

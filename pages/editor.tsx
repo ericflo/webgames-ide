@@ -20,6 +20,9 @@ const Editor = () => {
     if (encodedSceneData) {
       setSceneData(JSON.parse(decodeURIComponent(encodedSceneData)));
     }
+    console.log = function (...args: any[]) {
+      window.top.postMessage({ type: 'console.log', args: args }, '*');
+    };
     window.addEventListener('message', (ev: MessageEvent) => {
       // TODO
     });
