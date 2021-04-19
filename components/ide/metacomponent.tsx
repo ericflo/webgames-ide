@@ -37,16 +37,24 @@ function zeroFromNaN(i: number) {
   return i;
 }
 
-const FormPos = ({ component }: { component: ComponentPos }) => {
+const FormPos = ({
+  component,
+  onChange,
+}: {
+  component: ComponentPos;
+  onChange: (component: Component) => void;
+}) => {
   const handleXChange = useCallback(
     (ev: React.ChangeEvent<HTMLInputElement>) => {
       component.x = zeroFromNaN(parseFloat(ev.target.value));
+      onChange(component);
     },
     [component]
   );
   const handleYChange = useCallback(
     (ev: React.ChangeEvent<HTMLInputElement>) => {
       component.y = zeroFromNaN(parseFloat(ev.target.value));
+      onChange(component);
     },
     [component]
   );
@@ -70,16 +78,24 @@ const FormPos = ({ component }: { component: ComponentPos }) => {
   );
 };
 
-const FormScale = ({ component }: { component: ComponentScale }) => {
+const FormScale = ({
+  component,
+  onChange,
+}: {
+  component: ComponentScale;
+  onChange: (component: Component) => void;
+}) => {
   const handleXChange = useCallback(
     (ev: React.ChangeEvent<HTMLInputElement>) => {
       component.x = zeroFromNaN(parseFloat(ev.target.value));
+      onChange(component);
     },
     [component]
   );
   const handleYChange = useCallback(
     (ev: React.ChangeEvent<HTMLInputElement>) => {
       component.y = zeroFromNaN(parseFloat(ev.target.value));
+      onChange(component);
     },
     [component]
   );
@@ -103,10 +119,17 @@ const FormScale = ({ component }: { component: ComponentScale }) => {
   );
 };
 
-const FormRotate = ({ component }: { component: ComponentRotate }) => {
+const FormRotate = ({
+  component,
+  onChange,
+}: {
+  component: ComponentRotate;
+  onChange: (component: Component) => void;
+}) => {
   const handleAngleChange = useCallback(
     (ev: React.ChangeEvent<HTMLInputElement>) => {
       component.angle = zeroFromNaN(parseFloat(ev.target.value));
+      onChange(component);
     },
     [component]
   );
@@ -123,28 +146,38 @@ const FormRotate = ({ component }: { component: ComponentRotate }) => {
   );
 };
 
-const FormColor = ({ component }: { component: ComponentColor }) => {
+const FormColor = ({
+  component,
+  onChange,
+}: {
+  component: ComponentColor;
+  onChange: (component: Component) => void;
+}) => {
   const handleRChange = useCallback(
     (ev: React.ChangeEvent<HTMLInputElement>) => {
       component.r = zeroFromNaN(parseFloat(ev.target.value));
+      onChange(component);
     },
     [component]
   );
   const handleGChange = useCallback(
     (ev: React.ChangeEvent<HTMLInputElement>) => {
       component.g = zeroFromNaN(parseFloat(ev.target.value));
+      onChange(component);
     },
     [component]
   );
   const handleBChange = useCallback(
     (ev: React.ChangeEvent<HTMLInputElement>) => {
       component.b = zeroFromNaN(parseFloat(ev.target.value));
+      onChange(component);
     },
     [component]
   );
   const handleAChange = useCallback(
     (ev: React.ChangeEvent<HTMLInputElement>) => {
       component.a = zeroFromNaN(parseFloat(ev.target.value));
+      onChange(component);
     },
     [component]
   );
@@ -182,10 +215,17 @@ const FormColor = ({ component }: { component: ComponentColor }) => {
   );
 };
 
-const FormSprite = ({ component }: { component: ComponentSprite }) => {
+const FormSprite = ({
+  component,
+  onChange,
+}: {
+  component: ComponentSprite;
+  onChange: (component: Component) => void;
+}) => {
   const handleIDChange = useCallback(
     (ev: React.ChangeEvent<HTMLInputElement>) => {
       component.id = ev.target.value;
+      onChange(component);
     },
     [component]
   );
@@ -197,22 +237,31 @@ const FormSprite = ({ component }: { component: ComponentSprite }) => {
   );
 };
 
-const FormText = ({ component }: { component: ComponentText }) => {
+const FormText = ({
+  component,
+  onChange,
+}: {
+  component: ComponentText;
+  onChange: (component: Component) => void;
+}) => {
   const handleTextChange = useCallback(
     (ev: React.ChangeEvent<HTMLInputElement>) => {
       component.text = ev.target.value;
+      onChange(component);
     },
     [component]
   );
   const handleSizeChange = useCallback(
     (ev: React.ChangeEvent<HTMLInputElement>) => {
       component.size = zeroFromNaN(parseFloat(ev.target.value));
+      onChange(component);
     },
     [component]
   );
   const handleWidthChange = useCallback(
     (ev: React.ChangeEvent<HTMLInputElement>) => {
       component.width = zeroFromNaN(parseFloat(ev.target.value));
+      onChange(component);
     },
     [component]
   );
@@ -242,16 +291,24 @@ const FormText = ({ component }: { component: ComponentText }) => {
   );
 };
 
-const FormRect = ({ component }: { component: ComponentRect }) => {
+const FormRect = ({
+  component,
+  onChange,
+}: {
+  component: ComponentRect;
+  onChange: (component: Component) => void;
+}) => {
   const handleWChange = useCallback(
     (ev: React.ChangeEvent<HTMLInputElement>) => {
       component.w = zeroFromNaN(parseFloat(ev.target.value));
+      onChange(component);
     },
     [component]
   );
   const handleHChange = useCallback(
     (ev: React.ChangeEvent<HTMLInputElement>) => {
       component.h = zeroFromNaN(parseFloat(ev.target.value));
+      onChange(component);
     },
     [component]
   );
@@ -275,28 +332,38 @@ const FormRect = ({ component }: { component: ComponentRect }) => {
   );
 };
 
-const FormArea = ({ component }: { component: ComponentArea }) => {
+const FormArea = ({
+  component,
+  onChange,
+}: {
+  component: ComponentArea;
+  onChange: (component: Component) => void;
+}) => {
   const handleP1XChange = useCallback(
     (ev: React.ChangeEvent<HTMLInputElement>) => {
       component.p1.x = zeroFromNaN(parseFloat(ev.target.value));
+      onChange(component);
     },
     [component]
   );
   const handleP1YChange = useCallback(
     (ev: React.ChangeEvent<HTMLInputElement>) => {
       component.p1.y = zeroFromNaN(parseFloat(ev.target.value));
+      onChange(component);
     },
     [component]
   );
   const handleP2XChange = useCallback(
     (ev: React.ChangeEvent<HTMLInputElement>) => {
       component.p2.x = zeroFromNaN(parseFloat(ev.target.value));
+      onChange(component);
     },
     [component]
   );
   const handleP2YChange = useCallback(
     (ev: React.ChangeEvent<HTMLInputElement>) => {
       component.p2.y = zeroFromNaN(parseFloat(ev.target.value));
+      onChange(component);
     },
     [component]
   );
@@ -334,16 +401,24 @@ const FormArea = ({ component }: { component: ComponentArea }) => {
   );
 };
 
-const FormBody = ({ component }: { component: ComponentBody }) => {
+const FormBody = ({
+  component,
+  onChange,
+}: {
+  component: ComponentBody;
+  onChange: (component: Component) => void;
+}) => {
   const handleJumpForceChange = useCallback(
     (ev: React.ChangeEvent<HTMLInputElement>) => {
       component.jumpForce = zeroFromNaN(parseFloat(ev.target.value));
+      onChange(component);
     },
     [component]
   );
   const handleMaxVelChange = useCallback(
     (ev: React.ChangeEvent<HTMLInputElement>) => {
       component.maxVel = zeroFromNaN(parseFloat(ev.target.value));
+      onChange(component);
     },
     [component]
   );
@@ -366,26 +441,41 @@ const FormBody = ({ component }: { component: ComponentBody }) => {
   );
 };
 
-const FormSolid = ({ component }: { component: ComponentSolid }) => {
+const FormSolid = ({
+  component,
+  onChange,
+}: {
+  component: ComponentSolid;
+  onChange: (component: Component) => void;
+}) => {
   return null;
 };
 
-const FormOrigin = ({ component }: { component: ComponentOrigin }) => {
+const FormOrigin = ({
+  component,
+  onChange,
+}: {
+  component: ComponentOrigin;
+  onChange: (component: Component) => void;
+}) => {
   const handleNameChange = useCallback(
     (ev: React.ChangeEvent<HTMLInputElement>) => {
       component.name = ev.target.value;
+      onChange(component);
     },
     [component]
   );
   const handleCustomXChange = useCallback(
     (ev: React.ChangeEvent<HTMLInputElement>) => {
       component.custom.x = zeroFromNaN(parseFloat(ev.target.value));
+      onChange(component);
     },
     [component]
   );
   const handleCustomYChange = useCallback(
     (ev: React.ChangeEvent<HTMLInputElement>) => {
       component.custom.y = zeroFromNaN(parseFloat(ev.target.value));
+      onChange(component);
     },
     [component]
   );
@@ -415,10 +505,17 @@ const FormOrigin = ({ component }: { component: ComponentOrigin }) => {
   );
 };
 
-const FormLayer = ({ component }: { component: ComponentLayer }) => {
+const FormLayer = ({
+  component,
+  onChange,
+}: {
+  component: ComponentLayer;
+  onChange: (component: Component) => void;
+}) => {
   const handleNameChange = useCallback(
     (ev: React.ChangeEvent<HTMLInputElement>) => {
       component.name = ev.target.value;
+      onChange(component);
     },
     [component]
   );
@@ -434,10 +531,17 @@ const FormLayer = ({ component }: { component: ComponentLayer }) => {
   );
 };
 
-const FormTag = ({ component }: { component: ComponentTag }) => {
+const FormTag = ({
+  component,
+  onChange,
+}: {
+  component: ComponentTag;
+  onChange: (component: Component) => void;
+}) => {
   const handleNameChange = useCallback(
     (ev: React.ChangeEvent<HTMLInputElement>) => {
       component.name = ev.target.value;
+      onChange(component);
     },
     [component]
   );
@@ -453,34 +557,78 @@ const FormTag = ({ component }: { component: ComponentTag }) => {
   );
 };
 
-function ComponentForm({ component }: { component: Component }) {
+function ComponentForm({
+  component,
+  onChange,
+}: {
+  component: Component;
+  onChange: (component: Component) => void;
+}) {
   switch (component.type) {
     case ComponentType.Pos:
-      return <FormPos key="comp-pos" component={component} />;
+      return (
+        <FormPos key="comp-pos" component={component} onChange={onChange} />
+      );
     case ComponentType.Scale:
-      return <FormScale key="comp-scale" component={component} />;
+      return (
+        <FormScale key="comp-scale" component={component} onChange={onChange} />
+      );
     case ComponentType.Rotate:
-      return <FormRotate key="comp-rotate" component={component} />;
+      return (
+        <FormRotate
+          key="comp-rotate"
+          component={component}
+          onChange={onChange}
+        />
+      );
     case ComponentType.Color:
-      return <FormColor key="comp-color" component={component} />;
+      return (
+        <FormColor key="comp-color" component={component} onChange={onChange} />
+      );
     case ComponentType.Sprite:
-      return <FormSprite key="comp-sprite" component={component} />;
+      return (
+        <FormSprite
+          key="comp-sprite"
+          component={component}
+          onChange={onChange}
+        />
+      );
     case ComponentType.Text:
-      return <FormText key="comp-text" component={component} />;
+      return (
+        <FormText key="comp-text" component={component} onChange={onChange} />
+      );
     case ComponentType.Rect:
-      return <FormRect key="comp-rect" component={component} />;
+      return (
+        <FormRect key="comp-rect" component={component} onChange={onChange} />
+      );
     case ComponentType.Area:
-      return <FormArea key="comp-area" component={component} />;
+      return (
+        <FormArea key="comp-area" component={component} onChange={onChange} />
+      );
     case ComponentType.Body:
-      return <FormBody key="comp-body" component={component} />;
+      return (
+        <FormBody key="comp-body" component={component} onChange={onChange} />
+      );
     case ComponentType.Solid:
-      return <FormSolid key="comp-solid" component={component} />;
+      return (
+        <FormSolid key="comp-solid" component={component} onChange={onChange} />
+      );
     case ComponentType.Origin:
-      return <FormOrigin key="comp-origin" component={component} />;
+      return (
+        <FormOrigin
+          key="comp-origin"
+          component={component}
+          onChange={onChange}
+        />
+      );
     case ComponentType.Layer:
-      return <FormLayer key="comp-layer" component={component} />;
+      return (
+        <FormLayer key="comp-layer" component={component} onChange={onChange} />
+      );
     case ComponentType.Tag:
-      return <FormTag key="comp-tag" component={component} />;
+      return (
+        <FormTag key="comp-tag" component={component} onChange={onChange} />
+      );
   }
   return null;
 }
@@ -491,17 +639,10 @@ const MetaComponent = ({
   onChange,
   onDelete,
 }: Props) => {
-  const handleChange = useCallback(
-    (ev: React.ChangeEvent<HTMLFormElement>) => {
-      if (!ev.defaultPrevented) {
-        onChange(component);
-      }
-    },
-    [component]
-  );
   const handleSubmit = useCallback((ev: React.FormEvent) => {
     ev.preventDefault();
   }, []);
+
   const handleDeleteClick = useCallback(
     (ev: React.MouseEvent) => {
       ev.preventDefault();
@@ -517,6 +658,7 @@ const MetaComponent = ({
     },
     [component]
   );
+
   return (
     <div className="mx-4 my-2 px-4 py-2 rounded-lg bg-gray-200">
       <span className="float-right cursor-pointer" onClick={handleDeleteClick}>
@@ -525,10 +667,14 @@ const MetaComponent = ({
       {componentTypeName(component.type)}
       <form
         className="flex place-items-center justify-around flex-nowrap"
-        onChange={handleChange}
+        onChange={/*handleChange*/ null}
         onSubmit={handleSubmit}
       >
-        <ComponentForm component={component} key="component-form" />
+        <ComponentForm
+          component={component}
+          onChange={onChange}
+          key="component-form"
+        />
       </form>
     </div>
   );

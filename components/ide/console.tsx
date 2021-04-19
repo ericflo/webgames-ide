@@ -25,7 +25,10 @@ const Console = ({ className }: Props) => {
       <h3 className="flex-none mx-5 my-2 font-light text-black text-opacity-70">
         Console
       </h3>
-      <ul ref={ulRef} className="flex-1 px-5 overflow-y-scroll overflow-x-hide">
+      <ul
+        ref={ulRef}
+        className="flex-1 px-5 overflow-y-scroll overflow-x-hide bg-black bg-opacity-20"
+      >
         {logs.map((log: any[], i: number) => {
           return <li key={i}>{log.join(' ')}</li>;
         })}

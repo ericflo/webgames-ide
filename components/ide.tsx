@@ -185,9 +185,9 @@ const IDE = () => {
     [api, layerIndex, currentObjectIndex]
   );
   return (
-    <div className="flex flex-col h-screen w-screen" {...getRootProps()}>
-      <div className="flex flex-row flex-1">
-        <div className="flex flex-col flex-1 max-w-xs">
+    <div className="h-screen w-screen" {...getRootProps()}>
+      <div className="flex flex-row">
+        <div className="flex flex-col flex-none h-screen max-w-xs w-80">
           <SceneChooser
             className="flex-none h-14 border-b border-r border-black"
             currentSceneName={api.currentSceneData.currentSceneName}
@@ -199,7 +199,7 @@ const IDE = () => {
             onDelete={handleDeleteScene}
           />
           <Objects
-            className="flex flex-col flex-1 max-h-64 border-b border-r border-black"
+            className="flex-1 h-64 border-b border-r border-black"
             scene={scene}
             api={api}
             currentObjectIndex={currentObjectIndex}
@@ -212,7 +212,7 @@ const IDE = () => {
             onDeleteLayer={handleDeleteLayer}
           />
           <Assets
-            className="flex flex-col flex-1 max-h-64 border-r border-black"
+            className="flex-1 h-64 border-r border-black"
             assets={api.currentSceneData.assets || []}
             onAssetDelete={handleAssetDelete}
             isUploading={isUploading}
@@ -234,10 +234,13 @@ const IDE = () => {
             ) : null}
           </div>
           <div className="flex-1 flex flex-row">
-            <Editor
-              className="flex-1 bg-gray-300"
-              sceneData={api.currentSceneData}
-            />
+            <div className="flex-1 flex flex-col">
+              <Editor
+                className="flex-1 bg-gray-300"
+                sceneData={api.currentSceneData}
+              />
+              <Console className="flex-none h-36" />
+            </div>
             {currentObject ? (
               <Meta
                 className="w-80 border-l border-black"
@@ -249,7 +252,6 @@ const IDE = () => {
           </div>
         </div>
       </div>
-      <Console className="flex-none h-36 border-t border-black" />
       <input {...getInputProps()} />
     </div>
   );

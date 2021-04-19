@@ -80,13 +80,13 @@ const Objects = ({
     [currentObjectIndex]
   );
   return (
-    <div className={className + ' relative'}>
+    <div className={className + ' flex flex-col relative'}>
       <div className="flex">
         <h3 className="flex-none mx-4 font-light text-black text-opacity-70 w-14 self-center">
           Objects
         </h3>
         <LayerChooser
-          className="flex-1"
+          className="flex-none"
           layerNames={scene.layers.map((layer: Layer) => layer.name)}
           layerIndex={layerIndex}
           onChange={onLayerChange}
@@ -94,7 +94,7 @@ const Objects = ({
           onDelete={onDeleteLayer.bind(null, layerIndex)}
         />
       </div>
-      <ul className="flex-1 overflow-y-scroll overflow-x-hide">
+      <ul className="overflow-y-scroll overflow-x-hide">
         {gameObjects.map((gameObject: GameObject, i: number) => {
           const isSelected = i == currentObjectIndex;
           return (

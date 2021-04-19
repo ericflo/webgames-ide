@@ -55,7 +55,10 @@ const Assets = ({
     setAddAssetModalActive(true);
   }, []);
   return (
-    <div className={className + ' relative'} onClick={handleClick}>
+    <div
+      className={className + ' flex flex-col relative'}
+      onClick={handleClick}
+    >
       {isUploading ? (
         <div className="absolute w-full h-full bg-black bg-opacity-80 flex flex-col place-content-center place-items-center">
           <p className="text-white mx-8 mb-4">
@@ -93,10 +96,10 @@ const Assets = ({
           </button>
         </div>
       ) : null}
-      <h3 className="flex flex-none mx-5 my-2 font-light text-black text-opacity-70">
+      <h3 className="flex mx-5 my-2 font-light text-black text-opacity-70">
         <span className="flex-1">Assets</span>
       </h3>
-      <div className="flex-1 overflow-y-scroll overflow-x-hide">
+      <div className="overflow-y-scroll overflow-x-hide">
         {assets.map((asset: Asset) => {
           return (
             <AssetRow
