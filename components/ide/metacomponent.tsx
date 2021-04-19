@@ -183,34 +183,40 @@ const FormColor = ({
   );
   return (
     <>
-      <label>R:</label>
-      <input
-        className="w-12 text-center mx-1"
-        type="text"
-        value={'' + component.r}
-        onChange={handleRChange}
-      />
-      <label>G:</label>
-      <input
-        className="w-12 text-center mx-1"
-        type="text"
-        value={'' + component.g}
-        onChange={handleGChange}
-      />
-      <label>B:</label>
-      <input
-        className="w-12 text-center mx-1"
-        type="text"
-        value={'' + component.b}
-        onChange={handleBChange}
-      />
-      <label>A:</label>
-      <input
-        className="w-12 text-center ml-1"
-        type="text"
-        value={'' + component.a}
-        onChange={handleAChange}
-      />
+      <div>
+        <div className="flex w-full place-items-center mb-1">
+          <label>R:</label>
+          <input
+            className="w-10 text-center mx-1"
+            type="text"
+            value={'' + component.r}
+            onChange={handleRChange}
+          />
+          <label>G:</label>
+          <input
+            className="w-10 text-center mx-1"
+            type="text"
+            value={'' + component.g}
+            onChange={handleGChange}
+          />
+          <label>B:</label>
+          <input
+            className="w-10 text-center mx-1"
+            type="text"
+            value={'' + component.b}
+            onChange={handleBChange}
+          />
+        </div>
+        <div className="flex w-full place-items-center">
+          <label>A:</label>
+          <input
+            className="w-10 text-center ml-1"
+            type="text"
+            value={'' + component.a}
+            onChange={handleAChange}
+          />
+        </div>
+      </div>
     </>
   );
 };
@@ -666,8 +672,7 @@ const MetaComponent = ({
       </span>
       {componentTypeName(component.type)}
       <form
-        className="flex place-items-center justify-around flex-nowrap"
-        onChange={/*handleChange*/ null}
+        className="flex place-items-center justify-around"
         onSubmit={handleSubmit}
       >
         <ComponentForm

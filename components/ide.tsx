@@ -243,7 +243,7 @@ const IDE = () => {
             </div>
             {currentObject ? (
               <Meta
-                className="w-80 border-l border-black"
+                className="w-80 flex-none overflow-hidden border-l border-black"
                 gameObject={currentObject}
                 title={'Game Object ' + (currentObjectIndex + 1)}
                 onChangeComponent={handleChangeComponent}
