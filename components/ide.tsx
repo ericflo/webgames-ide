@@ -199,7 +199,7 @@ const IDE = () => {
             onDelete={handleDeleteScene}
           />
           <Objects
-            className="flex flex-col flex-1 max-h-72 border-b border-r border-black"
+            className="flex flex-col flex-1 max-h-64 border-b border-r border-black"
             scene={scene}
             api={api}
             currentObjectIndex={currentObjectIndex}
@@ -212,7 +212,7 @@ const IDE = () => {
             onDeleteLayer={handleDeleteLayer}
           />
           <Assets
-            className="flex-1 max-h-72 border-r border-black"
+            className="flex flex-col flex-1 max-h-64 border-r border-black"
             assets={api.currentSceneData.assets || []}
             onAssetDelete={handleAssetDelete}
             isUploading={isUploading}

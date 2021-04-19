@@ -116,7 +116,7 @@ const Meta = ({ className, gameObject, title, onChangeComponent }: Props) => {
       </div>
       {addComponentModalActive ? null : (
         <button
-          className="absolute bottom-3 right-3 bg-white bg-opacity-60 w-10 h-10 rounded-full border border-gray-500 shadow-2xl"
+          className="absolute bottom-3 left-3 bg-white bg-opacity-60 w-10 h-10 rounded-full border border-gray-500 shadow-2xl"
           onClick={handleAddComponentClick}
         >
           <FontAwesomeIcon icon={faPlusSquare} className="text-gray-800" />

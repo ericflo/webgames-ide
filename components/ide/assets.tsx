@@ -55,10 +55,7 @@ const Assets = ({
     setAddAssetModalActive(true);
   }, []);
   return (
-    <div
-      className={className + ' flex flex-col relative'}
-      onClick={handleClick}
-    >
+    <div className={className + ' relative'} onClick={handleClick}>
       {isUploading ? (
         <div className="absolute w-full h-full bg-black bg-opacity-80 flex flex-col place-content-center place-items-center">
           <p className="text-white mx-8 mb-4">
@@ -100,7 +97,7 @@ const Assets = ({
         <span className="flex-1">Assets</span>
       </h3>
       <div className="flex-1 overflow-y-scroll overflow-x-hide">
-        {assets.map((asset: Asset, i: number) => {
+        {assets.map((asset: Asset) => {
           return (
             <AssetRow
               key={asset.skylink}
@@ -112,7 +109,7 @@ const Assets = ({
       </div>
       {isUploading || addAssetModalActive ? null : (
         <button
-          className="absolute bottom-3 right-3 bg-white bg-opacity-60 w-10 h-10 rounded-full border border-gray-500 shadow-2xl"
+          className="absolute bottom-3 left-3 bg-white bg-opacity-60 w-10 h-10 rounded-full border border-gray-500 shadow-2xl"
           onClick={handleAddAssetClick}
         >
           <FontAwesomeIcon icon={faPlusSquare} className="text-gray-800" />
