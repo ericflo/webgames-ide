@@ -16,6 +16,8 @@ import SceneData, {
   DEFAULT_GAME_OBJECT,
   DEFAULT_ACTION,
   Action,
+  Layer,
+  ComponentType,
 } from './data';
 import { useAPI } from './api';
 
@@ -32,6 +34,26 @@ const IDE = () => {
   const [currentObjectIndex, setCurrentObjectIndex] = useState(-1);
   const gameObjects = scene.layers[layerIndex].gameObjects;
   const currentObject = gameObjects[currentObjectIndex];
+
+  const tags = (api.currentSceneData.scenes || [])
+    .flatMap((scn: Scene, i: number) => {
+      return scn.layers.flatMap((layer: Layer, j: number) => {
+        return layer.gameObjects.flatMap((gameObject, k: number) => {
+          return gameObject.components.flatMap(
+            (component: Component, l: number) => {
+              return component.type == ComponentType.Tag
+                ? [component.name]
+                : [];
+            }
+          );
+        });
+      });
+    })
+    .filter(
+      (value: string, index: number, acc: string[]): Boolean => {
+        return acc.indexOf(value) === index;
+      }
+    );
 
   const handleDeleteObject = useCallback(() => {
     const idx = gameObjects.indexOf(currentObject);
@@ -281,6 +303,7 @@ const IDE = () => {
           <Actions
             className="flex-1 h-0 border-t border-b border-r border-black"
             actions={api.currentSceneData.actions || []}
+            tags={tags}
             onAddAction={handleAddAction}
             onDeleteAction={handleDeleteAction}
             onChangeAction={handleChangeAction}

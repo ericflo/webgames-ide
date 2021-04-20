@@ -10,6 +10,7 @@ import {
 type Props = {
   className?: string;
   actions: Action[];
+  tags: string[];
   onAddAction: () => void;
   onDeleteAction: (index: number) => void;
   onChangeAction: (index: number, action: Action) => void;
@@ -18,6 +19,7 @@ type Props = {
 const Actions = ({
   className,
   actions,
+  tags,
   onAddAction,
   onDeleteAction,
   onChangeAction,
@@ -89,7 +91,7 @@ const Actions = ({
               className={'px-4 py-2 select-none flex place-items-center'}
             >
               <select
-                className="flex-none w-28"
+                className="flex-none w-20"
                 defaultValue={action.type}
                 onChange={handleChangeType.bind(null, i, action)}
               >
@@ -101,38 +103,47 @@ const Actions = ({
               </select>
               {action.type == ActionType.On ? (
                 <input
-                  className="flex-1 ml-2 w-0"
+                  className="flex-none ml-2 w-16"
                   type="text"
                   placeholder="event"
                   defaultValue={action.eventName}
                   onChange={handleChangeEventName.bind(null, i, action)}
                 />
               ) : null}
-              <input
-                className="flex-1 ml-2 w-0"
-                type="text"
-                placeholder="tag"
+              <select
+                className={
+                  (action.type == ActionType.Action ||
+                  action.type == ActionType.Render
+                    ? 'w-32'
+                    : 'w-16') + ' flex-none ml-2'
+                }
                 defaultValue={action.tag}
                 onChange={handleChangeTag.bind(null, i, action)}
-              />
+              >
+                {tags.map((tag: string) => {
+                  return <option value={tag}>{tag}</option>;
+                })}
+              </select>
               {action.type == ActionType.Collides ||
               action.type == ActionType.Overlaps ? (
-                <input
-                  className="flex-1 ml-2 w-0"
-                  type="text"
-                  placeholder="tag2"
+                <select
+                  className="flex-1 ml-2 w-16"
                   defaultValue={action.otherTag}
                   onChange={handleChangeOtherTag.bind(null, i, action)}
-                />
+                >
+                  {tags.map((tag: string) => {
+                    return <option value={tag}>{tag}</option>;
+                  })}
+                </select>
               ) : null}
               <span
-                className="flex-none ml-2 cursor-pointer"
+                className="flex-1 ml-2 cursor-pointer"
                 onClick={handleEditActionClick.bind(null, i, action)}
               >
                 <FontAwesomeIcon icon={faEdit} />
               </span>
               <span
-                className="flex-none ml-2 cursor-pointer"
+                className="flex-1 ml-2 cursor-pointer"
                 onClick={handleDeleteActionClick.bind(null, i)}
               >
                 <FontAwesomeIcon icon={faTrash} />
