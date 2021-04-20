@@ -89,7 +89,7 @@ const Meta = ({
       onClick={handleClick}
     >
       {addComponentModalActive ? (
-        <div className="absolute w-full h-full bg-black bg-opacity-80 flex flex-col place-content-center place-items-center">
+        <div className="absolute w-full h-full bg-black bg-opacity-80 flex flex-col place-content-center place-items-center z-10">
           <ul>
             {componentTypes.map((componentType: ComponentType, i: number) => {
               return (

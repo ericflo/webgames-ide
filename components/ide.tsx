@@ -6,6 +6,7 @@ import Editor from './ide/editor';
 import SceneChooser from './ide/scenechooser';
 import Objects from './ide/objects';
 import Assets, { useOnAssetDrop } from './ide/assets';
+import Actions from './ide/actions';
 import Console from './ide/console';
 import Meta from './ide/meta';
 import SceneData, {
@@ -13,6 +14,8 @@ import SceneData, {
   Asset,
   Component,
   DEFAULT_GAME_OBJECT,
+  DEFAULT_ACTION,
+  Action,
 } from './data';
 import { useAPI } from './api';
 
@@ -39,11 +42,57 @@ const IDE = () => {
   }, [api, currentObject, layerIndex]);
 
   const handleAddObject = useCallback(() => {
-    const newObject = JSON.parse(JSON.stringify(DEFAULT_GAME_OBJECT));
-    gameObjects.push(newObject);
+    gameObjects.push(JSON.parse(JSON.stringify(DEFAULT_GAME_OBJECT)));
     setCurrentObjectIndex(gameObjects.length - 1);
     api.saveCurrentSceneData();
   }, [scene, layerIndex, gameObjects]);
+
+  const handleAddAction = useCallback(() => {
+    api.setCurrentSceneData(
+      (sceneData: SceneData): SceneData => {
+        if (!sceneData.actions) {
+          sceneData.actions = [];
+        }
+        sceneData.actions.push(JSON.parse(JSON.stringify(DEFAULT_ACTION)));
+        return sceneData;
+      }
+    );
+    api.saveCurrentSceneData();
+  }, [api]);
+
+  const handleDeleteAction = useCallback(
+    (i: number) => {
+      api.setCurrentSceneData(
+        (sceneData: SceneData): SceneData => {
+          if (!sceneData.actions || sceneData.actions.length <= i) {
+            return;
+          }
+          sceneData.actions.splice(i, 1);
+          return sceneData;
+        }
+      );
+      api.saveCurrentSceneData();
+    },
+    [api]
+  );
+
+  const handleChangeAction = useCallback(
+    (i: number, action: Action) => {
+      api.setCurrentSceneData(
+        (sceneData: SceneData): SceneData => {
+          const resp = { ...sceneData };
+          resp.actions = (resp.actions || []).map(
+            (act: Action, j: number): Action => {
+              return j == i ? JSON.parse(JSON.stringify(action)) : act;
+            }
+          );
+          return resp;
+        }
+      );
+      api.saveCurrentSceneData();
+    },
+    [api]
+  );
 
   const handleRequestNewScene = useCallback(() => {
     const name = prompt('New scene name');
@@ -178,6 +227,7 @@ const IDE = () => {
   const handleChangeComponent = (i: number, component: Component) => {
     api.setCurrentSceneData(
       (sd: SceneData): SceneData => {
+        sd = JSON.parse(JSON.stringify(sd));
         const obj = sd.scenes.find(
           (value: Scene): Boolean => {
             return value.name == sd.currentSceneName;
@@ -209,7 +259,7 @@ const IDE = () => {
             onDelete={handleDeleteScene}
           />
           <Objects
-            className="flex-1 h-64 border-b border-r border-black"
+            className="flex-1 h-0 border-b border-r border-black"
             scene={scene}
             api={api}
             currentObjectIndex={currentObjectIndex}
@@ -222,12 +272,19 @@ const IDE = () => {
             onDeleteLayer={handleDeleteLayer}
           />
           <Assets
-            className="flex-1 h-64 border-r border-black"
+            className="flex-1 h-0 border-r border-black"
             assets={api.currentSceneData.assets || []}
             onAssetDelete={handleAssetDelete}
             isUploading={isUploading}
             addAssetModalActive={addAssetModalActive}
             setAddAssetModalActive={setAddAssetModalActive}
+          />
+          <Actions
+            className="flex-1 h-0 border-t border-b border-r border-black"
+            actions={api.currentSceneData.actions || []}
+            onAddAction={handleAddAction}
+            onDeleteAction={handleDeleteAction}
+            onChangeAction={handleChangeAction}
           />
         </div>
         <div className="flex flex-col flex-1">

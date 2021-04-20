@@ -199,9 +199,26 @@ export type Asset = {
   skylink: string;
 };
 
+export enum ActionType {
+  Action = 'action',
+  Render = 'render',
+  Collides = 'collides',
+  Overlaps = 'overlaps',
+  On = 'on',
+}
+
+export type Action = {
+  type: ActionType;
+  tag?: string;
+  otherTag?: string;
+  eventName?: string;
+  code: string;
+};
+
 export type SceneData = {
   scenes?: Scene[];
   assets?: Asset[];
+  actions?: Action[];
   currentSceneName?: string;
 };
 
@@ -211,6 +228,11 @@ export const DEFAULT_GAME_OBJECT: GameObject = {
     { type: ComponentType.Rect, w: 4, h: 4 },
     { type: ComponentType.Color, r: 0, g: 0, b: 1, a: 1 },
   ],
+};
+
+export const DEFAULT_ACTION: Action = {
+  type: ActionType.Action,
+  code: '',
 };
 
 export const DEFAULT_LAYERS: Layer[] = [
@@ -230,6 +252,7 @@ export function makeDefaultSceneData(): SceneData {
   return {
     scenes: DEFAULT_SCENES,
     assets: [],
+    actions: [],
     currentSceneName: DEFAULT_SCENE_NAME,
   };
 }

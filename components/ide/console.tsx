@@ -15,7 +15,7 @@ const Console = ({ className }: Props) => {
         setLogs((curr: any[][]): any[][] => {
           return [...curr, ev.data.args];
         });
-        ulRef.current.scrollTo(0, ulRef.current.scrollHeight);
+        ulRef.current?.scrollTo(0, ulRef.current.scrollHeight);
       }
     });
   }, [ulRef]);

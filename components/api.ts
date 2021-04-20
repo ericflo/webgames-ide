@@ -105,9 +105,7 @@ export class API {
   }
 
   setCurrentSceneData(callback: (sceneData: SceneData) => SceneData) {
-    this._currentSceneData = callback(
-      JSON.parse(JSON.stringify(this._currentSceneData))
-    );
+    this._currentSceneData = callback(this._currentSceneData);
     this._setCurrentSceneData(callback);
   }
 
