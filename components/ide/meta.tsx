@@ -1,6 +1,7 @@
 import React, { useCallback, useState } from 'react';
 
 import {
+  Asset,
   GameObject,
   Component,
   ComponentType,
@@ -16,21 +17,31 @@ import { faPlusSquare } from '@fortawesome/free-solid-svg-icons';
 type Props = {
   className?: string;
   gameObject: GameObject;
+  assets: Asset[];
   title: string;
   onChangeComponent: (i: number, component: Component) => void;
 };
 
-const Meta = ({ className, gameObject, title, onChangeComponent }: Props) => {
+const Meta = ({
+  className,
+  gameObject,
+  assets,
+  title,
+  onChangeComponent,
+}: Props) => {
   const [addComponentModalActive, setAddComponentModalActive] = useState(false);
+
   const handleAddComponentClick = useCallback((ev: React.MouseEvent) => {
     ev.preventDefault();
     setAddComponentModalActive(true);
   }, []);
+
   const handleClick = useCallback((ev: React.MouseEvent) => {
     if (!ev.defaultPrevented) {
       setAddComponentModalActive(false);
     }
   }, []);
+
   const handleAddClick = useCallback(
     (componentType: ComponentType, ev: React.MouseEvent) => {
       //ev.preventDefault();
@@ -38,11 +49,13 @@ const Meta = ({ className, gameObject, title, onChangeComponent }: Props) => {
     },
     [gameObject]
   );
+
   const handleDeleteComponent = useCallback((i: number) => {
     //ev.preventDefault();
     onChangeComponent(i, null);
     //gameObject.components.splice(i, 1);
   }, []);
+
   const componentTypes = [
     ComponentType.Pos,
     ComponentType.Scale,
@@ -58,6 +71,7 @@ const Meta = ({ className, gameObject, title, onChangeComponent }: Props) => {
     ComponentType.Layer,
     ComponentType.Tag,
   ];
+
   gameObject.components.forEach((component: Component) => {
     switch (component.type) {
       case ComponentType.Layer:
@@ -68,6 +82,7 @@ const Meta = ({ className, gameObject, title, onChangeComponent }: Props) => {
         break;
     }
   });
+
   return (
     <div
       className={className + ' flex flex-col relative'}
@@ -105,6 +120,7 @@ const Meta = ({ className, gameObject, title, onChangeComponent }: Props) => {
               key={'' + i + '.' + component.type}
               gameObject={gameObject}
               component={component}
+              assets={assets}
               onChange={onChangeComponent.bind(null, i)}
               onDelete={handleDeleteComponent.bind(null, i)}
             />

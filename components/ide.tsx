@@ -256,6 +256,7 @@ const IDE = () => {
                 key={currentObjectIndex}
                 className="w-80 flex-none overflow-hidden border-l border-black"
                 gameObject={currentObject}
+                assets={api.currentSceneData.assets || []}
                 title={'Game Object ' + (currentObjectIndex + 1)}
                 onChangeComponent={handleChangeComponent}
               />

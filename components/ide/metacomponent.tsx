@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 
 import {
+  Asset,
   GameObject,
   Component,
   ComponentType,
@@ -26,6 +27,7 @@ import {
 type Props = {
   gameObject: GameObject;
   component: Component;
+  assets: Asset[];
   onChange: (component: Component) => void;
   onDelete: () => void;
 };
@@ -59,7 +61,7 @@ const FormPos = ({
     [component]
   );
   return (
-    <>
+    <div className="mt-2 mx-2 w-full flex place-items-center justify-between">
       <label>X:</label>
       <input
         className="w-16 text-center"
@@ -74,7 +76,7 @@ const FormPos = ({
         defaultValue={'' + component.y}
         onChange={handleYChange}
       />
-    </>
+    </div>
   );
 };
 
@@ -100,7 +102,7 @@ const FormScale = ({
     [component]
   );
   return (
-    <>
+    <div className="mt-2 mx-2 w-full flex place-items-center justify-between">
       <label>X:</label>
       <input
         className="w-16 text-center"
@@ -115,7 +117,7 @@ const FormScale = ({
         defaultValue={'' + component.y}
         onChange={handleYChange}
       />
-    </>
+    </div>
   );
 };
 
@@ -134,15 +136,15 @@ const FormRotate = ({
     [component]
   );
   return (
-    <>
+    <div className="mt-2 mx-2 w-full flex place-items-center justify-between">
       <label>Angle:</label>
       <input
-        className="w-12 text-center"
+        className="w-24 text-center"
         type="text"
         defaultValue={'' + component.angle}
         onChange={handleAngleChange}
       />
-    </>
+    </div>
   );
 };
 
@@ -182,68 +184,76 @@ const FormColor = ({
     [component]
   );
   return (
-    <>
-      <div>
-        <div className="flex w-full place-items-center mb-1">
-          <label>R:</label>
-          <input
-            className="w-10 text-center mx-1"
-            type="text"
-            defaultValue={'' + component.r}
-            onChange={handleRChange}
-          />
-          <label>G:</label>
-          <input
-            className="w-10 text-center mx-1"
-            type="text"
-            defaultValue={'' + component.g}
-            onChange={handleGChange}
-          />
-          <label>B:</label>
-          <input
-            className="w-10 text-center mx-1"
-            type="text"
-            defaultValue={'' + component.b}
-            onChange={handleBChange}
-          />
-        </div>
-        <div className="flex w-full place-items-center">
-          <label>A:</label>
-          <input
-            className="w-10 text-center ml-1"
-            type="text"
-            defaultValue={'' + component.a}
-            onChange={handleAChange}
-          />
-        </div>
+    <div className="mt-2">
+      <div className="flex w-full place-items-center mb-1">
+        <label>R: </label>
+        <input
+          className="w-14 text-center mx-1"
+          type="text"
+          defaultValue={'' + component.r}
+          onChange={handleRChange}
+        />
+        <label>G: </label>
+        <input
+          className="w-14 text-center mx-1"
+          type="text"
+          defaultValue={'' + component.g}
+          onChange={handleGChange}
+        />
+        <label>B: </label>
+        <input
+          className="w-14 text-center mx-1"
+          type="text"
+          defaultValue={'' + component.b}
+          onChange={handleBChange}
+        />
       </div>
-    </>
+      <div className="flex w-full place-items-center place-content-center">
+        <label>A: </label>
+        <input
+          className="w-14 text-center ml-1"
+          type="text"
+          defaultValue={'' + component.a}
+          onChange={handleAChange}
+        />
+      </div>
+    </div>
   );
 };
 
 const FormSprite = ({
   component,
+  assets,
   onChange,
 }: {
   component: ComponentSprite;
+  assets: Asset[];
   onChange: (component: Component) => void;
 }) => {
   const handleIDChange = useCallback(
-    (ev: React.ChangeEvent<HTMLInputElement>) => {
+    (ev: React.ChangeEvent<HTMLSelectElement>) => {
       component.id = ev.target.value;
       onChange(component);
     },
     [component]
   );
   return (
-    <>
-      <label>ID:</label>
-      <input
-        type="text"
+    <div className="mt-2 mx-2 w-full flex place-items-center justify-between">
+      <label className="mr-8">ID:</label>
+      <select
+        className="w-64"
         defaultValue={'' + component.id}
         onChange={handleIDChange}
-      />
-    </>
+      >
+        {assets.map((asset: Asset) => {
+          return (
+            <option key={asset.skylink} value={asset.name}>
+              {asset.name}
+            </option>
+          );
+        })}
+      </select>
+    </div>
   );
 };
 
@@ -276,28 +286,32 @@ const FormText = ({
     [component]
   );
   return (
-    <>
-      <label>Text:</label>
-      <input
-        type="text"
-        defaultValue={'' + component.text}
-        onChange={handleTextChange}
-      />
-      <label>Size:</label>
-      <input
-        className="w-12 text-center"
-        type="text"
-        defaultValue={'' + component.size}
-        onChange={handleSizeChange}
-      />
-      <label>Width:</label>
-      <input
-        className="w-12 text-center"
-        type="text"
-        defaultValue={'' + component.width}
-        onChange={handleWidthChange}
-      />
-    </>
+    <div>
+      <div className="mb-2 mt-2">
+        <label className="mr-2">Text:</label>
+        <input
+          type="text"
+          defaultValue={'' + component.text}
+          onChange={handleTextChange}
+        />
+      </div>
+      <div className="flex place-items-center justify-between">
+        <label>Size:</label>
+        <input
+          className="w-16 text-center mr-1"
+          type="text"
+          defaultValue={'' + component.size}
+          onChange={handleSizeChange}
+        />
+        <label>Width:</label>
+        <input
+          className="w-16 text-center"
+          type="text"
+          defaultValue={'' + component.width}
+          onChange={handleWidthChange}
+        />
+      </div>
+    </div>
   );
 };
 
@@ -323,22 +337,22 @@ const FormRect = ({
     [component]
   );
   return (
-    <>
+    <div className="w-full mt-2 mx-2 flex place-items-center justify-between">
       <label>W:</label>
       <input
-        className="w-12 text-center"
+        className="w-16 text-center"
         type="text"
         defaultValue={'' + component.w}
         onChange={handleWChange}
       />
       <label>H:</label>
       <input
-        className="w-12 text-center"
+        className="w-16 text-center"
         type="text"
         defaultValue={'' + component.h}
         onChange={handleHChange}
       />
-    </>
+    </div>
   );
 };
 
@@ -378,36 +392,40 @@ const FormArea = ({
     [component]
   );
   return (
-    <>
-      <label>P1 X:</label>
-      <input
-        className="w-12 text-center"
-        type="text"
-        defaultValue={'' + component.p1.x}
-        onChange={handleP1XChange}
-      />
-      <label>P1 Y:</label>
-      <input
-        className="w-12 text-center"
-        type="text"
-        defaultValue={'' + component.p1.y}
-        onChange={handleP1YChange}
-      />
-      <label>P2 X:</label>
-      <input
-        className="w-12 text-center"
-        type="text"
-        defaultValue={'' + component.p2.x}
-        onChange={handleP2XChange}
-      />
-      <label>P2 Y:</label>
-      <input
-        className="w-12 text-center"
-        type="text"
-        defaultValue={'' + component.p2.y}
-        onChange={handleP2YChange}
-      />
-    </>
+    <div className="mt-2 mx-2 w-full">
+      <div className="flex place-items-center justify-between mb-2">
+        <label>P1 X:</label>
+        <input
+          className="w-12 text-center"
+          type="text"
+          defaultValue={'' + component.p1.x}
+          onChange={handleP1XChange}
+        />
+        <label>P1 Y:</label>
+        <input
+          className="w-12 text-center"
+          type="text"
+          defaultValue={'' + component.p1.y}
+          onChange={handleP1YChange}
+        />
+      </div>
+      <div className="flex place-items-center justify-between">
+        <label>P2 X:</label>
+        <input
+          className="w-12 text-center"
+          type="text"
+          defaultValue={'' + component.p2.x}
+          onChange={handleP2XChange}
+        />
+        <label>P2 Y:</label>
+        <input
+          className="w-12 text-center"
+          type="text"
+          defaultValue={'' + component.p2.y}
+          onChange={handleP2YChange}
+        />
+      </div>
+    </div>
   );
 };
 
@@ -433,21 +451,26 @@ const FormBody = ({
     [component]
   );
   return (
-    <>
-      <label>Jump Force:</label>
-      <input
-        type="text"
-        defaultValue={'' + component.jumpForce}
-        onChange={handleJumpForceChange}
-      />
-      <label>Max Vel:</label>
-      <input
-        className="w-12 text-center"
-        type="text"
-        defaultValue={'' + component.maxVel}
-        onChange={handleMaxVelChange}
-      />
-    </>
+    <div className="flex flex-col w-full mx-4 my-2">
+      <div className="flex place-items-center justify-between mb-2">
+        <label>Jump Force:</label>
+        <input
+          className="w-14 text-center"
+          type="text"
+          defaultValue={'' + component.jumpForce}
+          onChange={handleJumpForceChange}
+        />
+      </div>
+      <div className="flex place-items-center justify-between">
+        <label>Max Vel:</label>
+        <input
+          className="w-14 text-center"
+          type="text"
+          defaultValue={'' + component.maxVel}
+          onChange={handleMaxVelChange}
+        />
+      </div>
+    </div>
   );
 };
 
@@ -469,7 +492,7 @@ const FormOrigin = ({
   onChange: (component: Component) => void;
 }) => {
   const handleNameChange = useCallback(
-    (ev: React.ChangeEvent<HTMLInputElement>) => {
+    (ev: React.ChangeEvent<HTMLSelectElement>) => {
       component.name = ev.target.value;
       onChange(component);
     },
@@ -490,28 +513,42 @@ const FormOrigin = ({
     [component]
   );
   return (
-    <>
-      <label>Name:</label>
-      <input
-        type="text"
-        defaultValue={'' + component.name}
-        onChange={handleNameChange}
-      />
-      <label>Custom X:</label>
-      <input
-        className="w-12 text-center"
-        type="text"
-        defaultValue={'' + component.custom.x}
-        onChange={handleCustomXChange}
-      />
-      <label>Custom Y:</label>
-      <input
-        className="w-12 text-center"
-        type="text"
-        defaultValue={'' + component.custom.y}
-        onChange={handleCustomYChange}
-      />
-    </>
+    <div className="mx-2 my-2 w-full">
+      <div className="w-full flex place-items-center justify-between mb-2">
+        <label>Name:</label>
+        <select
+          className="w-44"
+          defaultValue={'' + component.name}
+          onChange={handleNameChange}
+        >
+          <option value="topleft">topleft</option>
+          <option value="top">top</option>
+          <option value="topright">topright</option>
+          <option value="left">left</option>
+          <option value="center">center</option>
+          <option value="right">right</option>
+          <option value="botleft">botleft</option>
+          <option value="bot">bot</option>
+          <option value="botright">botright</option>
+        </select>
+      </div>
+      <div className="w-full flex place-items-center justify-between">
+        <label>Custom X:</label>
+        <input
+          className="w-12 text-center"
+          type="text"
+          defaultValue={'' + component.custom.x}
+          onChange={handleCustomXChange}
+        />
+        <label>Y:</label>
+        <input
+          className="w-12 text-center"
+          type="text"
+          defaultValue={'' + component.custom.y}
+          onChange={handleCustomYChange}
+        />
+      </div>
+    </div>
   );
 };
 
@@ -530,14 +567,14 @@ const FormLayer = ({
     [component]
   );
   return (
-    <>
-      <label>Name:</label>
+    <div className="mt-2 mx-2 w-full flex place-items-center justify-between">
+      <label className="mr-2">Name:</label>
       <input
         type="text"
         defaultValue={'' + component.name}
         onChange={handleNameChange}
       />
-    </>
+    </div>
   );
 };
 
@@ -556,22 +593,24 @@ const FormTag = ({
     [component]
   );
   return (
-    <>
-      <label>Name:</label>
+    <div className="mt-2 mx-2 w-full flex place-items-center justify-between">
+      <label className="mr-2">Name:</label>
       <input
         type="text"
         defaultValue={'' + component.name}
         onChange={handleNameChange}
       />
-    </>
+    </div>
   );
 };
 
 function ComponentForm({
   component,
+  assets,
   onChange,
 }: {
   component: Component;
+  assets: Asset[];
   onChange: (component: Component) => void;
 }) {
   switch (component.type) {
@@ -600,6 +639,7 @@ function ComponentForm({
         <FormSprite
           key="comp-sprite"
           component={component}
+          assets={assets}
           onChange={onChange}
         />
       );
@@ -646,6 +686,7 @@ function ComponentForm({
 const MetaComponent = ({
   gameObject,
   component,
+  assets,
   onChange,
   onDelete,
 }: Props) => {
@@ -681,6 +722,7 @@ const MetaComponent = ({
       >
         <ComponentForm
           component={component}
+          assets={assets}
           onChange={onChange}
           key="component-form"
         />
