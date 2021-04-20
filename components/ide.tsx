@@ -227,7 +227,6 @@ const IDE = () => {
   const handleChangeComponent = (i: number, component: Component) => {
     api.setCurrentSceneData(
       (sd: SceneData): SceneData => {
-        sd = JSON.parse(JSON.stringify(sd));
         const obj = sd.scenes.find(
           (value: Scene): Boolean => {
             return value.name == sd.currentSceneName;

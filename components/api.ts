@@ -105,8 +105,11 @@ export class API {
   }
 
   setCurrentSceneData(callback: (sceneData: SceneData) => SceneData) {
-    this._currentSceneData = callback(this._currentSceneData);
-    this._setCurrentSceneData(callback);
+    const wrappedCallback = (sceneData: SceneData): SceneData => {
+      return callback(JSON.parse(JSON.stringify(sceneData)));
+    };
+    this._currentSceneData = wrappedCallback(this._currentSceneData);
+    this._setCurrentSceneData(wrappedCallback);
   }
 
   get saving(): boolean {
