@@ -1,7 +1,9 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
+
+import { ChromePicker, Color } from 'react-color';
 
 import {
   Asset,
@@ -155,30 +157,19 @@ const FormColor = ({
   component: ComponentColor;
   onChange: (component: Component) => void;
 }) => {
-  const handleRChange = useCallback(
-    (ev: React.ChangeEvent<HTMLInputElement>) => {
-      component.r = zeroFromNaN(parseFloat(ev.target.value));
-      onChange(component);
-    },
-    [component]
-  );
-  const handleGChange = useCallback(
-    (ev: React.ChangeEvent<HTMLInputElement>) => {
-      component.g = zeroFromNaN(parseFloat(ev.target.value));
-      onChange(component);
-    },
-    [component]
-  );
-  const handleBChange = useCallback(
-    (ev: React.ChangeEvent<HTMLInputElement>) => {
-      component.b = zeroFromNaN(parseFloat(ev.target.value));
-      onChange(component);
-    },
-    [component]
-  );
-  const handleAChange = useCallback(
-    (ev: React.ChangeEvent<HTMLInputElement>) => {
-      component.a = zeroFromNaN(parseFloat(ev.target.value));
+  const [color, setColor] = useState({
+    r: component.r * 255.0,
+    g: component.g * 255.0,
+    b: component.b * 255.0,
+    a: component.a,
+  });
+  const handleChangeComplete = useCallback(
+    (col: Color) => {
+      setColor(col.rgb);
+      component.r = col.rgb.r / 255.0;
+      component.g = col.rgb.g / 255.0;
+      component.b = col.rgb.b / 255.0;
+      component.a = col.rgb.a;
       onChange(component);
     },
     [component]
@@ -186,36 +177,7 @@ const FormColor = ({
   return (
     <div className="mt-2">
       <div className="flex w-full place-items-center mb-1">
-        <label>R: </label>
-        <input
-          className="w-14 text-center mx-1"
-          type="text"
-          defaultValue={'' + component.r}
-          onChange={handleRChange}
-        />
-        <label>G: </label>
-        <input
-          className="w-14 text-center mx-1"
-          type="text"
-          defaultValue={'' + component.g}
-          onChange={handleGChange}
-        />
-        <label>B: </label>
-        <input
-          className="w-14 text-center mx-1"
-          type="text"
-          defaultValue={'' + component.b}
-          onChange={handleBChange}
-        />
-      </div>
-      <div className="flex w-full place-items-center place-content-center">
-        <label>A: </label>
-        <input
-          className="w-14 text-center ml-1"
-          type="text"
-          defaultValue={'' + component.a}
-          onChange={handleAChange}
-        />
+        <ChromePicker color={color} onChange={handleChangeComplete} />
       </div>
     </div>
   );
