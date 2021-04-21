@@ -9,13 +9,21 @@ type Props = {
 };
 
 const Editor = ({ className, sceneData }: Props) => {
-  const encodedSceneData = encodeURIComponent(JSON.stringify(sceneData));
+  const iframeRef = useRef<HTMLIFrameElement>(null);
+  useEffect(() => {
+    if (!iframeRef.current) {
+      return;
+    }
+    iframeRef.current.contentWindow.postMessage(
+      { type: 'state.sceneData', data: sceneData },
+      '*'
+    );
+  }, [iframeRef, sceneData]);
   return (
     <iframe
       className={className}
-      src={
-        (isProd ? 'editor.html' : '/editor') + '?scenedata=' + encodedSceneData
-      }
+      ref={iframeRef}
+      src={isProd ? 'editor.html' : '/editor'}
     />
   );
 };

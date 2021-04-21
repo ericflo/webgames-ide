@@ -10,47 +10,54 @@ import SceneData, {
   Layer,
   Scene,
 } from '../components/data';
+import { isProd } from '../components/buildconfig';
 
 const Editor = () => {
+  const k = (window as any).kaboom;
+  k.scene('tmpscene', () => {});
+  k.start('tmpscene');
+
   const [sceneData, setSceneData] = useState(null as SceneData);
 
   useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const encodedSceneData = urlParams.get('scenedata');
-    if (encodedSceneData) {
-      setSceneData(JSON.parse(decodeURIComponent(encodedSceneData)));
-    }
     console.log = function (...args: any[]) {
       window.top.postMessage({ type: 'console.log', args: args }, '*');
     };
     window.addEventListener('message', (ev: MessageEvent) => {
-      // TODO
+      if (ev.data.type === 'state.sceneData') {
+        setSceneData(ev.data.data);
+      }
+    });
+    k.init({
+      fullscreen: true,
+      scale: 2,
     });
   }, []);
+
+  let registeredAssets: string[] = [];
 
   useEffect(() => {
     if (!sceneData) {
       return;
     }
 
-    const k = (window as any).kaboom;
-
-    k.init({
-      fullscreen: true,
-      scale: 2,
-    });
+    k.go('tmpscene');
 
     ((sceneData || {}).assets || []).forEach((asset: Asset) => {
+      if (registeredAssets.includes(asset.name)) {
+        return;
+      }
       console.log(
         'Loading sprite',
         asset.name,
         'from',
-        asset.skylink.replace('sia:', 'https://siasky.net/')
+        asset.skylink.replace('sia:', isProd ? '/' : 'https://siasky.net/')
       );
       k.loadSprite(
         asset.name,
-        asset.skylink.replace('sia:', 'https://siasky.net/')
+        asset.skylink.replace('sia:', isProd ? '/' : 'https://siasky.net/')
       );
+      registeredAssets.push(asset.name);
     });
 
     const layerNames: string[] = [];
@@ -133,7 +140,7 @@ const Editor = () => {
       });
     });
 
-    k.start('main');
+    k.go('main');
   }, [sceneData]);
   return (
     <>

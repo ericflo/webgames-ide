@@ -182,7 +182,9 @@ export class API {
 
   async loadCurrentSceneData(): Promise<SceneData> {
     console.log('Loading scene data...');
-    const { data } = await this.mySky.getJSON(`${DATA_DOMAIN}/games/current.json`);
+    const { data } = await this.mySky.getJSON(
+      `${DATA_DOMAIN}/games/current.json`
+    );
     if (data) {
       console.log('Loaded scene data');
       const sceneData = data as SceneData;
@@ -202,7 +204,10 @@ export class API {
     } else {
       this.saving = true;
       console.log('Saving scene data...');
-      await this.mySky.setJSON(`${DATA_DOMAIN}/games/current.json`, this.currentSceneData);
+      await this.mySky.setJSON(
+        `${DATA_DOMAIN}/games/current.json`,
+        this.currentSceneData
+      );
       this.saving = false;
       console.log('Saved scene data');
       if (this.wantsSave) {

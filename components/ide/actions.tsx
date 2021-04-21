@@ -121,7 +121,11 @@ const Actions = ({
                 onChange={handleChangeTag.bind(null, i, action)}
               >
                 {tags.map((tag: string) => {
-                  return <option value={tag}>{tag}</option>;
+                  return (
+                    <option key={tag} value={tag}>
+                      {tag}
+                    </option>
+                  );
                 })}
               </select>
               {action.type == ActionType.Collides ||
@@ -132,7 +136,11 @@ const Actions = ({
                   onChange={handleChangeOtherTag.bind(null, i, action)}
                 >
                   {tags.map((tag: string) => {
-                    return <option value={tag}>{tag}</option>;
+                    return (
+                      <option key={tag} value={tag}>
+                        {tag}
+                      </option>
+                    );
                   })}
                 </select>
               ) : null}

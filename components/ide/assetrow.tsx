@@ -4,6 +4,7 @@ import { Asset, AssetType } from '../data';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEllipsisV } from '@fortawesome/free-solid-svg-icons';
+import { isProd } from '../buildconfig';
 
 type Props = {
   asset: Asset;
@@ -22,7 +23,10 @@ const AssetRow = ({ asset, onMoreClick }: Props) => {
     <div className="mb-1 flex place-items-center select-none">
       {asset.type == AssetType.Sprite ? (
         <img
-          src={asset.skylink.replace('sia:', 'https://siasky.net/')}
+          src={asset.skylink.replace(
+            'sia:',
+            isProd ? '/' : 'https://siasky.net/'
+          )}
           className="w-8 h-8 inline ml-4 flex-none"
         />
       ) : null}
