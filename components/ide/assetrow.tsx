@@ -4,7 +4,7 @@ import { Asset, AssetType } from '../data';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEllipsisV } from '@fortawesome/free-solid-svg-icons';
-import { isProd } from '../buildconfig';
+import { isProd, isHandshake } from '../buildconfig';
 
 type Props = {
   asset: Asset;
@@ -25,7 +25,7 @@ const AssetRow = ({ asset, onMoreClick }: Props) => {
         <img
           src={asset.skylink.replace(
             'sia:',
-            isProd ? '/' : 'https://siasky.net/'
+            isProd && isHandshake ? '/' : 'https://siasky.net/'
           )}
           className="w-8 h-8 inline ml-4 flex-none"
         />

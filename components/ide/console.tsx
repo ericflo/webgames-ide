@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 type Props = {
   className?: string;
@@ -9,16 +9,24 @@ const Console = ({ className }: Props) => {
 
   const ulRef = useRef<HTMLUListElement>(null);
 
-  useEffect(() => {
-    window.addEventListener('message', (ev: MessageEvent) => {
+  const handleConsoleMessage = useCallback(
+    (ev: MessageEvent) => {
       if (ev.data.type === 'console.log') {
         setLogs((curr: any[][]): any[][] => {
           return [...curr, ev.data.args];
         });
         ulRef.current?.scrollTo(0, ulRef.current.scrollHeight);
       }
-    });
-  }, [ulRef]);
+    },
+    [ulRef]
+  );
+
+  useEffect(() => {
+    window.addEventListener('message', handleConsoleMessage);
+    return () => {
+      window.removeEventListener('message', handleConsoleMessage);
+    };
+  }, [handleConsoleMessage]);
 
   return (
     <div className={className + ' flex flex-col'}>

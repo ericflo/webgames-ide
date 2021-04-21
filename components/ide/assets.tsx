@@ -11,7 +11,7 @@ import SceneData, { Asset, AssetType } from '../data';
 
 import AssetRow from './assetrow';
 import { API } from '../api';
-import { isProd } from '../buildconfig';
+import { isProd, isHandshake } from '../buildconfig';
 
 type Props = {
   className?: string;
@@ -83,7 +83,7 @@ const Assets = ({
             <img
               src={currentAsset.skylink.replace(
                 'sia:',
-                isProd ? '/' : 'https://siasky.net/'
+                isProd && isHandshake ? '/' : 'https://siasky.net/'
               )}
               className="max-h-16 max-w-6xl inline mb-2 flex-none"
             />

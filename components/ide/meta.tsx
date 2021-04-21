@@ -45,7 +45,9 @@ const Meta = ({
   const handleAddClick = useCallback(
     (componentType: ComponentType, ev: React.MouseEvent) => {
       //ev.preventDefault();
-      gameObject.components.push(defaultComponentForType(componentType));
+      const cmp = defaultComponentForType(componentType);
+      const i = gameObject.components.push(cmp);
+      onChangeComponent(i - 1, cmp);
     },
     [gameObject]
   );
