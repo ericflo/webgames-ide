@@ -88,6 +88,7 @@ const IDE = () => {
 
   const handleDeleteAction = useCallback(
     (i: number) => {
+      setEditingActionIndex(-1);
       api.setCurrentSceneData(
         (sceneData: SceneData): SceneData => {
           if (!sceneData.actions || sceneData.actions.length <= i) {
@@ -99,7 +100,7 @@ const IDE = () => {
       );
       api.saveCurrentSceneData();
     },
-    [api]
+    [api, setEditingActionIndex]
   );
 
   const handleChangeAction = useCallback(
@@ -296,7 +297,7 @@ const IDE = () => {
       case ActionType.Action:
       case ActionType.Render:
       case ActionType.On:
-        codeValue = `(${editingAction.tag}) => {
+        codeValue = `(${editingAction.tag || ''}) => {
   // ${editingAction.tag || "get('tagname')"}.move(vec2(0, 100));
 };`;
         break;

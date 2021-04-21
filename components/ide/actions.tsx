@@ -152,7 +152,7 @@ const Actions = ({
               ) : null}
               <span
                 className={
-                  (editingActionIndex >= 0 ? 'bg-gray-300' : '') +
+                  (editingActionIndex == i ? 'bg-gray-300' : '') +
                   ' px-1.5 py-2.5 flex-1 ml-2 cursor-pointer'
                 }
                 onClick={handleEditActionClick.bind(null, i, action)}
