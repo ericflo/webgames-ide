@@ -10,19 +10,23 @@ import {
 type Props = {
   className?: string;
   actions: Action[];
+  editingActionIndex: number;
   tags: string[];
   onAddAction: () => void;
   onDeleteAction: (index: number) => void;
   onChangeAction: (index: number, action: Action) => void;
+  onEditAction: (index: number) => void;
 };
 
 const Actions = ({
   className,
   actions,
+  editingActionIndex,
   tags,
   onAddAction,
   onDeleteAction,
   onChangeAction,
+  onEditAction,
 }: Props) => {
   const handleAddActionClick = useCallback((ev: React.MouseEvent) => {
     ev.preventDefault();
@@ -74,8 +78,9 @@ const Actions = ({
   const handleEditActionClick = useCallback(
     (i: number, action: Action, ev: React.MouseEvent) => {
       ev.preventDefault();
+      onEditAction(i);
     },
-    []
+    [onEditAction]
   );
 
   return (
@@ -120,6 +125,7 @@ const Actions = ({
                 defaultValue={action.tag}
                 onChange={handleChangeTag.bind(null, i, action)}
               >
+                <option value="">None</option>
                 {tags.map((tag: string) => {
                   return (
                     <option key={tag} value={tag}>
@@ -145,13 +151,16 @@ const Actions = ({
                 </select>
               ) : null}
               <span
-                className="flex-1 ml-2 cursor-pointer"
+                className={
+                  (editingActionIndex >= 0 ? 'bg-gray-300' : '') +
+                  ' px-1.5 py-2.5 flex-1 ml-2 cursor-pointer'
+                }
                 onClick={handleEditActionClick.bind(null, i, action)}
               >
                 <FontAwesomeIcon icon={faEdit} />
               </span>
               <span
-                className="flex-1 ml-2 cursor-pointer"
+                className="flex-1 ml-2 cursor-pointer px-1.5 py-2.5"
                 onClick={handleDeleteActionClick.bind(null, i)}
               >
                 <FontAwesomeIcon icon={faTrash} />

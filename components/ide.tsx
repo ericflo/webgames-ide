@@ -2,6 +2,8 @@ import React, { useState, useCallback } from 'react';
 
 import { useDropzone } from 'react-dropzone';
 
+import { default as MonacoEditor } from '@monaco-editor/react';
+
 import Editor from './ide/editor';
 import SceneChooser from './ide/scenechooser';
 import Objects from './ide/objects';
@@ -18,6 +20,7 @@ import SceneData, {
   Action,
   Layer,
   ComponentType,
+  ActionType,
 } from './data';
 import { useAPI } from './api';
 
@@ -32,6 +35,7 @@ const IDE = () => {
   const [layerIndex, setLayerIndex] = useState(0);
   const [addAssetModalActive, setAddAssetModalActive] = useState(false);
   const [currentObjectIndex, setCurrentObjectIndex] = useState(-1);
+  const [editingActionIndex, setEditingActionIndex] = useState(-1);
   const gameObjects = scene.layers[layerIndex].gameObjects;
   const currentObject = gameObjects[currentObjectIndex];
 
@@ -114,6 +118,13 @@ const IDE = () => {
       api.saveCurrentSceneData();
     },
     [api]
+  );
+
+  const handleEditAction = useCallback(
+    (i: number) => {
+      setEditingActionIndex(editingActionIndex >= 0 ? -1 : i);
+    },
+    [editingActionIndex, setEditingActionIndex]
   );
 
   const handleRequestNewScene = useCallback(() => {
@@ -265,6 +276,40 @@ const IDE = () => {
     api.saveCurrentSceneData();
   };
 
+  const handleCodeChange = useCallback(
+    (value: string) => {
+      api.setCurrentSceneData(
+        (sceneData: SceneData): SceneData => {
+          sceneData.actions[editingActionIndex].code = value;
+          return sceneData;
+        }
+      );
+      api.saveCurrentSceneData();
+    },
+    [api, editingActionIndex]
+  );
+
+  const editingAction = api.currentSceneData.actions[editingActionIndex];
+  let codeValue: string = editingAction?.code;
+  if (!codeValue) {
+    switch (editingAction?.type) {
+      case ActionType.Action:
+      case ActionType.Render:
+      case ActionType.On:
+        codeValue = `(${editingAction.tag}) => {
+  // ${editingAction.tag || "get('tagname')"}.move(vec2(0, 100));
+};`;
+        break;
+      case ActionType.Collides:
+      case ActionType.Overlaps:
+        codeValue = `(${editingAction.tag}, ${editingAction.otherTag}) => {
+  // destroy(${editingAction.otherTag});
+  // ${editingAction.tag || "get('tagname')"}.move(vec2(0, 100));
+};`;
+        break;
+    }
+  }
+
   return (
     <div className="h-screen w-screen" {...getRootProps()}>
       <div className="flex flex-row">
@@ -303,10 +348,12 @@ const IDE = () => {
           <Actions
             className="flex-1 h-0 border-t border-b border-r border-black"
             actions={api.currentSceneData.actions || []}
+            editingActionIndex={editingActionIndex}
             tags={tags}
             onAddAction={handleAddAction}
             onDeleteAction={handleDeleteAction}
             onChangeAction={handleChangeAction}
+            onEditAction={handleEditAction}
           />
         </div>
         <div className="flex flex-col flex-1">
@@ -323,14 +370,19 @@ const IDE = () => {
             ) : null}
           </div>
           <div className="flex-1 flex flex-row">
-            <div className="flex-1 flex flex-col">
+            <div
+              className={
+                (editingActionIndex >= 0 ? 'absolute' : '') +
+                ' flex-1 flex flex-col'
+              }
+            >
               <Editor
                 className="flex-1 bg-gray-300"
                 sceneData={api.currentSceneData}
               />
               <Console className="flex-none h-36" />
             </div>
-            {currentObject ? (
+            {currentObject && editingActionIndex < 0 ? (
               <Meta
                 key={currentObjectIndex}
                 className="w-80 flex-none overflow-hidden border-l border-black"
@@ -338,6 +390,14 @@ const IDE = () => {
                 assets={api.currentSceneData.assets || []}
                 title={'Game Object ' + (currentObjectIndex + 1)}
                 onChangeComponent={handleChangeComponent}
+              />
+            ) : null}
+            {editingActionIndex >= 0 ? (
+              <MonacoEditor
+                language="javascript"
+                defaultValue={codeValue}
+                onChange={handleCodeChange}
+                theme="vs-dark"
               />
             ) : null}
           </div>
