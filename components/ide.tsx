@@ -4,7 +4,10 @@ import { useDropzone } from 'react-dropzone';
 
 import { default as MonacoEditor } from '@monaco-editor/react';
 
-import Editor from './ide/editor';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPlay, faStop, faCheck } from '@fortawesome/free-solid-svg-icons';
+
+import EditorPlayer from './ide/editorplayer';
 import SceneChooser from './ide/scenechooser';
 import Objects from './ide/objects';
 import Assets, { useOnAssetDrop } from './ide/assets';
@@ -26,64 +29,59 @@ import { useAPI } from './api';
 
 const IDE = () => {
   const api = useAPI();
-  const scene = api.currentSceneData.scenes.find(
-    (value: Scene): Boolean => {
-      return value.name == api.currentSceneData.currentSceneName;
-    }
+  const [scene, _] = findScene(
+    api.currentSceneData,
+    api.currentSceneData.currentSceneName
   );
   const [isUploading, setIsUploading] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [hasChanges, setHasChanges] = useState(false);
   const [layerIndex, setLayerIndex] = useState(0);
   const [addAssetModalActive, setAddAssetModalActive] = useState(false);
   const [currentObjectIndex, setCurrentObjectIndex] = useState(-1);
   const [editingActionIndex, setEditingActionIndex] = useState(-1);
   const gameObjects = scene.layers[layerIndex].gameObjects;
   const currentObject = gameObjects[currentObjectIndex];
+  const tags = uniquify(tagsFromScene(scene));
 
-  const tags = (api.currentSceneData.scenes || [])
-    .flatMap((scn: Scene, i: number) => {
-      return scn.layers.flatMap((layer: Layer, j: number) => {
-        return layer.gameObjects.flatMap((gameObject, k: number) => {
-          return gameObject.components.flatMap(
-            (component: Component, l: number) => {
-              return component.type == ComponentType.Tag
-                ? [component.name]
-                : [];
-            }
-          );
-        });
-      });
-    })
-    .filter(
-      (value: string, index: number, acc: string[]): Boolean => {
-        return acc.indexOf(value) === index;
-      }
-    );
+  const deselectAll = useCallback(() => {
+    setIsPlaying(false);
+    setAddAssetModalActive(false);
+    setCurrentObjectIndex(-1);
+    setEditingActionIndex(-1);
+  }, []);
 
   const handleDeleteObject = useCallback(() => {
-    const idx = gameObjects.indexOf(currentObject);
-    if (idx >= 0) {
-      gameObjects.splice(idx, 1);
-      api.saveCurrentSceneData();
+    if (currentObjectIndex >= 0) {
+      api.setCurrentSceneData((sceneData: SceneData) => {
+        const [scene, _] = findScene(sceneData, sceneData.currentSceneName);
+        scene.layers[layerIndex].gameObjects.splice(currentObjectIndex, 1);
+        return sceneData;
+      });
+      api.saveCurrentSceneData('handleDeleteObject');
     }
-  }, [api, currentObject, layerIndex]);
+  }, [api, currentObjectIndex, layerIndex]);
 
   const handleAddObject = useCallback(() => {
     gameObjects.push(JSON.parse(JSON.stringify(DEFAULT_GAME_OBJECT)));
     setCurrentObjectIndex(gameObjects.length - 1);
-    api.saveCurrentSceneData();
+    api.saveCurrentSceneData('handleAddObject');
   }, [scene, layerIndex, gameObjects]);
 
   const handleAddAction = useCallback(() => {
     api.setCurrentSceneData(
       (sceneData: SceneData): SceneData => {
-        if (!sceneData.actions) {
-          sceneData.actions = [];
-        }
-        sceneData.actions.push(JSON.parse(JSON.stringify(DEFAULT_ACTION)));
+        const [_, sceneIndex] = findScene(
+          sceneData,
+          sceneData.currentSceneName
+        );
+        sceneData.scenes[sceneIndex].actions.push(
+          JSON.parse(JSON.stringify(DEFAULT_ACTION))
+        );
         return sceneData;
       }
     );
-    api.saveCurrentSceneData();
+    api.saveCurrentSceneData('handleAddAction');
   }, [api]);
 
   const handleDeleteAction = useCallback(
@@ -91,14 +89,18 @@ const IDE = () => {
       setEditingActionIndex(-1);
       api.setCurrentSceneData(
         (sceneData: SceneData): SceneData => {
-          if (!sceneData.actions || sceneData.actions.length <= i) {
-            return;
+          const [_, sceneIndex] = findScene(
+            sceneData,
+            sceneData.currentSceneName
+          );
+          const actions = sceneData.scenes[sceneIndex].actions;
+          if (actions && actions.length > i) {
+            actions.splice(i, 1);
           }
-          sceneData.actions.splice(i, 1);
           return sceneData;
         }
       );
-      api.saveCurrentSceneData();
+      api.saveCurrentSceneData('handleDeleteAction');
     },
     [api, setEditingActionIndex]
   );
@@ -107,25 +109,32 @@ const IDE = () => {
     (i: number, action: Action) => {
       api.setCurrentSceneData(
         (sceneData: SceneData): SceneData => {
-          const resp = { ...sceneData };
-          resp.actions = (resp.actions || []).map(
-            (act: Action, j: number): Action => {
-              return j == i ? JSON.parse(JSON.stringify(action)) : act;
-            }
+          const [_, sceneIndex] = findScene(
+            sceneData,
+            sceneData.currentSceneName
           );
-          return resp;
+          const actions = sceneData.scenes[sceneIndex].actions;
+          if (actions && actions.length > i) {
+            actions.splice(i, 1, JSON.parse(JSON.stringify(action)));
+          }
+          return sceneData;
         }
       );
-      api.saveCurrentSceneData();
+      api.saveCurrentSceneData('handleChangeAction');
     },
     [api]
   );
 
   const handleEditAction = useCallback(
     (i: number) => {
-      setEditingActionIndex(editingActionIndex >= 0 ? -1 : i);
+      const isEditing = editingActionIndex >= 0;
+      if (isEditing && hasChanges) {
+        api.saveCurrentSceneData('handleEditAction');
+      }
+      setEditingActionIndex(isEditing ? -1 : i);
+      setIsPlaying(false);
     },
-    [editingActionIndex, setEditingActionIndex]
+    [api, editingActionIndex, hasChanges]
   );
 
   const handleRequestNewScene = useCallback(() => {
@@ -140,17 +149,19 @@ const IDE = () => {
               { name: 'bg', gameObjects: [] },
               { name: 'ui', gameObjects: [] },
             ],
+            actions: [],
           });
           sd.currentSceneName = name;
           return sd;
         }
       );
-      api.saveCurrentSceneData();
+      api.saveCurrentSceneData('handleRequestNewScene');
     }
   }, [api]);
 
   const handleSceneChanged = useCallback(
     (name: string) => {
+      deselectAll();
       api.setCurrentSceneData(
         (sd: SceneData): SceneData => {
           sd.currentSceneName = name;
@@ -182,7 +193,7 @@ const IDE = () => {
           return sd;
         }
       );
-      api.saveCurrentSceneData();
+      api.saveCurrentSceneData('handleDeleteScene');
     }
   }, [api]);
 
@@ -191,7 +202,7 @@ const IDE = () => {
     if (name && name.length > 0) {
       scene.layers.push({ name, gameObjects: [] });
       setLayerIndex(scene.layers.length - 1);
-      api.saveCurrentSceneData();
+      api.saveCurrentSceneData('handleNewLayer');
     }
   }, [api]);
 
@@ -206,7 +217,7 @@ const IDE = () => {
       ) {
         scene.layers.splice(idx, 1);
         setLayerIndex(0);
-        api.saveCurrentSceneData();
+        api.saveCurrentSceneData('handleDeleteLayer');
       }
     },
     [api]
@@ -242,7 +253,7 @@ const IDE = () => {
           return sceneData;
         }
       );
-      api.saveCurrentSceneData();
+      api.saveCurrentSceneData('handleAssetDelete');
     },
     [api]
   );
@@ -274,39 +285,54 @@ const IDE = () => {
         return sd;
       }
     );
-    api.saveCurrentSceneData();
+    api.saveCurrentSceneData('handleChangeComponent');
   };
 
   const handleCodeChange = useCallback(
     (value: string) => {
+      setHasChanges(true);
       api.setCurrentSceneData(
         (sceneData: SceneData): SceneData => {
-          sceneData.actions[editingActionIndex].code = value;
+          scene.actions[editingActionIndex].code = value;
           return sceneData;
         }
       );
-      api.saveCurrentSceneData();
     },
     [api, editingActionIndex]
   );
 
-  const editingAction = api.currentSceneData.actions[editingActionIndex];
+  const handlePlayClick = useCallback(
+    (ev: React.MouseEvent) => {
+      ev.preventDefault();
+      deselectAll();
+      setIsPlaying(!isPlaying);
+    },
+    [isPlaying, editingActionIndex]
+  );
+
+  const editingAction = scene.actions[editingActionIndex];
   let codeValue: string = editingAction?.code;
   if (!codeValue) {
     switch (editingAction?.type) {
       case ActionType.Action:
       case ActionType.Render:
       case ActionType.On:
-        codeValue = `(${editingAction.tag || ''}) => {
-  // ${editingAction.tag || "get('tagname')"}.move(vec2(0, 100));
-};`;
+        if (editingAction.tag) {
+          codeValue = `(k, ${editingAction.tag}) => {
+  //${editingAction.tag}.move(k.vec2(0, 100));
+}`;
+        } else {
+          codeValue = `(k) => {
+  //k.get('tagname').move(k.vec2(0, 100));
+}`;
+        }
         break;
       case ActionType.Collides:
       case ActionType.Overlaps:
-        codeValue = `(${editingAction.tag}, ${editingAction.otherTag}) => {
-  // destroy(${editingAction.otherTag});
-  // ${editingAction.tag || "get('tagname')"}.move(vec2(0, 100));
-};`;
+        codeValue = `(k, ${editingAction.tag}, ${editingAction.otherTag}) => {
+  //k.destroy(${editingAction.otherTag});
+  //${editingAction.tag || "k.get('tagname')"}.move(k.vec2(0, 100));
+}`;
         break;
     }
   }
@@ -316,7 +342,10 @@ const IDE = () => {
       <div className="flex flex-row">
         <div className="flex flex-col flex-none h-screen max-w-xs w-80">
           <SceneChooser
-            className="flex-none h-14 border-b border-r border-black"
+            className={
+              'flex-none h-14 border-b border-r border-black ' +
+              (isPlaying ? 'opacity-25' : '')
+            }
             currentSceneName={api.currentSceneData.currentSceneName}
             sceneNames={api.currentSceneData.scenes.map(
               (scene: Scene) => scene.name
@@ -326,7 +355,10 @@ const IDE = () => {
             onDelete={handleDeleteScene}
           />
           <Objects
-            className="flex-1 h-0 border-b border-r border-black"
+            className={
+              'flex-1 h-0 border-b border-r border-black ' +
+              (isPlaying ? 'opacity-25' : '')
+            }
             scene={scene}
             api={api}
             currentObjectIndex={currentObjectIndex}
@@ -334,12 +366,18 @@ const IDE = () => {
             onDeleteObject={handleDeleteObject}
             onAddObject={handleAddObject}
             layerIndex={layerIndex}
-            setLayerIndex={setLayerIndex}
+            setLayerIndex={(idx: number) => {
+              deselectAll();
+              setLayerIndex(idx);
+            }}
             onNewLayer={handleNewLayer}
             onDeleteLayer={handleDeleteLayer}
           />
           <Assets
-            className="flex-1 h-0 border-r border-black"
+            className={
+              'flex-1 h-0 border-r border-black ' +
+              (isPlaying ? 'opacity-25' : '')
+            }
             assets={api.currentSceneData.assets || []}
             onAssetDelete={handleAssetDelete}
             isUploading={isUploading}
@@ -347,8 +385,11 @@ const IDE = () => {
             setAddAssetModalActive={setAddAssetModalActive}
           />
           <Actions
-            className="flex-1 h-0 border-t border-b border-r border-black"
-            actions={api.currentSceneData.actions || []}
+            className={
+              'flex-1 h-0 border-t border-b border-r border-black ' +
+              (isPlaying ? 'opacity-25' : '')
+            }
+            actions={scene?.actions || []}
             editingActionIndex={editingActionIndex}
             tags={tags}
             onAddAction={handleAddAction}
@@ -357,18 +398,38 @@ const IDE = () => {
             onEditAction={handleEditAction}
           />
         </div>
-        <div className="flex flex-col flex-1">
-          <div className="loginbar px-4 py-4 h-14 border-b border-black">
-            {api.loggedIn ? null : (
-              <a href="#" onClick={handleLoginClick}>
-                Log in
-              </a>
+        <div className="flex-1 flex flex-col">
+          <div className="px-4 py-4 h-14 border-b border-black flex place-content-between">
+            {editingAction ? (
+              <>
+                <span>&nbsp;</span>
+                <button
+                  className="mx-4"
+                  onClick={handleEditAction.bind(null, 0)}
+                >
+                  <FontAwesomeIcon
+                    className={hasChanges ? 'text-green-600 fill-current' : ''}
+                    icon={faCheck}
+                  />
+                </button>
+              </>
+            ) : (
+              <>
+                <button onClick={handlePlayClick}>
+                  <FontAwesomeIcon icon={isPlaying ? faStop : faPlay} />
+                </button>
+                {api.loggedIn ? null : (
+                  <a href="#" onClick={handleLoginClick}>
+                    Log in
+                  </a>
+                )}
+                {api.loggedIn ? (
+                  <a href="#" onClick={handleLogoutClick}>
+                    Logout
+                  </a>
+                ) : null}
+              </>
             )}
-            {api.loggedIn ? (
-              <a href="#" onClick={handleLogoutClick}>
-                Logout
-              </a>
-            ) : null}
           </div>
           <div className="flex-1 flex flex-row">
             <div
@@ -377,13 +438,14 @@ const IDE = () => {
                 ' flex-1 flex flex-col'
               }
             >
-              <Editor
+              <EditorPlayer
                 className="flex-1 bg-gray-300"
                 sceneData={api.currentSceneData}
+                isPlaying={isPlaying}
               />
               <Console className="flex-none h-36" />
             </div>
-            {currentObject && editingActionIndex < 0 ? (
+            {currentObject && editingActionIndex < 0 && !isPlaying ? (
               <Meta
                 key={currentObjectIndex}
                 className="w-80 flex-none overflow-hidden border-l border-black"
@@ -408,5 +470,35 @@ const IDE = () => {
     </div>
   );
 };
+
+function findScene(sceneData: SceneData, name: string): [Scene, number] {
+  const scene = sceneData.scenes.find(
+    (value: Scene): Boolean => {
+      return value.name == name;
+    }
+  );
+  const index = scene ? sceneData.scenes.indexOf(scene) : -1;
+  return [scene, index];
+}
+
+function uniquify(strs: string[]): string[] {
+  return strs.filter(
+    (value: string, index: number, acc: string[]): Boolean => {
+      return acc.indexOf(value) === index;
+    }
+  );
+}
+
+function tagsFromScene(scene: Scene): string[] {
+  return scene.layers.flatMap((layer: Layer, j: number) => {
+    return layer.gameObjects.flatMap((gameObject, k: number) => {
+      return gameObject.components.flatMap(
+        (component: Component, l: number) => {
+          return component.type == ComponentType.Tag ? [component.name] : [];
+        }
+      );
+    });
+  });
+}
 
 export default IDE;

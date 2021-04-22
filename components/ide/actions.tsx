@@ -97,7 +97,7 @@ const Actions = ({
             >
               <select
                 className="flex-none w-20"
-                defaultValue={action.type}
+                value={action.type}
                 onChange={handleChangeType.bind(null, i, action)}
               >
                 <option value={ActionType.Action}>Action</option>
@@ -111,7 +111,7 @@ const Actions = ({
                   className="flex-none ml-2 w-16"
                   type="text"
                   placeholder="event"
-                  defaultValue={action.eventName}
+                  value={action.eventName}
                   onChange={handleChangeEventName.bind(null, i, action)}
                 />
               ) : null}
@@ -122,7 +122,7 @@ const Actions = ({
                     ? 'w-32'
                     : 'w-16') + ' flex-none ml-2'
                 }
-                defaultValue={action.tag}
+                value={action.tag}
                 onChange={handleChangeTag.bind(null, i, action)}
               >
                 <option value="">None</option>

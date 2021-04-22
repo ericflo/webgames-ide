@@ -185,6 +185,7 @@ export type Layer = {
 export type Scene = {
   name: string;
   layers: Layer[];
+  actions: Action[];
 };
 
 export enum AssetType {
@@ -218,7 +219,6 @@ export type Action = {
 export type SceneData = {
   scenes?: Scene[];
   assets?: Asset[];
-  actions?: Action[];
   currentSceneName?: string;
 };
 
@@ -244,7 +244,7 @@ export const DEFAULT_LAYERS: Layer[] = [
   { name: 'ui', gameObjects: [] },
 ];
 export const DEFAULT_SCENES: Scene[] = [
-  { name: 'main', layers: DEFAULT_LAYERS },
+  { name: 'main', layers: DEFAULT_LAYERS, actions: [] },
 ];
 export const DEFAULT_SCENE_NAME = 'main';
 
@@ -252,7 +252,6 @@ export function makeDefaultSceneData(): SceneData {
   return {
     scenes: DEFAULT_SCENES,
     assets: [],
-    actions: [],
     currentSceneName: DEFAULT_SCENE_NAME,
   };
 }

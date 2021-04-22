@@ -6,9 +6,10 @@ import { SceneData } from '../data';
 type Props = {
   className?: string;
   sceneData: SceneData;
+  isPlaying: boolean;
 };
 
-const Editor = ({ className, sceneData }: Props) => {
+const EditorPlayer = ({ className, sceneData, isPlaying }: Props) => {
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
   useEffect(() => {
@@ -47,9 +48,17 @@ const Editor = ({ className, sceneData }: Props) => {
     <iframe
       className={className}
       ref={iframeRef}
-      src={isProd ? 'editor.html' : '/editor'}
+      src={
+        isProd
+          ? isPlaying
+            ? 'player.html'
+            : 'editor.html'
+          : isPlaying
+          ? '/player'
+          : '/editor'
+      }
     />
   );
 };
 
-export default Editor;
+export default EditorPlayer;

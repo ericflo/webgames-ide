@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 
 import { MySky, SkynetClient } from 'skynet-js';
 
-import { SceneData, makeDefaultSceneData } from './data';
+import { SceneData, makeDefaultSceneData, Scene } from './data';
 import { isProd } from './buildconfig';
 
 const CLIENT = new SkynetClient(isProd ? undefined : 'https://siasky.net/');
@@ -190,6 +190,10 @@ export class API {
       const sceneData = data as SceneData;
       if (sceneData) {
         console.log('Loaded scene data', sceneData);
+        // TODO: Remove me once data has been migrated
+        (sceneData.scenes || []).forEach((scene: Scene) => {
+          scene.actions = scene.actions || [];
+        });
         return sceneData;
       }
     } else {
@@ -198,12 +202,12 @@ export class API {
     return makeDefaultSceneData();
   }
 
-  async saveCurrentSceneData() {
+  async saveCurrentSceneData(callsite: string) {
     if (this.saving) {
       this.wantsSave = true;
     } else {
       this.saving = true;
-      console.log('Saving scene data...');
+      console.log(`Saving scene data [${callsite}]...`);
       await this.mySky.setJSON(
         `${DATA_DOMAIN}/games/current.json`,
         this.currentSceneData
@@ -212,7 +216,7 @@ export class API {
       console.log('Saved scene data');
       if (this.wantsSave) {
         this.wantsSave = false;
-        this.saveCurrentSceneData();
+        this.saveCurrentSceneData(callsite);
       }
     }
   }
