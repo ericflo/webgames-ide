@@ -129,8 +129,7 @@ const Editor = () => {
   const [k, setK] = useState(null);
 
   useEffect(() => {
-    const newK = (window as any).kaboom;
-    newK.init({ fullscreen: true, scale: 2 });
+    const newK = (window as any).kaboom({ fullscreen: true, scale: 2 });
     newK.scene('tmpscene', () => {});
     newK.start('tmpscene');
     setK(newK);
@@ -161,7 +160,7 @@ const Editor = () => {
       <Head>
         <title>WebGame</title>
         <link rel="icon" href="/favicon.ico" />
-        <script src="https://kaboomjs.com/lib/0.3.0/kaboom.js"></script>
+        <script src="https://kaboomjs.com/lib/0.4.0/kaboom.js"></script>
       </Head>
     </>
   );
