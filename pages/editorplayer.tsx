@@ -14,9 +14,14 @@ import SceneData, {
 } from '../components/data';
 import { isProd, isHandshake } from '../components/buildconfig';
 
+const registeredAssets: string[] = [];
+
 function setupAssets(k: any, sceneData: SceneData): Promise<any> {
   const spritesLoading: Promise<any /*{tex, frames, anims}*/>[] = [];
   ((sceneData || {}).assets || []).forEach((asset: Asset) => {
+    if (registeredAssets.includes(asset.name)) {
+      return;
+    }
     spritesLoading.push(
       k.loadSprite(
         asset.name,
@@ -26,6 +31,7 @@ function setupAssets(k: any, sceneData: SceneData): Promise<any> {
         )
       )
     );
+    registeredAssets.push(asset.name);
   });
   return Promise.all(spritesLoading);
 }
@@ -137,7 +143,7 @@ function setupAction(k: any, action: Action) {
   }
 }
 
-function setup(k: any, sceneData: SceneData) {
+function setup(k: any, sceneData: SceneData, isPlaying: boolean) {
   if (!sceneData || !k) {
     return;
   }
@@ -152,7 +158,9 @@ function setup(k: any, sceneData: SceneData) {
       setupScene(k, scene);
       if (scene.name == currentSceneName) {
         k.go(scene.name);
-        scene.actions.forEach(setupAction.bind(null, k));
+        if (isPlaying) {
+          scene.actions.forEach(setupAction.bind(null, k));
+        }
       }
     });
   });
@@ -161,6 +169,7 @@ function setup(k: any, sceneData: SceneData) {
 const Player = () => {
   const [sceneData, setSceneData] = useState(null as SceneData);
   const [k, setK] = useState(null);
+  const [isPlaying, setIsPlaying] = useState(false);
 
   useEffect(() => {
     const newK = (window as any).kaboom({ fullscreen: true, scale: 2 });
@@ -180,12 +189,18 @@ const Player = () => {
     window.addEventListener('message', (ev: MessageEvent) => {
       if (ev.data.type === 'state.sceneData') {
         setSceneData(ev.data.data);
+      } else if (ev.data.type === 'state.isPlaying') {
+        setIsPlaying(ev.data.data);
       }
     });
     window.top.postMessage({ type: 'request.state.sceneData' }, '*');
   }, []);
 
-  useEffect(setup.bind(null, k, sceneData), [k, sceneData]);
+  useEffect(setup.bind(null, k, sceneData, isPlaying), [
+    k,
+    sceneData,
+    isPlaying,
+  ]);
 
   return (
     <>

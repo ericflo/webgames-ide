@@ -22,6 +22,16 @@ const EditorPlayer = ({ className, sceneData, isPlaying }: Props) => {
     );
   }, [iframeRef, sceneData]);
 
+  useEffect(() => {
+    if (!iframeRef.current) {
+      return;
+    }
+    iframeRef.current.contentWindow.postMessage(
+      { type: 'state.isPlaying', data: isPlaying },
+      '*'
+    );
+  }, [iframeRef, isPlaying]);
+
   const handleEditorMessage = useCallback(
     (ev: MessageEvent) => {
       if (!iframeRef.current) {
@@ -48,15 +58,7 @@ const EditorPlayer = ({ className, sceneData, isPlaying }: Props) => {
     <iframe
       className={className}
       ref={iframeRef}
-      src={
-        isProd
-          ? isPlaying
-            ? 'player.html'
-            : 'editor.html'
-          : isPlaying
-          ? '/player'
-          : '/editor'
-      }
+      src={isProd ? 'editorplayer.html' : '/editorplayer'}
     />
   );
 };
