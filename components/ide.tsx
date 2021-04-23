@@ -5,7 +5,13 @@ import { useDropzone } from 'react-dropzone';
 import { default as MonacoEditor } from '@monaco-editor/react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlay, faStop, faCheck } from '@fortawesome/free-solid-svg-icons';
+import {
+  faPlay,
+  faStop,
+  faSync,
+  faCheck,
+  faSave,
+} from '@fortawesome/free-solid-svg-icons';
 
 import EditorPlayer from './ide/editorplayer';
 import SceneChooser from './ide/scenechooser';
@@ -35,11 +41,13 @@ const IDE = () => {
   );
   const [isUploading, setIsUploading] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [hasCodeChanges, setHasCodeChanges] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
   const [layerIndex, setLayerIndex] = useState(0);
   const [addAssetModalActive, setAddAssetModalActive] = useState(false);
   const [currentObjectIndex, setCurrentObjectIndex] = useState(-1);
   const [editingActionIndex, setEditingActionIndex] = useState(-1);
+  const [reloadVersion, setReloadVersion] = useState(0);
   const gameObjects = scene.layers[layerIndex].gameObjects;
   const currentObject = gameObjects[currentObjectIndex];
   const tags = uniquify(tagsFromScene(scene));
@@ -58,14 +66,16 @@ const IDE = () => {
         scene.layers[layerIndex].gameObjects.splice(currentObjectIndex, 1);
         return sceneData;
       });
-      api.saveCurrentSceneData('handleDeleteObject');
+      //api.saveCurrentSceneData('handleDeleteObject');
+      setHasChanges(true);
     }
   }, [api, currentObjectIndex, layerIndex]);
 
   const handleAddObject = useCallback(() => {
     gameObjects.push(JSON.parse(JSON.stringify(DEFAULT_GAME_OBJECT)));
     setCurrentObjectIndex(gameObjects.length - 1);
-    api.saveCurrentSceneData('handleAddObject');
+    //api.saveCurrentSceneData('handleAddObject');
+    setHasChanges(true);
   }, [scene, layerIndex, gameObjects]);
 
   const handleAddAction = useCallback(() => {
@@ -81,7 +91,8 @@ const IDE = () => {
         return sceneData;
       }
     );
-    api.saveCurrentSceneData('handleAddAction');
+    //api.saveCurrentSceneData('handleAddAction');
+    setHasChanges(true);
   }, [api]);
 
   const handleDeleteAction = useCallback(
@@ -100,7 +111,8 @@ const IDE = () => {
           return sceneData;
         }
       );
-      api.saveCurrentSceneData('handleDeleteAction');
+      //api.saveCurrentSceneData('handleDeleteAction');
+      setHasChanges(true);
     },
     [api, setEditingActionIndex]
   );
@@ -120,7 +132,8 @@ const IDE = () => {
           return sceneData;
         }
       );
-      api.saveCurrentSceneData('handleChangeAction');
+      //api.saveCurrentSceneData('handleChangeAction');
+      setHasChanges(true);
     },
     [api]
   );
@@ -128,13 +141,17 @@ const IDE = () => {
   const handleEditAction = useCallback(
     (i: number) => {
       const isEditing = editingActionIndex >= 0;
-      if (isEditing && hasChanges) {
-        api.saveCurrentSceneData('handleEditAction');
+      if (isEditing && hasCodeChanges) {
+        //api.saveCurrentSceneData('handleEditAction');
+        setHasChanges(true);
       }
       setEditingActionIndex(isEditing ? -1 : i);
       setIsPlaying(false);
+      if (isEditing) {
+        setHasCodeChanges(false);
+      }
     },
-    [api, editingActionIndex, hasChanges]
+    [api, editingActionIndex, hasCodeChanges]
   );
 
   const handleRequestNewScene = useCallback(() => {
@@ -155,7 +172,8 @@ const IDE = () => {
           return sd;
         }
       );
-      api.saveCurrentSceneData('handleRequestNewScene');
+      //api.saveCurrentSceneData('handleRequestNewScene');
+      setHasChanges(true);
     }
   }, [api]);
 
@@ -193,7 +211,8 @@ const IDE = () => {
           return sd;
         }
       );
-      api.saveCurrentSceneData('handleDeleteScene');
+      //api.saveCurrentSceneData('handleDeleteScene');
+      setHasChanges(true);
     }
   }, [api]);
 
@@ -202,7 +221,8 @@ const IDE = () => {
     if (name && name.length > 0) {
       scene.layers.push({ name, gameObjects: [] });
       setLayerIndex(scene.layers.length - 1);
-      api.saveCurrentSceneData('handleNewLayer');
+      //api.saveCurrentSceneData('handleNewLayer');
+      setHasChanges(true);
     }
   }, [api]);
 
@@ -217,7 +237,8 @@ const IDE = () => {
       ) {
         scene.layers.splice(idx, 1);
         setLayerIndex(0);
-        api.saveCurrentSceneData('handleDeleteLayer');
+        //api.saveCurrentSceneData('handleDeleteLayer');
+        setHasChanges(true);
       }
     },
     [api]
@@ -253,7 +274,8 @@ const IDE = () => {
           return sceneData;
         }
       );
-      api.saveCurrentSceneData('handleAssetDelete');
+      //api.saveCurrentSceneData('handleAssetDelete');
+      setHasChanges(true);
     },
     [api]
   );
@@ -285,12 +307,13 @@ const IDE = () => {
         return sd;
       }
     );
-    api.saveCurrentSceneData('handleChangeComponent');
+    //api.saveCurrentSceneData('handleChangeComponent');
+    setHasChanges(true);
   };
 
   const handleCodeChange = useCallback(
     (value: string) => {
-      setHasChanges(true);
+      setHasCodeChanges(true);
       api.setCurrentSceneData(
         (sceneData: SceneData): SceneData => {
           scene.actions[editingActionIndex].code = value;
@@ -308,6 +331,15 @@ const IDE = () => {
       setIsPlaying(!isPlaying);
     },
     [isPlaying, editingActionIndex]
+  );
+
+  const handleSaveClick = useCallback(
+    (ev: React.MouseEvent) => {
+      ev.preventDefault();
+      setHasChanges(false);
+      api.saveCurrentSceneData('handleSaveClick');
+    },
+    [api]
   );
 
   const editingAction = scene.actions[editingActionIndex];
@@ -408,16 +440,34 @@ const IDE = () => {
                   onClick={handleEditAction.bind(null, 0)}
                 >
                   <FontAwesomeIcon
-                    className={hasChanges ? 'text-green-600 fill-current' : ''}
+                    className={
+                      hasCodeChanges ? 'text-green-600 fill-current' : ''
+                    }
                     icon={faCheck}
                   />
                 </button>
               </>
             ) : (
               <>
-                <button onClick={handlePlayClick}>
-                  <FontAwesomeIcon icon={isPlaying ? faStop : faPlay} />
-                </button>
+                <div>
+                  <button className="mr-4" onClick={handlePlayClick}>
+                    <FontAwesomeIcon icon={isPlaying ? faStop : faPlay} />
+                  </button>
+                  <button
+                    className="mr-4"
+                    onClick={(e) => setReloadVersion((v) => v + 1)}
+                  >
+                    <FontAwesomeIcon icon={faSync} />
+                  </button>
+                  <button
+                    className={
+                      'mr-4 ' + (hasChanges ? '' : ' cursor-default opacity-50')
+                    }
+                    onClick={handleSaveClick}
+                  >
+                    <FontAwesomeIcon icon={faSave} />
+                  </button>
+                </div>
                 {api.loggedIn ? null : (
                   <a href="#" onClick={handleLoginClick}>
                     Log in
@@ -442,6 +492,7 @@ const IDE = () => {
                 className="flex-1 bg-gray-300"
                 sceneData={api.currentSceneData}
                 isPlaying={isPlaying}
+                reloadVersion={reloadVersion}
               />
               <Console className="flex-none h-36" />
             </div>

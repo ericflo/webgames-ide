@@ -173,7 +173,7 @@ export function useOnAssetDrop(
             });
         })
       ).then(() => {
-        api.saveCurrentSceneData();
+        //api.saveCurrentSceneData('useOnAssetDrop');
         setIsUploading(false);
         setAddAssetModalActive(false);
       });

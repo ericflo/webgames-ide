@@ -7,10 +7,22 @@ type Props = {
   className?: string;
   sceneData: SceneData;
   isPlaying: boolean;
+  reloadVersion: number;
 };
 
-const EditorPlayer = ({ className, sceneData, isPlaying }: Props) => {
+const EditorPlayer = ({
+  className,
+  sceneData,
+  isPlaying,
+  reloadVersion,
+}: Props) => {
   const iframeRef = useRef<HTMLIFrameElement>(null);
+
+  useEffect(() => {
+    if (iframeRef.current && reloadVersion > 0) {
+      iframeRef.current.contentWindow.location.reload();
+    }
+  }, [reloadVersion, iframeRef]);
 
   useEffect(() => {
     if (!iframeRef.current) {

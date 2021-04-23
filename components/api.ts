@@ -5,7 +5,9 @@ import { MySky, SkynetClient } from 'skynet-js';
 import { SceneData, makeDefaultSceneData, Scene } from './data';
 import { isProd } from './buildconfig';
 
-const CLIENT = new SkynetClient(isProd ? undefined : 'https://siasky.net/');
+const CLIENT = new SkynetClient(
+  isProd ? undefined : /*'https://siasky.net/'*/ 'https://eu-ger-1.siasky.net/'
+);
 const DATA_DOMAIN = isProd ? 'webgames-ide' : 'localhost';
 
 export class API {
