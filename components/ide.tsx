@@ -376,7 +376,7 @@ const IDE = () => {
           <SceneChooser
             className={
               'flex-none h-14 border-b border-r border-black ' +
-              (isPlaying ? 'opacity-25' : '')
+              (isPlaying ? 'opacity-25 cursor-default pointer-events-none' : '')
             }
             currentSceneName={api.currentSceneData.currentSceneName}
             sceneNames={api.currentSceneData.scenes.map(
@@ -389,7 +389,7 @@ const IDE = () => {
           <Objects
             className={
               'flex-1 h-0 border-b border-r border-black ' +
-              (isPlaying ? 'opacity-25' : '')
+              (isPlaying ? 'opacity-25 cursor-default pointer-events-none' : '')
             }
             scene={scene}
             api={api}
@@ -408,7 +408,7 @@ const IDE = () => {
           <Assets
             className={
               'flex-1 h-0 border-r border-black ' +
-              (isPlaying ? 'opacity-25' : '')
+              (isPlaying ? 'opacity-25 cursor-default pointer-events-none' : '')
             }
             assets={api.currentSceneData.assets || []}
             onAssetDelete={handleAssetDelete}
@@ -419,7 +419,7 @@ const IDE = () => {
           <Actions
             className={
               'flex-1 h-0 border-t border-b border-r border-black ' +
-              (isPlaying ? 'opacity-25' : '')
+              (isPlaying ? 'opacity-25 cursor-default pointer-events-none' : '')
             }
             actions={scene?.actions || []}
             editingActionIndex={editingActionIndex}
@@ -475,12 +475,28 @@ const IDE = () => {
                   </button>
                 </div>
                 {api.loggedIn ? null : (
-                  <a href="#" onClick={handleLoginClick}>
+                  <a
+                    href="#"
+                    onClick={handleLoginClick}
+                    className={
+                      isPlaying
+                        ? ' opacity-25 cursor-default pointer-events-none'
+                        : ''
+                    }
+                  >
                     Log in
                   </a>
                 )}
                 {api.loggedIn ? (
-                  <a href="#" onClick={handleLogoutClick}>
+                  <a
+                    href="#"
+                    onClick={handleLogoutClick}
+                    className={
+                      isPlaying
+                        ? ' opacity-25 cursor-default pointer-events-none'
+                        : ''
+                    }
+                  >
                     Logout
                   </a>
                 ) : null}
@@ -502,10 +518,15 @@ const IDE = () => {
               />
               <Console className="flex-none h-36" />
             </div>
-            {currentObject && editingActionIndex < 0 && !isPlaying ? (
+            {currentObject && editingActionIndex < 0 ? (
               <Meta
                 key={currentObjectIndex}
-                className="w-80 flex-none overflow-hidden border-l border-black"
+                className={
+                  'w-80 flex-none overflow-hidden border-l border-black' +
+                  (isPlaying
+                    ? ' opacity-25 cursor-default pointer-events-none'
+                    : '')
+                }
                 gameObject={currentObject}
                 assets={api.currentSceneData.assets || []}
                 title={'Game Object ' + (currentObjectIndex + 1)}

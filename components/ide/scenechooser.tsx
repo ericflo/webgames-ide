@@ -45,7 +45,7 @@ const SceneChooser = ({
   );
   return (
     <div className={className + ' flex pr-4'}>
-      <h3 className="flex-none mx-4 font-light text-black text-opacity-70 w-14 self-center">
+      <h3 className="flex-none mx-4 font-light text-black text-opacity-70 w-14 self-center select-none">
         Scene
       </h3>
       <div className="flex-1 flex flex-row">

@@ -85,7 +85,7 @@ const Actions = ({
 
   return (
     <div className={className + ' flex flex-col relative'}>
-      <h3 className="flex mx-5 my-2 font-light text-black text-opacity-70">
+      <h3 className="flex mx-5 my-2 font-light text-black text-opacity-70 select-none">
         <span className="flex-1">Actions</span>
       </h3>
       <ul className="overflow-y-scroll overflow-x-hide">

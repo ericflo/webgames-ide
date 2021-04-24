@@ -12,6 +12,10 @@ import { isProd, isHandshake } from './buildconfig';
 
 const registeredAssets: string[] = [];
 
+export function clearAssets() {
+  registeredAssets.length = 0;
+}
+
 function setupAssets(k: any, sceneData: SceneData): Promise<any> {
   const spritesLoading: Promise<any /*{tex, frames, anims}*/>[] = [];
   ((sceneData || {}).assets || []).forEach((asset: Asset) => {

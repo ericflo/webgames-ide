@@ -111,7 +111,7 @@ const Meta = ({
           </button>
         </div>
       ) : null}
-      <h3 className="flex-none mx-4 my-2 font-light text-black text-opacity-70">
+      <h3 className="flex-none mx-4 my-2 font-light text-black text-opacity-70 select-none">
         Meta
         <span className="float-right">{title}</span>
       </h3>

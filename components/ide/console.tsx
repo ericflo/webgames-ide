@@ -30,7 +30,7 @@ const Console = ({ className }: Props) => {
 
   return (
     <div className={className + ' flex flex-col'}>
-      <h3 className="flex-none mx-5 my-2 font-light text-black text-opacity-70">
+      <h3 className="flex-none mx-5 my-2 font-light text-black text-opacity-70 select-none">
         Console
       </h3>
       <ul

@@ -100,7 +100,7 @@ const Assets = ({
           </button>
         </div>
       ) : null}
-      <h3 className="flex mx-5 my-2 font-light text-black text-opacity-70">
+      <h3 className="flex mx-5 my-2 font-light text-black text-opacity-70 select-none">
         <span className="flex-1">Assets</span>
       </h3>
       <div className="overflow-y-scroll overflow-x-hide">
