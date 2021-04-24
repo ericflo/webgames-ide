@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 
 import { useDropzone } from 'react-dropzone';
 
@@ -368,6 +368,8 @@ const IDE = () => {
         break;
     }
   }
+
+  useEffect(deselectAll, [reloadVersion]);
 
   return (
     <div className="h-screen w-screen" {...getRootProps()}>

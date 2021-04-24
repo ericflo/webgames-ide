@@ -4,13 +4,14 @@ An in-browser IDE to build Kaboom.js-based webgames that can take advantage of t
 
 ## TODO
 
-* Add the ability to drag/drop Game Objects to change their order
 * Add the ability to save a project to a certain file name
 * Add the ability to play a project in the editor
 * Add the ability to deploy a project to Skynet
 * Add the ability to load a saved project other than the latest one
 * Add the ability to import a deployed Skynet project
+* Game objects should have names
 * Fix the editor and player so that it works properly on browser resize
+* Add the ability to drag/drop Game Objects to change their order
 * Allow selection of game objects by clicking the editor window
 * Add controls for dragging game objects around in the editor window
 * Add controls for rotating game objects in the editor window
