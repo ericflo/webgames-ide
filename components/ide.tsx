@@ -434,7 +434,13 @@ const IDE = () => {
           <div className="px-4 py-4 h-14 border-b border-black flex place-content-between">
             {editingAction ? (
               <>
-                <span>&nbsp;</span>
+                <a
+                  href="https://kaboomjs.com/"
+                  target="_blank"
+                  className="text-blue-600"
+                >
+                  Documentation
+                </a>
                 <button
                   className="mx-4"
                   onClick={handleEditAction.bind(null, 0)}
