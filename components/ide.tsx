@@ -4,15 +4,6 @@ import { useDropzone } from 'react-dropzone';
 
 import { default as MonacoEditor } from '@monaco-editor/react';
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faPlay,
-  faStop,
-  faSync,
-  faCheck,
-  faSave,
-} from '@fortawesome/free-solid-svg-icons';
-
 import EditorPlayer from './ide/editorplayer';
 import SceneChooser from './ide/scenechooser';
 import Objects from './ide/objects';
@@ -32,6 +23,7 @@ import SceneData, {
   ActionType,
 } from './data';
 import { useAPI } from './api';
+import TopBar from './topbar';
 
 const IDE = () => {
   const api = useAPI();
@@ -324,23 +316,15 @@ const IDE = () => {
     [api, editingActionIndex]
   );
 
-  const handlePlayClick = useCallback(
-    (ev: React.MouseEvent) => {
-      ev.preventDefault();
-      deselectAll();
-      setIsPlaying(!isPlaying);
-    },
-    [isPlaying, editingActionIndex]
-  );
+  const handlePlayClick = useCallback(() => {
+    deselectAll();
+    setIsPlaying(!isPlaying);
+  }, [isPlaying, editingActionIndex]);
 
-  const handleSaveClick = useCallback(
-    (ev: React.MouseEvent) => {
-      ev.preventDefault();
-      setHasChanges(false);
-      api.saveCurrentSceneData('handleSaveClick');
-    },
-    [api]
-  );
+  const handleSaveClick = useCallback(() => {
+    setHasChanges(false);
+    api.saveCurrentSceneData('handleSaveClick');
+  }, [api]);
 
   const editingAction = scene.actions[editingActionIndex];
   let codeValue: string = editingAction?.code;
@@ -351,11 +335,11 @@ const IDE = () => {
       case ActionType.On:
         if (editingAction.tag) {
           codeValue = `(k, ${editingAction.tag}) => {
-  //${editingAction.tag}.move(k.vec2(0, 100));
+  //${editingAction.tag}.move(k.vec2(0, 10));
 }`;
         } else {
           codeValue = `(k) => {
-  //k.get('tagname').move(k.vec2(0, 100));
+  //k.get('tagname').move(k.vec2(0, 10));
 }`;
         }
         break;
@@ -363,7 +347,7 @@ const IDE = () => {
       case ActionType.Overlaps:
         codeValue = `(k, ${editingAction.tag}, ${editingAction.otherTag}) => {
   //k.destroy(${editingAction.otherTag});
-  //${editingAction.tag || "k.get('tagname')"}.move(k.vec2(0, 100));
+  //${editingAction.tag || "k.get('tagname')"}.move(k.vec2(0, 10));
 }`;
         break;
     }
@@ -433,78 +417,18 @@ const IDE = () => {
           />
         </div>
         <div className="flex-1 flex flex-col">
-          <div className="px-4 py-4 h-14 border-b border-black flex place-content-between">
-            {editingAction ? (
-              <>
-                <a
-                  href="https://kaboomjs.com/"
-                  target="_blank"
-                  className="text-blue-600"
-                >
-                  Documentation
-                </a>
-                <button
-                  className="mx-4"
-                  onClick={handleEditAction.bind(null, 0)}
-                >
-                  <FontAwesomeIcon
-                    className={
-                      hasCodeChanges ? 'text-green-600 fill-current' : ''
-                    }
-                    icon={faCheck}
-                  />
-                </button>
-              </>
-            ) : (
-              <>
-                <div>
-                  <button className="mr-4" onClick={handlePlayClick}>
-                    <FontAwesomeIcon icon={isPlaying ? faStop : faPlay} />
-                  </button>
-                  <button
-                    className="mr-4"
-                    onClick={(e) => setReloadVersion((v) => v + 1)}
-                  >
-                    <FontAwesomeIcon icon={faSync} />
-                  </button>
-                  <button
-                    className={
-                      'mr-4 ' + (hasChanges ? '' : ' cursor-default opacity-50')
-                    }
-                    onClick={handleSaveClick}
-                  >
-                    <FontAwesomeIcon icon={faSave} />
-                  </button>
-                </div>
-                {api.loggedIn ? null : (
-                  <a
-                    href="#"
-                    onClick={handleLoginClick}
-                    className={
-                      isPlaying
-                        ? ' opacity-25 cursor-default pointer-events-none'
-                        : ''
-                    }
-                  >
-                    Log in
-                  </a>
-                )}
-                {api.loggedIn ? (
-                  <a
-                    href="#"
-                    onClick={handleLogoutClick}
-                    className={
-                      isPlaying
-                        ? ' opacity-25 cursor-default pointer-events-none'
-                        : ''
-                    }
-                  >
-                    Logout
-                  </a>
-                ) : null}
-              </>
-            )}
-          </div>
+          <TopBar
+            isPlaying={isPlaying}
+            isEditingAction={!!editingAction}
+            isLoggedIn={api.loggedIn}
+            hasChanges={hasChanges}
+            hasCodeChanges={hasCodeChanges}
+            onDoneEditingAction={handleEditAction}
+            onPlayClick={handlePlayClick}
+            onReloadClick={() => setReloadVersion((v) => v + 1)}
+            onSaveClick={handleSaveClick}
+            onLoginClick={handleLoginClick}
+          />
           <div className="flex-1 flex flex-row">
             <div
               className={
