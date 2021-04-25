@@ -2,6 +2,7 @@ import SceneData, {
   Action,
   ActionType,
   Asset,
+  AssetType,
   Component,
   ComponentType,
   GameObject,
@@ -17,23 +18,42 @@ export function clearAssets() {
 }
 
 function setupAssets(k: any, sceneData: SceneData): Promise<any> {
-  const spritesLoading: Promise<any /*{tex, frames, anims}*/>[] = [];
+  const inFlight: Promise<any>[] = [];
   ((sceneData || {}).assets || []).forEach((asset: Asset) => {
     if (registeredAssets.includes(asset.name)) {
       return;
     }
-    spritesLoading.push(
-      k.loadSprite(
-        asset.name,
-        asset.skylink.replace(
-          'sia:',
-          isProd && isHandshake ? '/' : 'https://siasky.net/'
-        )
-      )
-    );
+    switch (asset.type) {
+      case AssetType.Sound:
+        inFlight.push(
+          k.loadSound(
+            asset.name,
+            asset.skylink.replace(
+              'sia:',
+              isProd && isHandshake ? '/' : 'https://siasky.net/'
+            )
+          )
+        );
+        break;
+      case AssetType.Sprite:
+        inFlight.push(
+          k.loadSprite(
+            asset.name,
+            asset.skylink.replace(
+              'sia:',
+              isProd && isHandshake ? '/' : 'https://siasky.net/'
+            )
+          )
+        );
+        break;
+      case AssetType.Font:
+        console.log('Fonts assets are not yet supported by this engine.');
+        break;
+    }
+
     registeredAssets.push(asset.name);
   });
-  return Promise.all(spritesLoading);
+  return Promise.all(inFlight);
 }
 
 function setupLayers(k: any, sceneData: SceneData) {
