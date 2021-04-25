@@ -1,4 +1,4 @@
-name: Build Docker Image
+name: Deploy to Skynet
 
 on:
   pull_request:
