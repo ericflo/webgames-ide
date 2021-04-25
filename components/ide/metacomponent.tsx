@@ -207,6 +207,7 @@ const FormSprite = ({
         defaultValue={'' + component.id}
         onChange={handleIDChange}
       >
+        <option value="">None</option>
         {assets.map((asset: Asset) => {
           return (
             <option key={asset.skylink} value={asset.name}>

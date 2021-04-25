@@ -8,7 +8,7 @@ import { isProd } from './buildconfig';
 const CLIENT = new SkynetClient(
   isProd ? undefined : /*'https://siasky.net/'*/ 'https://eu-ger-1.siasky.net/'
 );
-const DATA_DOMAIN = isProd ? 'webgames-ide' : 'localhost';
+const DATA_DOMAIN = isProd ? 'webgames-ide.hns' : 'localhost';
 
 export class API {
   client = CLIENT;
@@ -183,10 +183,7 @@ export class API {
 
   async initialize() {
     try {
-      this.mySky = await CLIENT.loadMySky(
-        DATA_DOMAIN,
-        isProd ? { debug: true } : undefined
-      );
+      this.mySky = await CLIENT.loadMySky(DATA_DOMAIN);
       // await mySky.loadDacs(contentRecord);
       this.loggedIn = await this.mySky.checkLogin();
       if (this.loggedIn) {

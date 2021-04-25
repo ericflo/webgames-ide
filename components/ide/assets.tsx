@@ -16,10 +16,10 @@ import { isProd, isHandshake } from '../buildconfig';
 type Props = {
   className?: string;
   assets: Asset[];
-  onAssetDelete: (asset: Asset) => void;
   isUploading: Boolean;
   addAssetModalActive: Boolean;
   setAddAssetModalActive: React.Dispatch<React.SetStateAction<boolean>>;
+  onAssetDelete: (asset: Asset) => void;
 };
 
 const Assets = ({
@@ -129,7 +129,8 @@ const Assets = ({
 export function useOnAssetDrop(
   api: API,
   setIsUploading: React.Dispatch<React.SetStateAction<boolean>>,
-  setAddAssetModalActive: React.Dispatch<React.SetStateAction<boolean>>
+  setAddAssetModalActive: React.Dispatch<React.SetStateAction<boolean>>,
+  setHasChanges: React.Dispatch<React.SetStateAction<boolean>>
 ) {
   return useCallback(
     (acceptedFiles: FileWithPath[]) => {
@@ -170,6 +171,7 @@ export function useOnAssetDrop(
                   return sceneData;
                 }
               );
+              setHasChanges(true);
             });
         })
       ).then(() => {

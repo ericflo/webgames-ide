@@ -270,7 +270,8 @@ const IDE = () => {
   const handleDrop = useOnAssetDrop(
     api,
     setIsUploading,
-    setAddAssetModalActive
+    setAddAssetModalActive,
+    setHasChanges
   );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -448,10 +449,10 @@ const IDE = () => {
               (isPlaying ? 'opacity-25 cursor-default pointer-events-none' : '')
             }
             assets={api.currentSceneData.assets || []}
-            onAssetDelete={handleAssetDelete}
             isUploading={isUploading}
             addAssetModalActive={addAssetModalActive}
             setAddAssetModalActive={setAddAssetModalActive}
+            onAssetDelete={handleAssetDelete}
           />
           <Actions
             className={
@@ -469,6 +470,7 @@ const IDE = () => {
         </div>
         <div className="flex-1 flex flex-col">
           <TopBar
+            api={api}
             isPlaying={isPlaying}
             isEditingAction={!!editingAction}
             isLoggedIn={api.loggedIn}
@@ -477,6 +479,7 @@ const IDE = () => {
             hasChanges={hasChanges}
             hasCodeChanges={hasCodeChanges}
             currentFilename={api.currentFilename}
+            sceneData={api.currentSceneData}
             onDoneEditingAction={handleEditAction.bind(null, 0)}
             onPlayClick={handlePlayClick}
             onReloadClick={() => setReloadVersion((v) => v + 1)}
