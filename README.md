@@ -22,3 +22,4 @@ An in-browser IDE to build Kaboom.js-based webgames that can take advantage of t
 * Add the ability to save a project to a certain file name
 * Add the ability to play a project in the editor
 * Add the ability to load a saved project other than the latest one
+* Auto-deploy to Skynet
