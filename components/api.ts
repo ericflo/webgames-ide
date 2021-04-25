@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 
 import { MySky, SkynetClient } from 'skynet-js';
+import { ContentRecordDAC } from '../vendor/content-record-library';
 
 import { SceneData, makeDefaultSceneData, Scene } from './data';
 import { isProd } from './buildconfig';
@@ -8,7 +9,7 @@ import { isProd } from './buildconfig';
 const CLIENT = new SkynetClient(
   isProd ? undefined : /*'https://siasky.net/'*/ 'https://eu-ger-1.siasky.net/'
 );
-const DATA_DOMAIN = isProd ? 'webgames-ide.hns' : 'localhost';
+export const DATA_DOMAIN = isProd ? 'webgames-ide.hns' : 'localhost';
 
 export class API {
   client = CLIENT;
@@ -16,6 +17,8 @@ export class API {
   _setInitialized: React.Dispatch<React.SetStateAction<boolean>>;
   _mySky: MySky;
   _setMySky: React.Dispatch<React.SetStateAction<MySky>>;
+  _contentRecord: ContentRecordDAC;
+  _setContentRecord: React.Dispatch<React.SetStateAction<ContentRecordDAC>>;
   _loggedIn: boolean;
   _setLoggedIn: React.Dispatch<React.SetStateAction<boolean>>;
   _currentFilename: string;
@@ -38,6 +41,8 @@ export class API {
     setInitialized: React.Dispatch<React.SetStateAction<boolean>>,
     mySky: MySky,
     setMySky: React.Dispatch<React.SetStateAction<MySky>>,
+    contentRecord: ContentRecordDAC,
+    setContentRecord: React.Dispatch<React.SetStateAction<ContentRecordDAC>>,
     loggedIn: boolean,
     setLoggedIn: React.Dispatch<React.SetStateAction<boolean>>,
     currentFilename: string,
@@ -66,6 +71,8 @@ export class API {
     this._setInitialized = setInitialized;
     this._mySky = mySky;
     this._setMySky = setMySky;
+    this._contentRecord = contentRecord;
+    this._setContentRecord = setContentRecord;
     this._loggedIn = loggedIn;
     this._setLoggedIn = setLoggedIn;
     this._currentFilename = currentFilename;
@@ -100,6 +107,15 @@ export class API {
   set mySky(value: MySky) {
     this._mySky = value;
     this._setMySky(value);
+  }
+
+  get contentRecord(): ContentRecordDAC {
+    return this._contentRecord;
+  }
+
+  set contentRecord(value: ContentRecordDAC) {
+    this._contentRecord = value;
+    this._setContentRecord(value);
   }
 
   get loggedIn(): boolean {
@@ -184,7 +200,8 @@ export class API {
   async initialize() {
     try {
       this.mySky = await CLIENT.loadMySky(DATA_DOMAIN);
-      // await mySky.loadDacs(contentRecord);
+      this.contentRecord = new ContentRecordDAC();
+      await this.mySky.loadDacs(this.contentRecord);
       this.loggedIn = await this.mySky.checkLogin();
       if (this.loggedIn) {
         this.userId = await this.mySky.userID();
@@ -268,14 +285,40 @@ export class API {
       this.wantsSave = true;
     } else {
       this.saving = true;
+
       console.log(
         `Saving scene data [${callsite}] to ${this.currentFilename}...`
       );
-      await this.mySky.setJSON(
-        `${DATA_DOMAIN}/games/${this.currentFilename}`,
-        this.currentSceneData
-      );
+      const uri = `${DATA_DOMAIN}/games/${this.currentFilename}`;
+      const prev = await this.mySky.getJSON(uri);
+      const curr = await this.mySky.setJSON(uri, this.currentSceneData);
       console.log('Saved scene data');
+
+      const metadata = { type: 'SavedGame', uri: uri };
+      if (prev?.skylink) {
+        console.log(
+          'Recording interaction with contentRecordDAC',
+          prev.skylink,
+          '...'
+        );
+        await this.contentRecord.recordInteraction({
+          skylink: prev.skylink,
+          metadata: { action: 'updated', next: curr.skylink, uri: uri },
+        });
+        console.log('Done.');
+        metadata['prev'] = prev.skylink;
+      }
+      console.log(
+        'Recording new content with contentRecordDAC',
+        curr.skylink,
+        '...'
+      );
+      await this.contentRecord.recordNewContent({
+        skylink: curr.skylink,
+        metadata: metadata,
+      });
+      console.log('Done.');
+
       this.saving = false;
 
       if (this.wantsSave) {
@@ -289,6 +332,7 @@ export class API {
 export function useAPI(): API {
   const [initialized, setInitialized] = useState(false);
   const [mySky, setMySky] = useState(null);
+  const [contentRecord, setContentRecord] = useState(null);
   const [loggedIn, setLoggedIn] = useState(false);
   const [currentFilename, setCurrentFilename] = useState('');
   const [userId, setUserId] = useState('');
@@ -304,6 +348,8 @@ export function useAPI(): API {
     setInitialized,
     mySky,
     setMySky,
+    contentRecord,
+    setContentRecord,
     loggedIn,
     setLoggedIn,
     currentFilename,

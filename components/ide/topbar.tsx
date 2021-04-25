@@ -11,7 +11,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useCallback } from 'react';
-import { API } from '../api';
+import { API, DATA_DOMAIN } from '../api';
 import { isHandshake, isProd } from '../buildconfig';
 import SceneData from '../data';
 
@@ -121,6 +121,46 @@ const TopBar = ({
             'sia:',
             /* isProd && isHandshake ? '/' : */ 'https://siasky.net/'
           );
+          const uri = `${DATA_DOMAIN}/games/${api.currentFilename}`;
+          api.mySky
+            .getJSON(uri)
+            .then((prev) => {
+              console.log('Recording new content...');
+
+              api.contentRecord
+                .recordNewContent({
+                  skylink: resp.skylink,
+                  metadata: {
+                    type: 'PublishedGame',
+                    prev: prev?.skylink,
+                    uri: uri,
+                  },
+                })
+                .then((curr) => {
+                  console.log('Done recording new content.');
+                });
+
+              if (prev?.skylink) {
+                console.log('Recording interaction...');
+                api.contentRecord
+                  .recordInteraction({
+                    skylink: prev.skylink,
+                    metadata: { type: 'exported', to: resp.skylink, uri: uri },
+                  })
+                  .then((tmp) => {
+                    console.log('Done recording export interaction.');
+                  });
+              }
+            })
+            .catch((err) => {
+              console.log('Error getting prev: ', err);
+              console.log('Recording new content...');
+              api.contentRecord.recordNewContent({
+                skylink: resp.skylink,
+                metadata: { type: 'PublishedGame', prev: null, uri: uri },
+              });
+              console.log('Done.');
+            });
         });
     },
     [sceneData]
