@@ -64,14 +64,14 @@ const FormPos = ({
   );
   return (
     <div className="mt-2 mx-2 w-full flex place-items-center justify-between">
-      <label>X:</label>
+      <label className="pointer-events-none select-none">X:</label>
       <input
         className="w-16 text-center"
         type="text"
         defaultValue={'' + component.x}
         onChange={handleXChange}
       />
-      <label>Y:</label>
+      <label className="pointer-events-none select-none">Y:</label>
       <input
         className="w-16 text-center"
         type="text"
@@ -105,14 +105,14 @@ const FormScale = ({
   );
   return (
     <div className="mt-2 mx-2 w-full flex place-items-center justify-between">
-      <label>X:</label>
+      <label className="pointer-events-none select-none">X:</label>
       <input
         className="w-16 text-center"
         type="text"
         defaultValue={'' + component.x}
         onChange={handleXChange}
       />
-      <label>Y:</label>
+      <label className="pointer-events-none select-none">Y:</label>
       <input
         className="w-16 text-center"
         type="text"
@@ -139,7 +139,7 @@ const FormRotate = ({
   );
   return (
     <div className="mt-2 mx-2 w-full flex place-items-center justify-between">
-      <label>Angle:</label>
+      <label className="pointer-events-none select-none">Angle:</label>
       <input
         className="w-24 text-center"
         type="text"
@@ -201,7 +201,7 @@ const FormSprite = ({
   );
   return (
     <div className="mt-2 mx-2 w-full flex place-items-center justify-between">
-      <label className="mr-8">ID:</label>
+      <label className="mr-8 pointer-events-none select-none">ID:</label>
       <select
         className="w-64"
         defaultValue={'' + component.id}
@@ -250,7 +250,7 @@ const FormText = ({
   return (
     <div>
       <div className="mb-2 mt-2">
-        <label className="mr-2">Text:</label>
+        <label className="mr-2 pointer-events-none select-none">Text:</label>
         <input
           type="text"
           defaultValue={'' + component.text}
@@ -258,14 +258,14 @@ const FormText = ({
         />
       </div>
       <div className="flex place-items-center justify-between">
-        <label>Size:</label>
+        <label className="pointer-events-none select-none">Size:</label>
         <input
           className="w-16 text-center mr-1"
           type="text"
           defaultValue={'' + component.size}
           onChange={handleSizeChange}
         />
-        <label>Width:</label>
+        <label className="pointer-events-none select-none">Width:</label>
         <input
           className="w-16 text-center"
           type="text"
@@ -300,14 +300,14 @@ const FormRect = ({
   );
   return (
     <div className="w-full mt-2 mx-2 flex place-items-center justify-between">
-      <label>W:</label>
+      <label className="pointer-events-none select-none">W:</label>
       <input
         className="w-16 text-center"
         type="text"
         defaultValue={'' + component.w}
         onChange={handleWChange}
       />
-      <label>H:</label>
+      <label className="pointer-events-none select-none">H:</label>
       <input
         className="w-16 text-center"
         type="text"
@@ -356,14 +356,14 @@ const FormArea = ({
   return (
     <div className="mt-2 mx-2 w-full">
       <div className="flex place-items-center justify-between mb-2">
-        <label>P1 X:</label>
+        <label className="pointer-events-none select-none">P1 X:</label>
         <input
           className="w-12 text-center"
           type="text"
           defaultValue={'' + component.p1.x}
           onChange={handleP1XChange}
         />
-        <label>P1 Y:</label>
+        <label className="pointer-events-none select-none">P1 Y:</label>
         <input
           className="w-12 text-center"
           type="text"
@@ -372,14 +372,14 @@ const FormArea = ({
         />
       </div>
       <div className="flex place-items-center justify-between">
-        <label>P2 X:</label>
+        <label className="pointer-events-none select-none">P2 X:</label>
         <input
           className="w-12 text-center"
           type="text"
           defaultValue={'' + component.p2.x}
           onChange={handleP2XChange}
         />
-        <label>P2 Y:</label>
+        <label className="pointer-events-none select-none">P2 Y:</label>
         <input
           className="w-12 text-center"
           type="text"
@@ -415,7 +415,7 @@ const FormBody = ({
   return (
     <div className="flex flex-col w-full mx-4 my-2">
       <div className="flex place-items-center justify-between mb-2">
-        <label>Jump Force:</label>
+        <label className="pointer-events-none select-none">Jump Force:</label>
         <input
           className="w-14 text-center"
           type="text"
@@ -424,7 +424,7 @@ const FormBody = ({
         />
       </div>
       <div className="flex place-items-center justify-between">
-        <label>Max Vel:</label>
+        <label className="pointer-events-none select-none">Max Vel:</label>
         <input
           className="w-14 text-center"
           type="text"
@@ -477,7 +477,7 @@ const FormOrigin = ({
   return (
     <div className="mx-2 my-2 w-full">
       <div className="w-full flex place-items-center justify-between mb-2">
-        <label>Name:</label>
+        <label className="pointer-events-none select-none">Name:</label>
         <select
           className="w-44"
           defaultValue={'' + component.name}
@@ -495,14 +495,14 @@ const FormOrigin = ({
         </select>
       </div>
       <div className="w-full flex place-items-center justify-between">
-        <label>Custom X:</label>
+        <label className="pointer-events-none select-none">Custom X:</label>
         <input
           className="w-12 text-center"
           type="text"
           defaultValue={'' + component.custom.x}
           onChange={handleCustomXChange}
         />
-        <label>Y:</label>
+        <label className="pointer-events-none select-none">Y:</label>
         <input
           className="w-12 text-center"
           type="text"
@@ -530,7 +530,7 @@ const FormLayer = ({
   );
   return (
     <div className="mt-2 mx-2 w-full flex place-items-center justify-between">
-      <label className="mr-2">Name:</label>
+      <label className="mr-2 pointer-events-none select-none">Name:</label>
       <input
         type="text"
         defaultValue={'' + component.name}
@@ -556,7 +556,7 @@ const FormTag = ({
   );
   return (
     <div className="mt-2 mx-2 w-full flex place-items-center justify-between">
-      <label className="mr-2">Name:</label>
+      <label className="mr-2 pointer-events-none select-none">Name:</label>
       <input
         type="text"
         defaultValue={'' + component.name}
@@ -677,7 +677,9 @@ const MetaComponent = ({
       <span className="float-right cursor-pointer" onClick={handleDeleteClick}>
         <FontAwesomeIcon icon={faTrash} />
       </span>
-      {componentTypeName(component.type)}
+      <span className="pointer-events-none select-none">
+        {componentTypeName(component.type)}
+      </span>
       <form
         className="flex place-items-center justify-around"
         onSubmit={handleSubmit}

@@ -56,13 +56,13 @@ export function defaultComponentForType(
     case ComponentType.Rotate:
       return { type: componentType, angle: 0 };
     case ComponentType.Color:
-      return { type: componentType, r: 0, g: 0, b: 0, a: 1 };
+      return { type: componentType, r: 1, g: 1, b: 1, a: 1 };
     case ComponentType.Sprite:
       return { type: componentType, id: '' };
     case ComponentType.Text:
       return { type: componentType, text: '', size: 40, width: 0 };
     case ComponentType.Rect:
-      return { type: componentType, w: 4, h: 4 };
+      return { type: componentType, w: 40, h: 40 };
     case ComponentType.Area:
       return {
         type: componentType,
@@ -224,8 +224,8 @@ export type SceneData = {
 
 export const DEFAULT_GAME_OBJECT: GameObject = {
   components: [
-    { type: ComponentType.Pos, x: 0, y: 0 },
-    { type: ComponentType.Rect, w: 4, h: 4 },
+    { type: ComponentType.Pos, x: 60, y: 60 },
+    { type: ComponentType.Rect, w: 40, h: 40 },
     { type: ComponentType.Color, r: 0, g: 0, b: 1, a: 1 },
   ],
 };
@@ -236,10 +236,7 @@ export const DEFAULT_ACTION: Action = {
 };
 
 export const DEFAULT_LAYERS: Layer[] = [
-  {
-    name: 'obj',
-    gameObjects: [DEFAULT_GAME_OBJECT],
-  },
+  { name: 'obj', gameObjects: [] },
   { name: 'bg', gameObjects: [] },
   { name: 'ui', gameObjects: [] },
 ];
@@ -249,11 +246,23 @@ export const DEFAULT_SCENES: Scene[] = [
 export const DEFAULT_SCENE_NAME = 'main';
 
 export function makeDefaultSceneData(): SceneData {
-  return {
-    scenes: DEFAULT_SCENES,
-    assets: [],
-    currentSceneName: DEFAULT_SCENE_NAME,
-  };
+  return JSON.parse(
+    JSON.stringify({
+      scenes: DEFAULT_SCENES,
+      assets: [],
+      currentSceneName: DEFAULT_SCENE_NAME,
+    })
+  );
+}
+
+export function makeEmptySceneData(): SceneData {
+  const sd = makeDefaultSceneData();
+  sd.scenes.forEach((scene: Scene) => {
+    scene.layers.forEach((layer: Layer) => {
+      layer.gameObjects.length = 0;
+    });
+  });
+  return sd;
 }
 
 export default SceneData;

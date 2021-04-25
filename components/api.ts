@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
 import { MySky, SkynetClient } from 'skynet-js';
 
@@ -18,14 +18,20 @@ export class API {
   _setMySky: React.Dispatch<React.SetStateAction<MySky>>;
   _loggedIn: boolean;
   _setLoggedIn: React.Dispatch<React.SetStateAction<boolean>>;
+  _currentFilename: string;
+  _setCurrentFilename: React.Dispatch<React.SetStateAction<string>>;
   _userId: string;
   _setUserId: React.Dispatch<React.SetStateAction<string>>;
   _currentSceneData: SceneData;
   _setCurrentSceneData: React.Dispatch<React.SetStateAction<SceneData>>;
+  _gamesList: string[];
+  _setGamesList: React.Dispatch<React.SetStateAction<string[]>>;
   _saving: boolean;
   _setSaving: React.Dispatch<React.SetStateAction<boolean>>;
   _wantsSave: boolean;
   _setWantsSave: React.Dispatch<React.SetStateAction<boolean>>;
+  _loading: boolean;
+  _setLoading: React.Dispatch<React.SetStateAction<boolean>>;
 
   constructor(
     initialized: boolean,
@@ -34,14 +40,20 @@ export class API {
     setMySky: React.Dispatch<React.SetStateAction<MySky>>,
     loggedIn: boolean,
     setLoggedIn: React.Dispatch<React.SetStateAction<boolean>>,
+    currentFilename: string,
+    setCurrentFilename: React.Dispatch<React.SetStateAction<string>>,
     userId: string,
     setUserId: React.Dispatch<React.SetStateAction<string>>,
     currentSceneData: SceneData,
     setCurrentSceneData: React.Dispatch<React.SetStateAction<SceneData>>,
+    gamesList: string[],
+    setGamesList: React.Dispatch<React.SetStateAction<string[]>>,
     saving: boolean,
     setSaving: React.Dispatch<React.SetStateAction<boolean>>,
     wantsSave: boolean,
-    setWantsSave: React.Dispatch<React.SetStateAction<boolean>>
+    setWantsSave: React.Dispatch<React.SetStateAction<boolean>>,
+    loading: boolean,
+    setLoading: React.Dispatch<React.SetStateAction<boolean>>
   ) {
     this.initialize = this.initialize.bind(this);
     this.login = this.login.bind(this);
@@ -56,14 +68,20 @@ export class API {
     this._setMySky = setMySky;
     this._loggedIn = loggedIn;
     this._setLoggedIn = setLoggedIn;
+    this._currentFilename = currentFilename;
+    this._setCurrentFilename = setCurrentFilename;
     this._userId = userId;
     this._setUserId = setUserId;
     this._currentSceneData = currentSceneData;
     this._setCurrentSceneData = setCurrentSceneData;
+    this._gamesList = gamesList;
+    this._setGamesList = setGamesList;
     this._saving = saving;
     this._setSaving = setSaving;
     this._wantsSave = wantsSave;
     this._setWantsSave = setWantsSave;
+    this._loading = loading;
+    this._setLoading = setLoading;
   }
 
   get initialized(): boolean {
@@ -93,6 +111,16 @@ export class API {
     this._setLoggedIn(value);
   }
 
+  get currentFilename(): string {
+    return this._currentFilename;
+  }
+
+  set currentFilename(value: string) {
+    this._currentFilename = value;
+    this._setCurrentFilename(value);
+    localStorage.setItem('latest-project-filename', value);
+  }
+
   get userId(): string {
     return this._userId;
   }
@@ -114,6 +142,18 @@ export class API {
     this._setCurrentSceneData(wrappedCallback);
   }
 
+  get gamesList(): string[] {
+    return this._gamesList;
+  }
+
+  setGamesList(callback: (gamesList: string[]) => string[]) {
+    const wrappedCallback = (gamesList: string[]): string[] => {
+      return callback(JSON.parse(JSON.stringify(gamesList)));
+    };
+    this._gamesList = wrappedCallback(this._gamesList);
+    this._setGamesList(wrappedCallback);
+  }
+
   get saving(): boolean {
     return this._saving;
   }
@@ -132,6 +172,15 @@ export class API {
     this._setWantsSave(value);
   }
 
+  get loading(): boolean {
+    return this._loading;
+  }
+
+  set loading(value: boolean) {
+    this._loading = value;
+    this._setLoading(value);
+  }
+
   async initialize() {
     try {
       this.mySky = await CLIENT.loadMySky(
@@ -142,12 +191,18 @@ export class API {
       this.loggedIn = await this.mySky.checkLogin();
       if (this.loggedIn) {
         this.userId = await this.mySky.userID();
+        const filename = localStorage.getItem('latest-project-filename');
+        if (filename) {
+          this.currentFilename = filename;
+        }
         const sceneData = await this.loadCurrentSceneData();
-        this.setCurrentSceneData(
-          (_: SceneData): SceneData => {
-            return sceneData;
-          }
-        );
+        if (sceneData) {
+          this.setCurrentSceneData(
+            (_: SceneData): SceneData => {
+              return sceneData;
+            }
+          );
+        }
       }
     } catch (e) {
       console.error(e);
@@ -161,11 +216,13 @@ export class API {
       if (this.loggedIn) {
         this.userId = await this.mySky.userID();
         const sceneData = await this.loadCurrentSceneData();
-        this.setCurrentSceneData(
-          (_: SceneData): SceneData => {
-            return sceneData;
-          }
-        );
+        if (sceneData) {
+          this.setCurrentSceneData(
+            (_: SceneData): SceneData => {
+              return sceneData;
+            }
+          );
+        }
       }
     } catch (e) {
       console.error(e);
@@ -183,19 +240,24 @@ export class API {
   }
 
   async loadCurrentSceneData(): Promise<SceneData> {
+    if (this.loading) {
+      return;
+    }
+    if (!this.currentFilename) {
+      console.log(
+        'Could not load scene data because there was no filename to load'
+      );
+      return Promise.resolve(null);
+    }
     console.log('Loading scene data...');
+    this.loading = true;
     const { data } = await this.mySky.getJSON(
-      `${DATA_DOMAIN}/games/current.json`
+      `${DATA_DOMAIN}/games/${this.currentFilename}`
     );
+    this.loading = false;
     if (data) {
-      console.log('Loaded scene data');
       const sceneData = data as SceneData;
       if (sceneData) {
-        console.log('Loaded scene data', sceneData);
-        // TODO: Remove me once data has been migrated
-        (sceneData.scenes || []).forEach((scene: Scene) => {
-          scene.actions = scene.actions || [];
-        });
         return sceneData;
       }
     } else {
@@ -209,13 +271,16 @@ export class API {
       this.wantsSave = true;
     } else {
       this.saving = true;
-      console.log(`Saving scene data [${callsite}]...`);
+      console.log(
+        `Saving scene data [${callsite}] to ${this.currentFilename}...`
+      );
       await this.mySky.setJSON(
-        `${DATA_DOMAIN}/games/current.json`,
+        `${DATA_DOMAIN}/games/${this.currentFilename}`,
         this.currentSceneData
       );
-      this.saving = false;
       console.log('Saved scene data');
+      this.saving = false;
+
       if (this.wantsSave) {
         this.wantsSave = false;
         this.saveCurrentSceneData(callsite);
@@ -228,11 +293,14 @@ export function useAPI(): API {
   const [initialized, setInitialized] = useState(false);
   const [mySky, setMySky] = useState(null);
   const [loggedIn, setLoggedIn] = useState(false);
+  const [currentFilename, setCurrentFilename] = useState('');
   const [userId, setUserId] = useState('');
   const [currentSceneData, setCurrentSceneData] = useState(
     makeDefaultSceneData()
   );
+  const [gamesList, setGamesList] = useState([] as string[]);
   const [saving, setSaving] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [wantsSave, setWantsSave] = useState(false);
   const api = new API(
     initialized,
@@ -241,17 +309,70 @@ export function useAPI(): API {
     setMySky,
     loggedIn,
     setLoggedIn,
+    currentFilename,
+    setCurrentFilename,
     userId,
     setUserId,
     currentSceneData,
     setCurrentSceneData,
+    gamesList,
+    setGamesList,
     saving,
     setSaving,
     wantsSave,
-    setWantsSave
+    setWantsSave,
+    loading,
+    setLoading
   );
   useEffect(() => {
     api.initialize();
   }, []);
+
+  const loadGames = useCallback(async (mySky: any): Promise<string[]> => {
+    const resp = await mySky.getJSON(`${DATA_DOMAIN}/gameindex.json`);
+    const games =
+      resp && resp.data && resp.data.gameslist
+        ? (resp.data.gameslist as string[])
+        : [];
+    return games;
+  }, []);
+
+  useEffect(() => {
+    if (mySky) {
+      loadGames(mySky).then(setGamesList);
+    }
+  }, [mySky]);
+
+  const updateIndex = useCallback(
+    async (mySky: any, currentFilename: string) => {
+      if (!currentFilename) {
+        return;
+      }
+      console.log(
+        'Checking whether this project needs to be added to the index...'
+      );
+      const games = await loadGames(mySky);
+      console.log('Current games list:', games);
+      if (games.includes(currentFilename)) {
+        console.log('...it does not.');
+      } else {
+        games.push(currentFilename);
+        console.log(`Adding ${currentFilename} to the game index...`);
+        await mySky.setJSON(`${DATA_DOMAIN}/gameindex.json`, {
+          gameslist: games,
+        });
+        console.log('Done -- new games list:', games);
+      }
+      setGamesList(games);
+    },
+    []
+  );
+
+  useEffect(() => {
+    if (mySky && currentFilename) {
+      updateIndex(mySky, currentFilename);
+    }
+  }, [mySky, currentFilename, updateIndex]);
+
   return api;
 }

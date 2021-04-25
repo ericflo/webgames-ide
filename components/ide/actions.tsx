@@ -96,7 +96,7 @@ const Actions = ({
               className={'px-4 py-2 select-none flex place-items-center'}
             >
               <select
-                className="flex-none w-20"
+                className="flex-none w-24"
                 value={action.type}
                 onChange={handleChangeType.bind(null, i, action)}
               >
@@ -108,9 +108,9 @@ const Actions = ({
               </select>
               {action.type == ActionType.On ? (
                 <input
-                  className="flex-none ml-2 w-16"
+                  className="flex-none ml-2 w-28"
                   type="text"
-                  placeholder="event"
+                  placeholder="eventName"
                   value={action.eventName}
                   onChange={handleChangeEventName.bind(null, i, action)}
                 />

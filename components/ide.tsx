@@ -21,9 +21,11 @@ import SceneData, {
   Layer,
   ComponentType,
   ActionType,
+  makeDefaultSceneData,
 } from './data';
 import { useAPI } from './api';
-import TopBar from './topbar';
+import TopBar from './ide/topbar';
+import LoadModal from './ide/loadmodal';
 
 const IDE = () => {
   const api = useAPI();
@@ -33,6 +35,7 @@ const IDE = () => {
   );
   const [isUploading, setIsUploading] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [isShowingLoadingModal, setIsShowingLoadingModal] = useState(false);
   const [hasCodeChanges, setHasCodeChanges] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
   const [layerIndex, setLayerIndex] = useState(0);
@@ -236,14 +239,6 @@ const IDE = () => {
     [api]
   );
 
-  const handleLoginClick = useCallback(
-    (ev: React.MouseEvent) => {
-      ev.preventDefault();
-      api.login();
-    },
-    [api]
-  );
-
   const handleLogoutClick = useCallback(
     (ev: React.MouseEvent) => {
       ev.preventDefault();
@@ -322,9 +317,57 @@ const IDE = () => {
   }, [isPlaying, editingActionIndex]);
 
   const handleSaveClick = useCallback(() => {
+    if (!api.currentFilename) {
+      let filename = prompt(
+        'What should we name the file for this game project?',
+        'MyGameName.json'
+      );
+      console.log('filename', filename, typeof filename);
+      if (!filename || filename.length == 0) {
+        alert(
+          'A valid file name must be chosen in order to save this game project.'
+        );
+        return;
+      }
+      if (!filename.endsWith('.json')) {
+        filename += '.json';
+      }
+      api.currentFilename = filename;
+    }
     setHasChanges(false);
     api.saveCurrentSceneData('handleSaveClick');
   }, [api]);
+
+  const handleNewClick = useCallback(() => {
+    if (
+      hasChanges &&
+      !confirm(
+        'Are you sure you want to start a new project? You have unsaved changes which will be lost.'
+      )
+    ) {
+      return;
+    }
+    setHasChanges(false);
+    deselectAll();
+    api.currentFilename = '';
+    api.setCurrentSceneData(
+      (_: SceneData): SceneData => {
+        return makeDefaultSceneData();
+      }
+    );
+  }, [api, hasChanges]);
+
+  const handleLoadClick = useCallback(() => {
+    setIsShowingLoadingModal(!isShowingLoadingModal);
+  }, [isShowingLoadingModal]);
+
+  const handleLoadingModalBackgroundClick = useCallback(
+    (ev: React.MouseEvent) => {
+      ev.preventDefault();
+      setIsShowingLoadingModal(false);
+    },
+    []
+  );
 
   const editingAction = scene.actions[editingActionIndex];
   let codeValue: string = editingAction?.code;
@@ -357,8 +400,16 @@ const IDE = () => {
 
   return (
     <div className="h-screen w-screen" {...getRootProps()}>
+      {isShowingLoadingModal ? (
+        <LoadModal
+          api={api}
+          hasChanges={hasChanges}
+          setHasChanges={setHasChanges}
+          onClose={() => setIsShowingLoadingModal(false)}
+        />
+      ) : null}
       <div className="flex flex-row">
-        <div className="flex flex-col flex-none h-screen max-w-xs w-80">
+        <div className="flex flex-col flex-none h-screen w-96">
           <SceneChooser
             className={
               'flex-none h-14 border-b border-r border-black ' +
@@ -421,13 +472,17 @@ const IDE = () => {
             isPlaying={isPlaying}
             isEditingAction={!!editingAction}
             isLoggedIn={api.loggedIn}
+            isSaving={api.saving}
+            isLoading={api.loading}
             hasChanges={hasChanges}
             hasCodeChanges={hasCodeChanges}
-            onDoneEditingAction={handleEditAction}
+            onDoneEditingAction={handleEditAction.bind(null, 0)}
             onPlayClick={handlePlayClick}
             onReloadClick={() => setReloadVersion((v) => v + 1)}
             onSaveClick={handleSaveClick}
-            onLoginClick={handleLoginClick}
+            onLoginClick={api.login}
+            onNewClick={handleNewClick}
+            onLoadClick={handleLoadClick}
           />
           <div className="flex-1 flex flex-row">
             <div

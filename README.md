@@ -4,10 +4,7 @@ An in-browser IDE to build Kaboom.js-based webgames that can take advantage of t
 
 ## TODO
 
-* Add the ability to save a project to a certain file name
-* Add the ability to play a project in the editor
 * Add the ability to deploy a project to Skynet
-* Add the ability to load a saved project other than the latest one
 * Add the ability to import a deployed Skynet project
 * Game objects should have names
 * Fix the editor and player so that it works properly on browser resize
@@ -22,3 +19,6 @@ An in-browser IDE to build Kaboom.js-based webgames that can take advantage of t
 * Fix formatting on all the meta form fields
 * Make sure the editor doesn't reload each time anything changes
 * Add an "Actions" module where you can write code and assign it to actions
+* Add the ability to save a project to a certain file name
+* Add the ability to play a project in the editor
+* Add the ability to load a saved project other than the latest one
