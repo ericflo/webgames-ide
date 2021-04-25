@@ -34,7 +34,7 @@ const LoadModal = ({
         (className || '')
       }
     >
-      <div className="absolute w-1/2 h-2/3 bg-white bg-opacity-100 rounded-xl p-4 z-20">
+      <div className="absolute w-1/2 h-2/3 bg-white bg-opacity-100 rounded-xl p-4 z-20 shadow">
         <h3 className="text-4xl mx-6 my-6 font-bold select-none">
           Project Browser
           <FontAwesomeIcon
@@ -122,7 +122,7 @@ const LoadModal = ({
       </div>
 
       <div
-        className="absolute w-screen h-screen bg-black bg-opacity-50 z-10"
+        className="absolute w-screen h-screen bg-white bg-opacity-90 z-10"
         onClick={handleBackgroundClick}
       />
     </div>
