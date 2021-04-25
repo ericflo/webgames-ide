@@ -104,7 +104,7 @@ const TopBar = ({
   </head>
   <body>
     <iframe src="${
-      '/player.html?scenedata=' + encodeURIComponent(JSON.stringify(sceneData))
+      '/hns/webgames-ide/player.html?scenedata=' + encodeURIComponent(JSON.stringify(sceneData))
     }" />
   </body>
 </html>`,
