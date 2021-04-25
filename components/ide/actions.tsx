@@ -67,6 +67,14 @@ const Actions = ({
     []
   );
 
+  const handleChangeKeyName = useCallback(
+    (i: number, action: Action, ev: React.ChangeEvent<HTMLInputElement>) => {
+      action.keyName = ev.target.value;
+      onChangeAction(i, action);
+    },
+    []
+  );
+
   const handleChangeOtherTag = useCallback(
     (i: number, action: Action, ev: React.ChangeEvent<HTMLSelectElement>) => {
       action.otherTag = ev.target.value;
@@ -105,6 +113,13 @@ const Actions = ({
                 <option value={ActionType.Collides}>Collides</option>
                 <option value={ActionType.Overlaps}>Overlaps</option>
                 <option value={ActionType.On}>On</option>
+                <option value={ActionType.KeyDown}>KeyDown</option>
+                <option value={ActionType.KeyPress}>KeyPress</option>
+                <option value={ActionType.KeyRelease}>KeyRelease</option>
+                <option value={ActionType.CharInput}>CharInput</option>
+                <option value={ActionType.MouseDown}>MouseDown</option>
+                <option value={ActionType.MouseClick}>MouseClick</option>
+                <option value={ActionType.MouseRelease}>MouseRelease</option>
               </select>
               {action.type == ActionType.On ? (
                 <input
@@ -115,25 +130,42 @@ const Actions = ({
                   onChange={handleChangeEventName.bind(null, i, action)}
                 />
               ) : null}
-              <select
-                className={
-                  (action.type == ActionType.Action ||
-                  action.type == ActionType.Render
-                    ? 'w-32'
-                    : 'w-16') + ' flex-none ml-2'
-                }
-                value={action.tag}
-                onChange={handleChangeTag.bind(null, i, action)}
-              >
-                <option value="">None</option>
-                {tags.map((tag: string) => {
-                  return (
-                    <option key={tag} value={tag}>
-                      {tag}
-                    </option>
-                  );
-                })}
-              </select>
+              {action.type == ActionType.Action ||
+              action.type == ActionType.Render ||
+              action.type == ActionType.Collides ||
+              action.type == ActionType.Overlaps ||
+              action.type == ActionType.On ? (
+                <select
+                  className={
+                    (action.type == ActionType.Action ||
+                    action.type == ActionType.Render
+                      ? 'w-32'
+                      : 'w-16') + ' flex-none ml-2'
+                  }
+                  value={action.tag}
+                  onChange={handleChangeTag.bind(null, i, action)}
+                >
+                  <option value="">None</option>
+                  {tags.map((tag: string) => {
+                    return (
+                      <option key={tag} value={tag}>
+                        {tag}
+                      </option>
+                    );
+                  })}
+                </select>
+              ) : null}
+              {action.type == ActionType.KeyDown ||
+              action.type == ActionType.KeyPress ||
+              action.type == ActionType.KeyRelease ? (
+                <input
+                  className="flex-none ml-2 w-28"
+                  type="text"
+                  placeholder="key"
+                  value={action.eventName}
+                  onChange={handleChangeKeyName.bind(null, i, action)}
+                />
+              ) : null}
               {action.type == ActionType.Collides ||
               action.type == ActionType.Overlaps ? (
                 <select

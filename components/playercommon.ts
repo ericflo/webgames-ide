@@ -147,6 +147,27 @@ function setupAction(k: any, action: Action) {
     case ActionType.On:
       k.overlaps(action.eventName, action.tag, act);
       break;
+    case ActionType.KeyDown:
+      k.keyDown(action.keyName, act);
+      break;
+    case ActionType.KeyPress:
+      k.keyPress(action.keyName, act);
+      break;
+    case ActionType.KeyRelease:
+      k.keyRelease(action.keyName, act);
+      break;
+    case ActionType.CharInput:
+      k.charInput(act);
+      break;
+    case ActionType.MouseDown:
+      k.mouseDown(act);
+      break;
+    case ActionType.MouseClick:
+      k.mouseClick(act);
+      break;
+    case ActionType.MouseRelease:
+      k.mouseRelease(act);
+      break;
   }
 }
 

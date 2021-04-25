@@ -206,6 +206,13 @@ export enum ActionType {
   Collides = 'collides',
   Overlaps = 'overlaps',
   On = 'on',
+  KeyDown = 'keyDown',
+  KeyPress = 'keyPress',
+  KeyRelease = 'keyRelease',
+  CharInput = 'charInput',
+  MouseDown = 'mouseDown',
+  MouseClick = 'mouseClick',
+  MouseRelease = 'mouseRelease',
 }
 
 export type Action = {
@@ -213,6 +220,7 @@ export type Action = {
   tag?: string;
   otherTag?: string;
   eventName?: string;
+  keyName?: string;
   code: string;
 };
 

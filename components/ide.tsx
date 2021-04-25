@@ -394,6 +394,21 @@ const IDE = () => {
   //${editingAction.tag || "k.get('tagname')"}.move(k.vec2(0, 10));
 }`;
         break;
+      case ActionType.KeyDown:
+      case ActionType.KeyPress:
+      case ActionType.KeyRelease:
+      case ActionType.MouseDown:
+      case ActionType.MouseClick:
+      case ActionType.MouseRelease:
+        codeValue = `(k) => {
+  //k.get('tagname').move(k.vec2(0, 10));
+}`;
+        break;
+      case ActionType.CharInput:
+        codeValue = `(k, ch) => {
+  //console.log('Typed:', ch);
+}`;
+        break;
     }
   }
 
