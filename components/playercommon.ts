@@ -170,7 +170,7 @@ export function setup(k: any, sceneData: SceneData, isPlaying: boolean) {
       if (scene.name == currentSceneName) {
         k.go(scene.name);
         if (isPlaying) {
-          scene.actions.forEach(setupAction.bind(null, k));
+          (scene.actions || []).forEach(setupAction.bind(null, k));
         }
       }
     });
