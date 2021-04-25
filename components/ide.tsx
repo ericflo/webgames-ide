@@ -22,6 +22,7 @@ import SceneData, {
   ComponentType,
   ActionType,
   makeDefaultSceneData,
+  GameObject,
 } from './data';
 import { useAPI } from './api';
 import TopBar from './ide/topbar';
@@ -66,15 +67,33 @@ const IDE = () => {
     }
   }, [api, currentObjectIndex, layerIndex]);
 
+  const handleObjectNameChange = useCallback(
+    (name: string) => {
+      api.setCurrentSceneData(
+        (sceneData: SceneData): SceneData => {
+          const [scene, _] = findScene(sceneData, sceneData.currentSceneName);
+          const objs = scene.layers[layerIndex].gameObjects;
+          const obj = objs[currentObjectIndex];
+          obj.name = name;
+          return sceneData;
+        }
+      );
+    },
+    [layerIndex, currentObjectIndex]
+  );
+
   const handleAddObject = useCallback(() => {
+    const tmp = { nextLength: 0 };
     api.setCurrentSceneData((sceneData: SceneData) => {
       const [scene, _] = findScene(sceneData, sceneData.currentSceneName);
-      scene.layers[layerIndex].gameObjects.push(
-        JSON.parse(JSON.stringify(DEFAULT_GAME_OBJECT))
-      );
+      const obj: GameObject = JSON.parse(JSON.stringify(DEFAULT_GAME_OBJECT));
+      const objs = scene.layers[layerIndex].gameObjects;
+      objs.push(obj);
+      obj.name += ' ' + objs.length;
+      tmp.nextLength = objs.length;
       return sceneData;
     });
-    setCurrentObjectIndex(gameObjects.length - 1);
+    setCurrentObjectIndex(tmp.nextLength - 1);
     //api.saveCurrentSceneData('handleAddObject');
     setHasChanges(true);
   }, [scene, layerIndex, gameObjects]);
@@ -535,8 +554,8 @@ const IDE = () => {
                 }
                 gameObject={currentObject}
                 assets={api.currentSceneData.assets || []}
-                title={'Game Object ' + (currentObjectIndex + 1)}
                 onChangeComponent={handleChangeComponent}
+                onNameChange={handleObjectNameChange}
               />
             ) : null}
             {editingActionIndex >= 0 ? (

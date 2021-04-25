@@ -147,15 +147,15 @@ const Objects = ({
           const isSelected = i == currentObjectIndex;
           return (
             <li
-              key={i}
+              key={'' + i + '.' + gameObject.name}
               onClick={handleClick.bind(null, gameObject, i)}
               className={
                 'px-4 py-2 cursor-pointer select-none ' +
                 (isSelected ? 'bg-blue-200' : '')
               }
             >
-              <FontAwesomeIcon icon={faChevronCircleRight} /> Game Object{' '}
-              {i + 1}
+              <FontAwesomeIcon className="mr-1" icon={faChevronCircleRight} />
+              {gameObject.name}
               {isSelected ? (
                 <div className="float-right flex">
                   <div className="mr-2" onClick={handleUpClick.bind(null, i)}>

@@ -174,6 +174,7 @@ export type Component =
   | ComponentTag;
 
 export type GameObject = {
+  name: string;
   components: Component[];
 };
 
@@ -231,6 +232,7 @@ export type SceneData = {
 };
 
 export const DEFAULT_GAME_OBJECT: GameObject = {
+  name: 'Default Game Object',
   components: [
     { type: ComponentType.Pos, x: 60, y: 60 },
     { type: ComponentType.Rect, w: 40, h: 40 },

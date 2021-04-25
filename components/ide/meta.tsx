@@ -18,18 +18,26 @@ type Props = {
   className?: string;
   gameObject: GameObject;
   assets: Asset[];
-  title: string;
   onChangeComponent: (i: number, component: Component) => void;
+  onNameChange: (name: string) => void;
 };
 
 const Meta = ({
   className,
   gameObject,
   assets,
-  title,
   onChangeComponent,
+  onNameChange,
 }: Props) => {
   const [addComponentModalActive, setAddComponentModalActive] = useState(false);
+
+  const handleNameChange = useCallback(
+    (ev: React.ChangeEvent<HTMLInputElement>) => {
+      ev.preventDefault();
+      onNameChange(ev.target.value);
+    },
+    [onNameChange]
+  );
 
   const handleAddComponentClick = useCallback((ev: React.MouseEvent) => {
     ev.preventDefault();
@@ -113,7 +121,12 @@ const Meta = ({
       ) : null}
       <h3 className="flex-none mx-4 my-2 font-light text-black text-opacity-70 select-none">
         Meta
-        <span className="float-right">{title}</span>
+        <input
+          className="float-right w-full rounded"
+          type="text"
+          value={gameObject.name}
+          onChange={handleNameChange}
+        />
       </h3>
       <div className="flex-grow overflow-scroll h-0">
         {gameObject.components.map((component: Component, i: number) => {
