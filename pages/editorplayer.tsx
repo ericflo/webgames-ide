@@ -78,7 +78,7 @@ const Player = () => {
       <Head>
         <title>WebGame</title>
         <link rel="icon" href="/favicon.ico" />
-        <script src="https://kaboomjs.com/lib/0.4.0/kaboom.js"></script>
+        <script src="https://kaboomjs.com/lib/0.4.1/kaboom.js"></script>
       </Head>
     </>
   );
