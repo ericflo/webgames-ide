@@ -1,9 +1,11 @@
 import React, { useState, useCallback } from 'react';
 import LayerChooser from './layerchooser';
-import { Scene, GameObject, Layer, Component } from '../data';
+import SceneData, { Scene, GameObject, Layer, Component } from '../data';
 import { API } from '../api';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
+  faArrowDown,
+  faArrowUp,
   faChevronCircleRight,
   faPlusSquare,
   faTrash,
@@ -79,6 +81,52 @@ const Objects = ({
     },
     [currentObjectIndex]
   );
+  const handleUpClick = useCallback(
+    (i: number, ev: React.MouseEvent) => {
+      ev.preventDefault();
+      const nextIndex = Math.max(i - 1, 0);
+      if (nextIndex == i) {
+        return;
+      }
+      api.setCurrentSceneData(
+        (sceneData: SceneData): SceneData => {
+          const scn = sceneData.scenes.find((s: Scene): boolean => {
+            return s.name == sceneData.currentSceneName;
+          });
+          const objs = scn.layers[layerIndex].gameObjects || [];
+          const tmp = objs[nextIndex];
+          objs[nextIndex] = objs[i];
+          objs[i] = tmp;
+          return sceneData;
+        }
+      );
+      setCurrentObjectIndex(nextIndex);
+    },
+    [api, layerIndex]
+  );
+  const handleDownClick = useCallback(
+    (i: number, ev: React.MouseEvent) => {
+      ev.preventDefault();
+      const nextIndex = Math.min(i + 1, gameObjects.length - 1);
+      if (nextIndex == i) {
+        return;
+      }
+      api.setCurrentSceneData(
+        (sceneData: SceneData): SceneData => {
+          const scn = sceneData.scenes.find((s: Scene): boolean => {
+            return s.name == sceneData.currentSceneName;
+          });
+          const objs = scn.layers[layerIndex].gameObjects || [];
+          const tmp = objs[nextIndex];
+          objs[nextIndex] = objs[i];
+          objs[i] = tmp;
+          return sceneData;
+        }
+      );
+      setCurrentObjectIndex(nextIndex);
+    },
+    [api, gameObjects]
+  );
   return (
     <div className={className + ' flex flex-col relative'}>
       <div className="flex">
@@ -109,12 +157,17 @@ const Objects = ({
               <FontAwesomeIcon icon={faChevronCircleRight} /> Game Object{' '}
               {i + 1}
               {isSelected ? (
-                <span
-                  className="float-right"
-                  onClick={handleDeleteClick.bind(null, i)}
-                >
-                  <FontAwesomeIcon icon={faTrash} />
-                </span>
+                <div className="float-right flex">
+                  <div className="mr-2" onClick={handleUpClick.bind(null, i)}>
+                    <FontAwesomeIcon icon={faArrowUp} />
+                  </div>
+                  <div className="mr-2" onClick={handleDownClick.bind(null, i)}>
+                    <FontAwesomeIcon icon={faArrowDown} />
+                  </div>
+                  <div onClick={handleDeleteClick.bind(null, i)}>
+                    <FontAwesomeIcon icon={faTrash} />
+                  </div>
+                </div>
               ) : null}
             </li>
           );

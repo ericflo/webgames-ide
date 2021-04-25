@@ -4,9 +4,8 @@ An in-browser IDE to build Kaboom.js-based webgames that can take advantage of t
 
 ## TODO
 
-* Add support for per-object actions
 * Game objects should have names
-* Add the ability to drag/drop Game Objects to change their order
+* Add support for per-object actions
 * Add the ability to import a deployed Skynet project
 * Fix the editor and player so that it works properly on browser resize
 * Allow selection of game objects by clicking the editor window
@@ -25,3 +24,4 @@ An in-browser IDE to build Kaboom.js-based webgames that can take advantage of t
 * Auto-deploy to Skynet
 * Add the ability to deploy a project to Skynet
 * Add support for more events like keyDown
+* Add the ability to change the order of Game Objects
