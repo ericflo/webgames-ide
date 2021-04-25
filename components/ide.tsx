@@ -78,6 +78,7 @@ const IDE = () => {
           return sceneData;
         }
       );
+      setHasChanges(true);
     },
     [layerIndex, currentObjectIndex]
   );
