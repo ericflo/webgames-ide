@@ -67,7 +67,13 @@ const IDE = () => {
   }, [api, currentObjectIndex, layerIndex]);
 
   const handleAddObject = useCallback(() => {
-    gameObjects.push(JSON.parse(JSON.stringify(DEFAULT_GAME_OBJECT)));
+    api.setCurrentSceneData((sceneData: SceneData) => {
+      const [scene, _] = findScene(sceneData, sceneData.currentSceneName);
+      scene.layers[layerIndex].gameObjects.push(
+        JSON.parse(JSON.stringify(DEFAULT_GAME_OBJECT))
+      );
+      return sceneData;
+    });
     setCurrentObjectIndex(gameObjects.length - 1);
     //api.saveCurrentSceneData('handleAddObject');
     setHasChanges(true);
