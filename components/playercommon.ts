@@ -86,7 +86,7 @@ function setupScene(k: any, scene: Scene, isPlaying: boolean) {
               case ComponentType.Scale:
                 return k.scale(component.x, component.y);
               case ComponentType.Rotate:
-                return k.scale(component.angle);
+                return k.rotate(component.angle);
               case ComponentType.Color:
                 return k.color(
                   component.r,
