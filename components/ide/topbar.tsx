@@ -19,6 +19,7 @@ type Props = {
   isLoading: boolean;
   hasChanges: boolean;
   hasCodeChanges: boolean;
+  currentFilename: string;
   onDoneEditingAction: () => void;
   onPlayClick: () => void;
   onReloadClick: () => void;
@@ -46,6 +47,7 @@ const TopBar = ({
   isLoading,
   hasChanges,
   hasCodeChanges,
+  currentFilename,
   onDoneEditingAction,
   onPlayClick,
   onReloadClick,
@@ -111,6 +113,7 @@ const TopBar = ({
                 spin={isLoading}
               />
             </a>
+            <span className="cursor-default">{currentFilename}</span>
           </div>
           {isLoggedIn ? null : (
             <a

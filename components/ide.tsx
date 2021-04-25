@@ -476,6 +476,7 @@ const IDE = () => {
             isLoading={api.loading}
             hasChanges={hasChanges}
             hasCodeChanges={hasCodeChanges}
+            currentFilename={api.currentFilename}
             onDoneEditingAction={handleEditAction.bind(null, 0)}
             onPlayClick={handlePlayClick}
             onReloadClick={() => setReloadVersion((v) => v + 1)}
