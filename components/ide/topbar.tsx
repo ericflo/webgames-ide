@@ -105,7 +105,8 @@ const TopBar = ({
   </head>
   <body>
     <iframe src="${
-      '/hns/webgames-ide/player.html?scenedata=' + encodeURIComponent(JSON.stringify(sceneData))
+      '/hns/webgames-ide/player.html?scenedata=' +
+      encodeURIComponent(JSON.stringify(sceneData))
     }" />
   </body>
 </html>`,
@@ -118,7 +119,7 @@ const TopBar = ({
         .then((resp) => {
           win.location.href = resp.skylink.replace(
             'sia:',
-            isProd && isHandshake ? '/' : 'https://siasky.net/'
+            /* isProd && isHandshake ? '/' : */ 'https://siasky.net/'
           );
         });
     },
