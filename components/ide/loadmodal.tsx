@@ -27,6 +27,24 @@ const LoadModal = ({
     [onClose]
   );
 
+  const handleExampleClick = useCallback(
+    (exampleUrl: string, ev: React.MouseEvent) => {
+      ev.preventDefault();
+      fetch(exampleUrl)
+        .then((r) => r.json())
+        .then((sceneData: SceneData) => {
+          api.currentFilename = '';
+          api.setCurrentSceneData(
+            (_: SceneData): SceneData => {
+              return sceneData;
+            }
+          );
+          onClose();
+        });
+    },
+    []
+  );
+
   return (
     <div
       className={
@@ -118,6 +136,14 @@ const LoadModal = ({
               </div>
             );
           })}
+          <div className="my-6 mx-6 text-2xl">
+            <span
+              className="select-none text-green-600 cursor-pointer"
+              onClick={handleExampleClick.bind(null, '/rollerball.json')}
+            >
+              EXAMPLE: rollerball.json
+            </span>
+          </div>
         </div>
       </div>
 
