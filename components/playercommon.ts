@@ -138,6 +138,10 @@ function setupScene(k: any, scene: Scene, isPlaying: boolean) {
           })
         );
       });
+
+    if (isPlaying) {
+      (scene.actions || []).forEach(setupAction.bind(null, k));
+    }
   });
 }
 
@@ -210,9 +214,6 @@ export function setup(k: any, sceneData: SceneData, isPlaying: boolean) {
       setupScene(k, scene, isPlaying);
       if (scene.name == currentSceneName) {
         k.go(scene.name);
-        if (isPlaying) {
-          (scene.actions || []).forEach(setupAction.bind(null, k));
-        }
       }
     });
   });
