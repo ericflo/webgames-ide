@@ -4,6 +4,10 @@ An [in-browser IDE](https://webgames-ide.hns.siasky.net/) to build Kaboom.js-bas
 
 Example Game: [Roller Ball](https://siasky.net/EADnbyTecWqMQHGHV4kNGmx1r_45So4twRTu8gCWMTiGLg/)
 
+## Video Demo
+
+[![Walkthrough Video](https://i.imgur.com/8LikgHS.png)](https://youtu.be/g6jRrBtVzI8)
+
 ## Integration with Content Record DAC
 
 When users save a project for the first time:
