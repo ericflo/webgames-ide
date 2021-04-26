@@ -17,11 +17,12 @@ const Player = () => {
     newK.start('tmpscene');
     setK(newK);
 
-    const params = new URLSearchParams(window.location.search);
-    // TODO: Why is this delay needed?
-    setTimeout(() => {
-      setSceneData(JSON.parse(decodeURIComponent(params.get('scenedata'))));
-    }, 0);
+    window.addEventListener('message', (ev: MessageEvent) => {
+      if (ev.data.type === 'state.sceneData') {
+        setSceneData(ev.data.data);
+      }
+    });
+    window.top.postMessage({ type: 'request.state.sceneData' }, '*');
   }, []);
 
   useEffect(setup.bind(null, k, sceneData, true), [k, sceneData]);

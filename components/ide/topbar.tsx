@@ -86,7 +86,7 @@ const TopBar = ({
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <style>
-    html, body, canvas, iframe {
+    html, body, canvas, #player-iframe {
       padding: 0;
       margin: 0;
       overflow: hidden;
@@ -104,10 +104,18 @@ const TopBar = ({
     </style>
   </head>
   <body>
-    <iframe src="${
-      '/hns/webgames-ide/player.html?scenedata=' +
-      encodeURIComponent(JSON.stringify(sceneData))
-    }" />
+    <iframe id="player-iframe" src="/hns/webgames-ide/player.html" />
+    <script type="application/javascript">
+      var iframe = document.getElementsById('player-iframe');
+      window.addEventListener('message', (ev) => {
+        if (ev.data.type === 'request.state.sceneData') {
+          iframe.contentWindow.postMessage(
+            { type: 'state.sceneData', data: ${JSON.stringify(sceneData)} },
+            '*'
+          );
+        }
+      });
+    </script>
   </body>
 </html>`,
               ],
