@@ -162,7 +162,7 @@ const Actions = ({
                   className="flex-none ml-2 w-28"
                   type="text"
                   placeholder="key"
-                  value={action.eventName}
+                  value={action.keyName}
                   onChange={handleChangeKeyName.bind(null, i, action)}
                 />
               ) : null}
