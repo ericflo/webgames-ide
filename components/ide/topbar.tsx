@@ -107,8 +107,8 @@ const TopBar = ({
     <script type="application/javascript">
       window.addEventListener('message', (ev) => {
         if (ev.data.type === 'request.state.sceneData') {
-          document.getElementsById('player-iframe').contentWindow.postMessage(
-            { type: 'state.sceneData', data: '${btoa(
+          document.getElementById('player-iframe').contentWindow.postMessage(
+            { type: 'state.sceneData', data: '${window.btoa(
               JSON.stringify(sceneData)
             )}' },
             '*'

@@ -19,7 +19,7 @@ const Player = () => {
 
     window.addEventListener('message', (ev: MessageEvent) => {
       if (ev.data.type === 'state.sceneData') {
-        setSceneData(JSON.parse(atob(ev.data.data)));
+        setSceneData(JSON.parse(window.atob(ev.data.data)));
       }
     });
     window.top.postMessage({ type: 'request.state.sceneData' }, '*');
