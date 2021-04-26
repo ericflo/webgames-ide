@@ -1,6 +1,6 @@
-# Webgames IDE
+# [Webgames IDE](https://webgames-ide.hns.siasky.net/)
 
-An in-browser IDE to build Kaboom.js-based webgames that can take advantage of the Skynet data platform.
+An [in-browser IDE](https://webgames-ide.hns.siasky.net/) to build Kaboom.js-based webgames that can take advantage of the Skynet data platform.
 
 Example Game: [Roller Ball](https://siasky.net/EADnbyTecWqMQHGHV4kNGmx1r_45So4twRTu8gCWMTiGLg/)
 
