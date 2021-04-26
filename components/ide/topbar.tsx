@@ -104,18 +104,19 @@ const TopBar = ({
     </style>
   </head>
   <body>
-    <iframe id="player-iframe" src="/hns/webgames-ide/player.html" />
     <script type="application/javascript">
-      var iframe = document.getElementsById('player-iframe');
       window.addEventListener('message', (ev) => {
         if (ev.data.type === 'request.state.sceneData') {
-          iframe.contentWindow.postMessage(
-            { type: 'state.sceneData', data: ${JSON.stringify(sceneData)} },
+          document.getElementsById('player-iframe').contentWindow.postMessage(
+            { type: 'state.sceneData', data: '${encodeURIComponent(
+              JSON.stringify(sceneData)
+            )}' },
             '*'
           );
         }
       });
     </script>
+    <iframe id="player-iframe" src="/hns/webgames-ide/player.html" />
   </body>
 </html>`,
               ],
