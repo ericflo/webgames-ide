@@ -286,12 +286,16 @@ export class API {
     } else {
       this.saving = true;
 
+      // Make sure we have a clean copy and harcode saved scene name to 'main'
+      const sceneData = JSON.parse(JSON.stringify(this.currentSceneData));
+      sceneData.currentSceneName = 'main';
+
       console.log(
         `Saving scene data [${callsite}] to ${this.currentFilename}...`
       );
       const uri = `${DATA_DOMAIN}/games/${this.currentFilename}`;
       const prev = await this.mySky.getJSON(uri);
-      const curr = await this.mySky.setJSON(uri, this.currentSceneData);
+      const curr = await this.mySky.setJSON(uri, sceneData);
       console.log('Saved scene data');
 
       const metadata = { type: 'SavedGame', uri: uri };
