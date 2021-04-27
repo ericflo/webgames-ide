@@ -196,7 +196,8 @@ function setupAction(k: any, action: Action) {
 }
 
 export function create(): any {
-  return (window as any).kaboom({ fullscreen: true, scale: 1 });
+  const canvas = document.querySelectorAll('canvas.game')[0];
+  return (window as any).kaboom({ scale: 1, fullscreen: true, canvas });
 }
 
 export function setup(k: any, sceneData: SceneData, isPlaying: boolean) {

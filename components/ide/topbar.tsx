@@ -31,6 +31,7 @@ type Props = {
   onReloadClick: () => void;
   onSaveClick: () => void;
   onLoginClick: () => void;
+  onLogoutClick: () => void;
   onNewClick: () => void;
   onLoadClick: () => void;
 };
@@ -61,6 +62,7 @@ const TopBar = ({
   onReloadClick,
   onSaveClick,
   onLoginClick,
+  onLogoutClick,
   onNewClick,
   onLoadClick,
 }: Props) => {
@@ -69,6 +71,7 @@ const TopBar = ({
   const handleReloadClick = usePreventDefault(onReloadClick);
   const handleSaveClick = usePreventDefault(onSaveClick);
   const handleLoginClick = usePreventDefault(onLoginClick);
+  const handleLogoutClick = usePreventDefault(onLogoutClick);
   const handleNewClick = usePreventDefault(onNewClick);
   const handleLoadClick = usePreventDefault(onLoadClick);
   const handleExportClick = useCallback(
@@ -115,8 +118,15 @@ const TopBar = ({
           );
         }
       });
+      var playerIframe = document.createElement('iframe');
+      document.body.appendChild(playerIframe);
+      playerIframe.setAttribute('id', 'player-iframe');
+      playerIframe.setAttribute('src', '${
+        isProd
+          ? 'https://webgames-ide.hns.siasky.net/player.html'
+          : 'http://localhost:3000/player'
+      }?referrer=' + encodeURIComponent(document.location.href));
     </script>
-    <iframe id="player-iframe" src="/hns/webgames-ide/player.html" />
   </body>
 </html>`,
               ],
@@ -245,7 +255,7 @@ const TopBar = ({
           {isLoggedIn ? (
             <a
               href="#"
-              onClick={handleLoginClick}
+              onClick={handleLogoutClick}
               className={
                 isPlaying
                   ? ' opacity-25 cursor-default pointer-events-none'
