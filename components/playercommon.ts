@@ -194,7 +194,10 @@ function setupAction(k: any, action: Action) {
   }
 }
 
-function addExt(k: any, setLatestScore: React.Dispatch<React.SetStateAction<number>>) {
+function addExt(
+  k: any,
+  setLatestScore: React.Dispatch<React.SetStateAction<number>>
+) {
   k.ext = {
     data: {},
     submitScore: (score: number) => {
@@ -203,7 +206,9 @@ function addExt(k: any, setLatestScore: React.Dispatch<React.SetStateAction<numb
   };
 }
 
-export function create(setLatestScore: React.Dispatch<React.SetStateAction<number>>): any {
+export function create(
+  setLatestScore: React.Dispatch<React.SetStateAction<number>>
+): any {
   const canvas = document.querySelectorAll('canvas.game')[0];
   const k = (window as any).kaboom({ scale: 1, fullscreen: true, canvas });
   addExt(k, setLatestScore);

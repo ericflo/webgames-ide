@@ -69,23 +69,28 @@ const Player = () => {
     if (!skylink) {
       return;
     }
-    api.mySky.getJSON(`${DATA_DOMAIN}/scores.json`)
-      .then((resp) => {
-        const scores: {score: number, skylink: string, ts: number}[] = resp && resp.data && resp.data.scores ? resp.data.scores as any[] : [];
-        scores.push({score: latestScore, skylink, ts: (new Date()).getTime()});
-        console.log('Score count: ', scores.length);
-        return api.mySky.setJSON(`${DATA_DOMAIN}/scores.json`, {scores});
-      });
+    api.mySky.getJSON(`${DATA_DOMAIN}/scores.json`).then((resp) => {
+      const scores: { score: number; skylink: string; ts: number }[] =
+        resp && resp.data && resp.data.scores
+          ? (resp.data.scores as any[])
+          : [];
+      scores.push({ score: latestScore, skylink, ts: new Date().getTime() });
+      console.log('Score count: ', scores.length);
+      return api.mySky.setJSON(`${DATA_DOMAIN}/scores.json`, { scores });
+    });
     console.log(`Recording score interaction (${latestScore})...`);
     api.contentRecord
-      .recordInteraction({ skylink, metadata: { action: 'score', score: latestScore } })
+      .recordInteraction({
+        skylink,
+        metadata: { action: 'score', score: latestScore },
+      })
       .then((dacResp) => {
         console.log('Recorded score interaction', dacResp);
       })
       .catch((err) => {
         console.log('Could not record score interaction:', err);
       });
-  }, [loggedIn, api, latestScore])
+  }, [loggedIn, api, latestScore]);
 
   useEffect(setup.bind(null, k, sceneData, true), [k, sceneData]);
 
@@ -156,7 +161,7 @@ function getSkylinkReferrer(): string {
     .split('/')
     .reverse()
     .filter((s) => s && s.length > 0)[0];
-  return skylink
+  return skylink;
 }
 
 export default Player;

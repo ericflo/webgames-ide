@@ -43,9 +43,11 @@ const Player = () => {
 
   useEffect(() => {
     if (latestScore >= 0) {
-      console.log(`This is where we would record a score interaction (${latestScore}).`);
+      console.log(
+        `This is where we would record a score interaction (${latestScore}).`
+      );
     }
-  }, [latestScore])
+  }, [latestScore]);
 
   useEffect(setup.bind(null, k, sceneData, isPlaying), [
     k,
