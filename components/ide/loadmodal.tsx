@@ -111,7 +111,7 @@ const LoadModal = ({
             //);
 
             return (
-              <div key={filename} className="my-6 mx-6 text-gray-600 text-2xl">
+              <div key={filename} className="my-4 mx-6 text-gray-600 text-l">
                 <span
                   className={
                     'select-none ' +
@@ -136,12 +136,20 @@ const LoadModal = ({
               </div>
             );
           })}
-          <div className="my-6 mx-6 text-2xl">
+          <div className="my-4 mx-6 text-l">
             <span
               className="select-none text-green-600 cursor-pointer"
               onClick={handleExampleClick.bind(null, '/rollerball.json')}
             >
-              EXAMPLE: rollerball.json
+              EXAMPLE: RollerBall.json
+            </span>
+          </div>
+          <div className="my-4 mx-6 text-l">
+            <span
+              className="select-none text-green-600 cursor-pointer"
+              onClick={handleExampleClick.bind(null, '/spaceshooter.json')}
+            >
+              EXAMPLE: SpaceShooter.json
             </span>
           </div>
         </div>
