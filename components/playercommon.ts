@@ -169,7 +169,7 @@ function setupAction(k: any, action: Action) {
       k.overlaps(action.tag, action.otherTag, act);
       break;
     case ActionType.On:
-      k.overlaps(action.eventName, action.tag, act);
+      k.on(action.eventName, action.tag, act);
       break;
     case ActionType.KeyDown:
       k.keyDown(action.keyName, act);
