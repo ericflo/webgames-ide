@@ -73,6 +73,9 @@ function setupLayers(k: any, sceneData: SceneData) {
 function setupScene(k: any, scene: Scene, isPlaying: boolean) {
   let skipIndex = 0;
   k.scene(scene.name, () => {
+    if (isPlaying) {
+      (scene.actions || []).forEach(setupAction.bind(null, k));
+    }
     scene.layers
       .flatMap((layer: Layer): GameObject[] => {
         return layer.gameObjects;
@@ -138,10 +141,6 @@ function setupScene(k: any, scene: Scene, isPlaying: boolean) {
           })
         );
       });
-
-    if (isPlaying) {
-      (scene.actions || []).forEach(setupAction.bind(null, k));
-    }
   });
 }
 
