@@ -194,9 +194,20 @@ function setupAction(k: any, action: Action) {
   }
 }
 
-export function create(): any {
+function addExt(k: any, setLatestScore: React.Dispatch<React.SetStateAction<number>>) {
+  k.ext = {
+    data: {},
+    submitScore: (score: number) => {
+      setLatestScore(score);
+    },
+  };
+}
+
+export function create(setLatestScore: React.Dispatch<React.SetStateAction<number>>): any {
   const canvas = document.querySelectorAll('canvas.game')[0];
-  return (window as any).kaboom({ scale: 1, fullscreen: true, canvas });
+  const k = (window as any).kaboom({ scale: 1, fullscreen: true, canvas });
+  addExt(k, setLatestScore);
+  return k;
 }
 
 export function setup(k: any, sceneData: SceneData, isPlaying: boolean) {

@@ -4,13 +4,14 @@ import Head from 'next/head';
 
 import SceneData from '../components/data';
 import { create, setup } from '../components/playercommon';
-import { useAPI } from '../components/api';
+import { DATA_DOMAIN, useAPI } from '../components/api';
 import { faTimes, faTimesCircle } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 const Player = () => {
   const [barShowing, setBarShowing] = useState(true);
   const [sceneData, setSceneData] = useState(null as SceneData);
+  const [latestScore, setLatestScore] = useState(-1);
   const [k, setK] = useState(null);
   const api = useAPI();
   const loggedIn = api.loggedIn;
@@ -45,7 +46,7 @@ const Player = () => {
   useEffect(() => {
     document.body.classList.add('overflow-hidden');
 
-    const newK = create();
+    const newK = create(setLatestScore);
     newK.scene('tmpscene', () => {});
     newK.start('tmpscene');
     setK(newK);
@@ -53,10 +54,38 @@ const Player = () => {
     window.addEventListener('message', (ev: MessageEvent) => {
       if (ev.data.type === 'state.sceneData') {
         setSceneData(JSON.parse(window.atob(ev.data.data)));
+      } else if (ev.data.type === 'state.submitScore' && ev.data.score) {
+        setLatestScore(ev.data.score);
       }
     });
     window.top.postMessage({ type: 'request.state.sceneData' }, '*');
   }, []);
+
+  useEffect(() => {
+    if (!loggedIn || !api || latestScore < 0) {
+      return;
+    }
+    const skylink = getSkylinkReferrer();
+    if (!skylink) {
+      return;
+    }
+    api.mySky.getJSON(`${DATA_DOMAIN}/scores.json`)
+      .then((resp) => {
+        const scores: {score: number, skylink: string, ts: number}[] = resp && resp.data && resp.data.scores ? resp.data.scores as any[] : [];
+        scores.push({score: latestScore, skylink, ts: (new Date()).getTime()});
+        console.log('Score count: ', scores.length);
+        return api.mySky.setJSON(`${DATA_DOMAIN}/scores.json`, {scores});
+      });
+    console.log(`Recording score interaction (${latestScore})...`);
+    api.contentRecord
+      .recordInteraction({ skylink, metadata: { action: 'score', score: latestScore } })
+      .then((dacResp) => {
+        console.log('Recorded score interaction', dacResp);
+      })
+      .catch((err) => {
+        console.log('Could not record score interaction:', err);
+      });
+  }, [loggedIn, api, latestScore])
 
   useEffect(setup.bind(null, k, sceneData, true), [k, sceneData]);
 
@@ -64,15 +93,7 @@ const Player = () => {
     if (!loggedIn) {
       return;
     }
-    const params = new URLSearchParams(window.location.search);
-    const referrer = params.get('referrer');
-    if (!referrer || !referrer.startsWith('http')) {
-      return;
-    }
-    const skylink = referrer
-      .split('/')
-      .reverse()
-      .filter((s) => s && s.length > 0)[0];
+    const skylink = getSkylinkReferrer();
     if (!skylink) {
       return;
     }
@@ -124,5 +145,18 @@ const Player = () => {
     </>
   );
 };
+
+function getSkylinkReferrer(): string {
+  const params = new URLSearchParams(window.location.search);
+  const referrer = params.get('referrer');
+  if (!referrer || !referrer.startsWith('http')) {
+    return;
+  }
+  const skylink = referrer
+    .split('/')
+    .reverse()
+    .filter((s) => s && s.length > 0)[0];
+  return skylink
+}
 
 export default Player;

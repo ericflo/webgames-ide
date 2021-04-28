@@ -7,13 +7,14 @@ import { clearAssets, create, setup } from '../components/playercommon';
 
 const Player = () => {
   const [sceneData, setSceneData] = useState(null as SceneData);
+  const [latestScore, setLatestScore] = useState(-1);
   const [k, setK] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
 
   useEffect(() => {
     document.body.classList.add('overflow-hidden');
 
-    const newK = create();
+    const newK = create(setLatestScore);
     newK.scene('tmpscene', () => {});
     newK.start('tmpscene');
     setK(newK);
@@ -32,10 +33,19 @@ const Player = () => {
         setSceneData(ev.data.data);
       } else if (ev.data.type === 'state.isPlaying') {
         setIsPlaying(ev.data.data);
+        if (!ev.data.data) {
+          setLatestScore(-1);
+        }
       }
     });
     window.top.postMessage({ type: 'request.state.sceneData' }, '*');
   }, []);
+
+  useEffect(() => {
+    if (latestScore >= 0) {
+      console.log(`This is where we would record a score interaction (${latestScore}).`);
+    }
+  }, [latestScore])
 
   useEffect(setup.bind(null, k, sceneData, isPlaying), [
     k,
