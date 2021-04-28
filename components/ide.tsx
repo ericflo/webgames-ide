@@ -265,14 +265,6 @@ const IDE = () => {
     [api]
   );
 
-  const handleLogoutClick = useCallback(
-    (ev: React.MouseEvent) => {
-      ev.preventDefault();
-      api.logout();
-    },
-    [api]
-  );
-
   const handleAssetDelete = useCallback(
     (asset: Asset) => {
       api.setCurrentSceneData(
@@ -526,6 +518,7 @@ const IDE = () => {
             onReloadClick={() => setReloadVersion((v) => v + 1)}
             onSaveClick={handleSaveClick}
             onLoginClick={api.login}
+            onLogoutClick={api.logout}
             onNewClick={handleNewClick}
             onLoadClick={handleLoadClick}
           />

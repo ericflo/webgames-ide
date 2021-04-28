@@ -80,6 +80,7 @@ const Player = () => {
         <link rel="icon" href="/favicon.ico" />
         <script src="https://kaboomjs.com/lib/0.4.1/kaboom.js"></script>
       </Head>
+      <canvas className="game w-full h-full" />
     </>
   );
 };
