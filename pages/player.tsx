@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 
 import Head from 'next/head';
 
-import SceneData from '../components/data';
+import SceneData, { GameScore } from '../components/data';
 import { create, setup } from '../components/playercommon';
 import { DATA_DOMAIN, useAPI } from '../components/api';
 import { faTimes, faTimesCircle } from '@fortawesome/free-solid-svg-icons';
@@ -70,7 +70,7 @@ const Player = () => {
       return;
     }
     api.mySky.getJSON(`${DATA_DOMAIN}/scores.json`).then((resp) => {
-      const scores: { score: number; skylink: string; ts: number }[] =
+      const scores: GameScore[] =
         resp && resp.data && resp.data.scores
           ? (resp.data.scores as any[])
           : [];

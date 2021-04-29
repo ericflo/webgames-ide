@@ -231,6 +231,12 @@ export type SceneData = {
   currentSceneName?: string;
 };
 
+export type GameScore = {
+  score: number;
+  skylink: string;
+  ts: number;
+};
+
 export const DEFAULT_GAME_OBJECT: GameObject = {
   name: 'Default Game Object',
   components: [
