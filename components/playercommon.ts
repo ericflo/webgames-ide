@@ -6,10 +6,13 @@ import SceneData, {
   Component,
   ComponentType,
   GameObject,
+  GameScore,
   Layer,
   Scene,
 } from './data';
 import { isProd, isHandshake } from './buildconfig';
+import { MySky } from 'skynet-js';
+import { DATA_DOMAIN } from './api';
 
 const registeredAssets: string[] = [];
 
@@ -199,10 +202,32 @@ function addExt(
   setLatestScore: React.Dispatch<React.SetStateAction<number>>
 ) {
   k.ext = {
+    mySky: null,
+    skylink: '',
     data: {},
     scores: {
       submit: (score: number) => {
         setLatestScore(score);
+      },
+      load: (): Promise<GameScore[]> => {
+        if (!k.ext.mySky || !k.ext.skylink) {
+          console.log('Bailing early', !k.ext.mySky, !k.ext.skylink);
+          return Promise.resolve([]);
+        }
+        return new Promise((resolve, reject) => {
+          (k.ext.mySky as MySky)
+            .getJSON(`${DATA_DOMAIN}/scores.json`)
+            .then((resp) => {
+              const scores: GameScore[] =
+                resp && resp.data && resp.data.scores
+                  ? (resp.data.scores as any[])
+                  : [];
+              resolve(
+                scores.filter((sc) => sc.skylink === (k.ext.skylink as string))
+              );
+            })
+            .catch(reject);
+        });
       },
     },
   };

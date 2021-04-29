@@ -62,6 +62,14 @@ const Player = () => {
   }, []);
 
   useEffect(() => {
+    const skylink = getSkylinkReferrer();
+    if (api && api.mySky && k && skylink) {
+      k.ext.mySky = api.mySky;
+      k.ext.skylink = skylink;
+    }
+  }, [api, k]);
+
+  useEffect(() => {
     if (!loggedIn || !api || latestScore < 0) {
       return;
     }
