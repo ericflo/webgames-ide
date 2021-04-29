@@ -130,9 +130,10 @@ const Objects = ({
   return (
     <div className={className + ' flex flex-col relative'}>
       <div className="flex">
-        <h3 className="flex-none mx-4 font-light text-black text-opacity-70 w-14 self-center select-none">
+        <h3 className="flex-none mx-4 my-2 font-light text-black text-opacity-70 w-14 self-center select-none">
           Objects
         </h3>
+        {/*
         <LayerChooser
           className="flex-none"
           layerNames={scene.layers.map((layer: Layer) => layer.name)}
@@ -141,6 +142,7 @@ const Objects = ({
           onNew={onNewLayer}
           onDelete={onDeleteLayer.bind(null, layerIndex)}
         />
+        */}
       </div>
       <ul className="overflow-y-scroll overflow-x-hide">
         {gameObjects.map((gameObject: GameObject, i: number) => {

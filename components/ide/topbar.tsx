@@ -77,6 +77,8 @@ const TopBar = ({
   const handleExportClick = useCallback(
     (ev: React.MouseEvent) => {
       ev.preventDefault();
+      const sd: SceneData = JSON.parse(JSON.stringify(sceneData));
+      sd.currentSceneName = 'main';
       const win = window.open('about:blank', '_blank');
       api.client
         .uploadDirectory(
@@ -112,7 +114,7 @@ const TopBar = ({
         if (ev.data.type === 'request.state.sceneData') {
           document.getElementById('player-iframe').contentWindow.postMessage(
             { type: 'state.sceneData', data: '${window.btoa(
-              JSON.stringify(sceneData)
+              JSON.stringify(sd)
             )}' },
             '*'
           );

@@ -201,6 +201,7 @@ function addExt(
   k: any,
   setLatestScore: React.Dispatch<React.SetStateAction<number>>
 ) {
+  let latestScore: GameScore = null;
   k.ext = {
     mySky: null,
     skylink: '',
@@ -208,11 +209,15 @@ function addExt(
     scores: {
       submit: (score: number) => {
         setLatestScore(score);
+        latestScore = {
+          skylink: k.ext.skylink,
+          ts: new Date().getTime(),
+          score,
+        };
       },
       load: (): Promise<GameScore[]> => {
         if (!k.ext.mySky || !k.ext.skylink) {
-          console.log('Bailing early', !k.ext.mySky, !k.ext.skylink);
-          return Promise.resolve([]);
+          return Promise.resolve([latestScore]);
         }
         return new Promise((resolve, reject) => {
           (k.ext.mySky as MySky)
@@ -222,6 +227,20 @@ function addExt(
                 resp && resp.data && resp.data.scores
                   ? (resp.data.scores as any[])
                   : [];
+              if (latestScore) {
+                let found = false;
+                scores.forEach((s) => {
+                  if (
+                    s.score == latestScore.score &&
+                    Math.abs(s.ts - latestScore.ts) < 1000
+                  ) {
+                    found = true;
+                  }
+                });
+                if (!found) {
+                  scores.push(latestScore);
+                }
+              }
               resolve(
                 scores.filter((sc) => sc.skylink === (k.ext.skylink as string))
               );
@@ -246,6 +265,7 @@ export function setup(k: any, sceneData: SceneData, isPlaying: boolean) {
   if (!sceneData || !k) {
     return;
   }
+  //console.log(JSON.stringify(sceneData));
 
   k.go('tmpscene');
 
