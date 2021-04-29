@@ -200,8 +200,10 @@ function addExt(
 ) {
   k.ext = {
     data: {},
-    submitScore: (score: number) => {
-      setLatestScore(score);
+    scores: {
+      submit: (score: number) => {
+        setLatestScore(score);
+      },
     },
   };
 }
