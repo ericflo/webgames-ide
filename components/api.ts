@@ -4,7 +4,7 @@ import { MySky, SkynetClient } from 'skynet-js';
 import { ContentRecordDAC } from '../vendor/content-record-library';
 
 import { SceneData, makeDefaultSceneData, Scene } from './data';
-import { isProd } from './buildconfig';
+import { isProd, linkPortal } from './buildconfig';
 
 const CLIENT = new SkynetClient(
   isProd ? undefined : /*'https://siasky.net/'*/ 'https://eu-ger-1.siasky.net/'
@@ -298,16 +298,27 @@ export class API {
       const curr = await this.mySky.setJSON(uri, sceneData);
       console.log('Saved scene data');
 
-      const metadata = { type: 'SavedGame', uri: uri };
+      const metadata = {
+        type: 'SavedGame',
+        content: { link: linkPortal + curr.skylink },
+        uri: uri,
+      };
       if (prev?.skylink) {
         console.log(
           'Recording interaction with contentRecordDAC',
           prev.skylink,
           '...'
         );
+        const updateMeta = {
+          action: 'Updated',
+          content: { link: linkPortal + prev.skylink },
+          next: curr.skylink,
+          uri: uri,
+        };
+        console.log('Recording update interaction for previous', updateMeta);
         await this.contentRecord.recordInteraction({
           skylink: prev.skylink,
-          metadata: { action: 'updated', next: curr.skylink, uri: uri },
+          metadata: updateMeta,
         });
         console.log('Done.');
         metadata['prev'] = prev.skylink;
@@ -315,6 +326,7 @@ export class API {
       console.log(
         'Recording new content with contentRecordDAC',
         curr.skylink,
+        metadata,
         '...'
       );
       await this.contentRecord.recordNewContent({

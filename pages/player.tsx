@@ -7,6 +7,7 @@ import { create, setup } from '../components/playercommon';
 import { DATA_DOMAIN, useAPI } from '../components/api';
 import { faTimes, faTimesCircle } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { linkPortal } from '../components/buildconfig';
 
 const Player = () => {
   const [barShowing, setBarShowing] = useState(true);
@@ -87,13 +88,15 @@ const Player = () => {
       return api.mySky.setJSON(`${DATA_DOMAIN}/scores.json`, { scores });
     });
     console.log(`Recording score interaction (${latestScore})...`);
+    const metadata = {
+      action: 'Score',
+      content: { link: linkPortal + skylink },
+      score: latestScore,
+    };
     api.contentRecord
-      .recordInteraction({
-        skylink,
-        metadata: { action: 'score', score: latestScore },
-      })
+      .recordInteraction({ skylink, metadata })
       .then((dacResp) => {
-        console.log('Recorded score interaction', dacResp);
+        console.log('Recorded score interaction', metadata, 'resp:', dacResp);
       })
       .catch((err) => {
         console.log('Could not record score interaction:', err);
@@ -111,10 +114,14 @@ const Player = () => {
       return;
     }
     console.log('Recording play interaction...');
+    const metadata = {
+      action: 'Play',
+      content: { link: linkPortal + skylink },
+    };
     api.contentRecord
-      .recordInteraction({ skylink, metadata: { action: 'play' } })
+      .recordInteraction({ skylink, metadata })
       .then((dacResp) => {
-        console.log('Recorded play interaction', dacResp);
+        console.log('Recorded play interaction', metadata, 'resp:', dacResp);
       })
       .catch((err) => {
         console.log('Could not record play interaction:', err);

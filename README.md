@@ -16,25 +16,25 @@ Example Game 2: [Space Shooter](https://siasky.net/IABCP7N7yCe75SYfEZrWg6hC76H4Z
 
 When users save a project for the first time:
 
-    CREATE 'sia:AAZ0f...' {type: 'SavedGame', uri: 'https://...', prev: null}
+    CREATE 'sia:AAZ0f...' {type: 'SavedGame', content: {link: 'https://siasky.net/AAZ0f...'}, uri: 'https://...', prev: null}
 
 When users save updates to a project:
 
-    UPDATE 'sia:AAZ0f...' {action: 'updated', uri: 'https://...', next: 'sia:AAZ1f...'}
-    CREATE 'sia:AAZ1f...' {type: 'SavedGame', uri: 'https://...', prev: 'sia:AAZ0f...'}
+    INTERACTION 'sia:AAZ0f...' {action: 'Updated', content: {link: 'https://siasky.net/AAZ0f...'}, uri: 'https://...', next: 'sia:AAZ1f...'}
+    CREATE 'sia:AAZ1f...' {type: 'SavedGame', content: {link: 'https://siasky.net/AAZ1f...'}, uri: 'https://...', prev: 'sia:AAZ0f...'}
 
 When users export a game from a project:
 
-    UPDATE 'sia:AAZ1f...' {action: 'exported', uri: 'https://...', to: 'sia:AAZ2f...'}
-    CREATE 'sia:AAZ2f...' {type: 'PublishedGame', uri: 'https://...', prev: 'sia:AAZ1f...'}
+    INTERACTION 'sia:AAZ1f...' {action: 'Exported', content: {link: 'https://siasky.net/AAZ1f...'}, uri: 'https://...', to: 'sia:AAZ2f...'}
+    CREATE 'sia:AAZ2f...' {type: 'PublishedGame', content: {link: 'https://siasky.net/AAZ2f...'}, uri: 'https://...', prev: 'sia:AAZ1f...'}
 
 When a user plays an exported game:
 
-    UPDATE 'sia:AAZ2f...' {action: 'play'}
+    INTERACTION 'sia:AAZ2f...' {action: 'Play', content: {link: 'https://siasky.net/AAZ2f...'}}
 
 When the user publishes a score in an exported game
 
-    UPDATE 'sia:AAZ2f...' {action: 'score', score: 123456}
+    INTERACTION 'sia:AAZ2f...' {action: 'Score', score: 123456, content: {link: 'https://siasky.net/AAZ2f...'}}
 
 
 ## Files maintained which may be useful

@@ -12,7 +12,7 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useCallback } from 'react';
 import { API, DATA_DOMAIN } from '../api';
-import { isHandshake, isProd } from '../buildconfig';
+import { isHandshake, isProd, linkPortal } from '../buildconfig';
 import SceneData from '../data';
 
 type Props = {
@@ -146,28 +146,29 @@ const TopBar = ({
           api.mySky
             .getJSON(uri)
             .then((prev) => {
-              console.log('Recording new content...');
-
+              const metadata = {
+                type: 'PublishedGame',
+                content: { link: resp.skylink },
+                prev: prev?.skylink,
+                uri,
+              };
+              console.log('Recording new content...', metadata);
               api.contentRecord
-                .recordNewContent({
-                  skylink: resp.skylink,
-                  metadata: {
-                    type: 'PublishedGame',
-                    prev: prev?.skylink,
-                    uri: uri,
-                  },
-                })
+                .recordNewContent({ skylink: resp.skylink, metadata })
                 .then((curr) => {
                   console.log('Done recording new content.');
                 });
 
               if (prev?.skylink) {
-                console.log('Recording interaction...');
+                const metadata = {
+                  type: 'Exported',
+                  content: { link: linkPortal + prev.skylink },
+                  to: resp.skylink,
+                  uri: uri,
+                };
+                console.log('Recording interaction...', metadata);
                 api.contentRecord
-                  .recordInteraction({
-                    skylink: prev.skylink,
-                    metadata: { type: 'exported', to: resp.skylink, uri: uri },
-                  })
+                  .recordInteraction({ skylink: prev.skylink, metadata })
                   .then((tmp) => {
                     console.log('Done recording export interaction.');
                   });
@@ -175,10 +176,16 @@ const TopBar = ({
             })
             .catch((err) => {
               console.log('Error getting prev: ', err);
-              console.log('Recording new content...');
+              const metadata = {
+                type: 'PublishedGame',
+                content: { link: linkPortal + resp.skylink },
+                prev: null,
+                uri: uri,
+              };
+              console.log('Recording new content...', metadata);
               api.contentRecord.recordNewContent({
                 skylink: resp.skylink,
-                metadata: { type: 'PublishedGame', prev: null, uri: uri },
+                metadata,
               });
               console.log('Done.');
             });
