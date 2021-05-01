@@ -52,8 +52,8 @@ const LoadModal = ({
         (className || '')
       }
     >
-      <div className="absolute w-1/2 h-2/3 bg-white bg-opacity-100 rounded-xl p-4 z-20 shadow">
-        <h3 className="text-4xl mx-6 my-6 font-bold select-none">
+      <div className="flex flex-col absolute w-1/2 h-2/3 bg-white bg-opacity-100 rounded-xl p-4 z-20 shadow">
+        <h3 className="flex-none text-4xl mx-6 my-6 font-bold select-none">
           Project Browser
           <FontAwesomeIcon
             className="float-right cursor-pointer"
@@ -61,7 +61,7 @@ const LoadModal = ({
             onClick={handleBackgroundClick}
           />
         </h3>
-        <div className="overflow-x-hide overflow-y-scroll">
+        <div className="flex-1 overflow-x-hide overflow-y-scroll">
           {api.gamesList.map((filename: string) => {
             const handleFilenameClick = (ev: React.MouseEvent) => {
               //useCallback(
