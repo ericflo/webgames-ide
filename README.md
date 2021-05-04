@@ -56,7 +56,6 @@ Format: `{scores: [{score: 123, skylink: "EAB...tLw", ts: 1619686786000}, ...]}`
 
 ### TODO
 
-* Add support for per-object actions
 * Add the ability to import a deployed Skynet project
 * Fix the editor and player so that it works properly on browser resize
 * Allow selection of game objects by clicking the editor window

@@ -19,6 +19,7 @@ type Props = {
   gameObject: GameObject;
   assets: Asset[];
   onChangeComponent: (i: number, component: Component) => void;
+  onStartCodeEditor: (i: number, component: Component) => void;
   onNameChange: (name: string) => void;
 };
 
@@ -27,6 +28,7 @@ const Meta = ({
   gameObject,
   assets,
   onChangeComponent,
+  onStartCodeEditor,
   onNameChange,
 }: Props) => {
   const [addComponentModalActive, setAddComponentModalActive] = useState(false);
@@ -79,11 +81,13 @@ const Meta = ({
     ComponentType.Solid,
     ComponentType.Origin,
     ComponentType.Tag,
+    ComponentType.Action,
   ];
 
   gameObject.components.forEach((component: Component) => {
     switch (component.type) {
       case ComponentType.Tag:
+      case ComponentType.Action:
         break;
       default:
         componentTypes.splice(componentTypes.indexOf(component.type), 1);
@@ -136,6 +140,7 @@ const Meta = ({
               assets={assets}
               onChange={onChangeComponent.bind(null, i)}
               onDelete={handleDeleteComponent.bind(null, i)}
+              onStartCodeEditor={onStartCodeEditor.bind(null, i, component)}
             />
           );
         })}

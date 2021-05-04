@@ -22,6 +22,7 @@ import {
   ComponentSolid,
   ComponentOrigin,
   ComponentTag,
+  ComponentAction,
   componentTypeName,
 } from '../data';
 
@@ -31,6 +32,7 @@ type Props = {
   assets: Asset[];
   onChange: (component: Component) => void;
   onDelete: () => void;
+  onStartCodeEditor: () => void;
 };
 
 function zeroFromNaN(i: number) {
@@ -540,14 +542,80 @@ const FormTag = ({
   );
 };
 
+const FormAction = ({
+  component,
+  onChange,
+  onStartCodeEditor,
+}: {
+  component: ComponentAction;
+  onChange: (component: Component) => void;
+  onStartCodeEditor: () => void;
+}) => {
+  const handleNameChange = useCallback(
+    (ev: React.ChangeEvent<HTMLInputElement>) => {
+      component.name = ev.target.value;
+      onChange(component);
+    },
+    [component]
+  );
+
+  const handleEventNameChange = useCallback(
+    (ev: React.ChangeEvent<HTMLInputElement>) => {
+      component.eventName = ev.target.value;
+      onChange(component);
+    },
+    [component]
+  );
+
+  const handleEditClick = useCallback((ev: React.MouseEvent) => {
+    ev.preventDefault();
+    onStartCodeEditor();
+  }, []);
+
+  return (
+    <div className="mt-2 mx-2 w-full flex flex-col place-items-center overflow-hidden">
+      <div className="flex w-full place-items-center justify-between mb-1">
+        <label className="pointer-events-none select-none flex-none w-16">
+          Name:
+        </label>
+        <input
+          type="text"
+          defaultValue={'' + component.name}
+          onChange={handleNameChange}
+          className="flex-1 w-0"
+        />
+      </div>
+      <div className="flex w-full place-items-center justify-between">
+        <label className="pointer-events-none select-none flex-none w-16">
+          Event:
+        </label>
+        <input
+          type="text"
+          defaultValue={'' + component.eventName}
+          onChange={handleEventNameChange}
+          className="flex-1 w-0"
+        />
+      </div>
+      <input
+        type="button"
+        value="Edit"
+        onClick={handleEditClick}
+        className="border border-black mt-2 py-2 px-12 rounded-full cursor-pointer"
+      />
+    </div>
+  );
+};
+
 function ComponentForm({
   component,
   assets,
   onChange,
+  onStartCodeEditor,
 }: {
   component: Component;
   assets: Asset[];
   onChange: (component: Component) => void;
+  onStartCodeEditor: () => void;
 }) {
   switch (component.type) {
     case ComponentType.Pos:
@@ -611,6 +679,15 @@ function ComponentForm({
       return (
         <FormTag key="comp-tag" component={component} onChange={onChange} />
       );
+    case ComponentType.Action:
+      return (
+        <FormAction
+          key="comp-action"
+          component={component}
+          onChange={onChange}
+          onStartCodeEditor={onStartCodeEditor}
+        />
+      );
   }
   return null;
 }
@@ -620,6 +697,7 @@ const MetaComponent = ({
   component,
   assets,
   onChange,
+  onStartCodeEditor,
   onDelete,
 }: Props) => {
   const handleSubmit = useCallback((ev: React.FormEvent) => {
@@ -658,6 +736,7 @@ const MetaComponent = ({
           component={component}
           assets={assets}
           onChange={onChange}
+          onStartCodeEditor={onStartCodeEditor}
           key="component-form"
         />
       </form>

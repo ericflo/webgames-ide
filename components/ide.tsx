@@ -21,6 +21,7 @@ import SceneData, {
   ActionType,
   makeDefaultSceneData,
   GameObject,
+  ComponentAction,
 } from './data';
 import { useAPI } from './api';
 import TopBar from './ide/topbar';
@@ -41,6 +42,10 @@ const IDE = () => {
   const [addAssetModalActive, setAddAssetModalActive] = useState(false);
   const [currentObjectIndex, setCurrentObjectIndex] = useState(-1);
   const [editingActionIndex, setEditingActionIndex] = useState(-1);
+  const [
+    editingComponentActionIndex,
+    setEditingComponentActionIndex,
+  ] = useState(-1);
   const [reloadVersion, setReloadVersion] = useState(0);
   const gameObjects = scene.layers[layerIndex].gameObjects;
   const currentObject = gameObjects[currentObjectIndex];
@@ -308,28 +313,48 @@ const IDE = () => {
     setHasChanges(true);
   };
 
+  const handleStartCodeEditor = (i: number, component: Component) => {
+    setEditingComponentActionIndex(i);
+  };
+
   const handleSaveCodeEditor = useCallback(
     (code: string) => {
       api.setCurrentSceneData(
         (sd: SceneData): SceneData => {
-          const [_, sceneIndex] = findScene(sd, sd.currentSceneName);
-          const actn = sd.scenes[sceneIndex].actions[editingActionIndex];
-          if (actn.code != code) {
-            // if code is changed
-            setHasChanges(true);
+          const [scn, _] = findScene(sd, sd.currentSceneName);
+          if (editingComponentActionIndex >= 0) {
+            const obj = scn.layers[layerIndex].gameObjects[currentObjectIndex];
+            const component = obj.components[
+              editingComponentActionIndex
+            ] as ComponentAction;
+            component.code = code;
+            obj.components[editingComponentActionIndex] = component;
+          } else {
+            const action = scn.actions[editingActionIndex];
+            if (action.code != code) {
+              setTimeout(() => {
+                setHasChanges(true);
+              }, 50);
+            }
+            action.code = code;
           }
-          actn.code = code;
           return sd;
         }
       );
     },
-    [api, editingActionIndex]
+    [
+      api,
+      layerIndex,
+      editingActionIndex,
+      editingComponentActionIndex,
+      currentObjectIndex,
+    ]
   );
 
-  const handleCloseCodeEditor = useCallback(
-    () => setEditingActionIndex(-1),
-    []
-  );
+  const handleCloseCodeEditor = useCallback(() => {
+    setEditingActionIndex(-1);
+    setEditingComponentActionIndex(-1);
+  }, []);
 
   const handlePlayClick = useCallback(() => {
     deselectAll();
@@ -389,9 +414,21 @@ const IDE = () => {
     []
   );
 
-  const editingAction = scene.actions[editingActionIndex];
-  let codeValue: string = editingAction?.code;
+  let codeValue: string = '';
+  if (editingActionIndex >= 0) {
+    codeValue = scene.actions[editingActionIndex]?.code;
+  } else if (editingComponentActionIndex >= 0 && currentObject) {
+    codeValue = (currentObject.components[
+      editingComponentActionIndex
+    ] as ComponentAction)?.code;
+    if (!codeValue) {
+      codeValue = `(k, obj) => {
+  //obj.move(k.vec2(750, 0));
+}`;
+    }
+  }
   if (!codeValue) {
+    const editingAction = scene.actions[editingActionIndex];
     switch (editingAction?.type) {
       case ActionType.Action:
       case ActionType.Render:
@@ -447,7 +484,7 @@ const IDE = () => {
           onClose={() => setIsShowingLoadingModal(false)}
         />
       ) : null}
-      {editingActionIndex < 0 ? null : (
+      {editingActionIndex < 0 && editingComponentActionIndex < 0 ? null : (
         <CodeEditor
           initialValue={codeValue}
           onSave={handleSaveCodeEditor}
@@ -560,6 +597,7 @@ const IDE = () => {
                 gameObject={currentObject}
                 assets={api.currentSceneData.assets || []}
                 onChangeComponent={handleChangeComponent}
+                onStartCodeEditor={handleStartCodeEditor}
                 onNameChange={handleObjectNameChange}
               />
             ) : null}

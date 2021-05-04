@@ -4,6 +4,7 @@ import SceneData, {
   Asset,
   AssetType,
   Component,
+  ComponentAction,
   ComponentType,
   GameObject,
   GameScore,
@@ -84,65 +85,77 @@ function setupScene(k: any, scene: Scene, isPlaying: boolean) {
         return layer.gameObjects;
       })
       .forEach((gameObject: GameObject, i: number) => {
-        k.add(
-          gameObject.components.map((component: Component) => {
-            switch (component.type) {
-              case ComponentType.Pos:
-                return k.pos(component.x, component.y);
-              case ComponentType.Scale:
-                return k.scale(component.x, component.y);
-              case ComponentType.Rotate:
-                return k.rotate(component.angle);
-              case ComponentType.Color:
-                return k.color(
-                  component.r,
-                  component.g,
-                  component.b,
-                  component.a
-                );
-              case ComponentType.Sprite:
-                return k.sprite(component.id);
-              case ComponentType.Text:
-                return k.text(component.text, component.size, {
-                  width: component.width,
-                });
-              case ComponentType.Rect:
-                return k.rect(component.w, component.h);
-              case ComponentType.Area:
-                return k.area(
-                  k.vec2(component.p1.x, component.p1.y),
-                  k.vec2(component.p2.x, component.p2.y)
-                );
-              case ComponentType.Body:
-                if (isPlaying) {
-                  return k.body({
-                    jumpForce: component.jumpForce,
-                    maxVel: component.maxVel,
-                  });
-                } else {
-                  const tag = 'skip-tag-' + skipIndex;
-                  skipIndex += 1;
-                  return tag;
-                }
-              case ComponentType.Solid:
-                return k.solid();
-              case ComponentType.Origin:
-                if (
-                  Math.abs(component.custom.x) > 0.001 ||
-                  Math.abs(component.custom.y) > 0.001
-                ) {
-                  return k.origin(
-                    k.vec2(component.custom.x, component.custom.y)
+        const objActions: ComponentAction[] = [];
+        const obj = k.add(
+          gameObject.components
+            .map((component: Component) => {
+              switch (component.type) {
+                case ComponentType.Pos:
+                  return k.pos(component.x, component.y);
+                case ComponentType.Scale:
+                  return k.scale(component.x, component.y);
+                case ComponentType.Rotate:
+                  return k.rotate(component.angle);
+                case ComponentType.Color:
+                  return k.color(
+                    component.r,
+                    component.g,
+                    component.b,
+                    component.a
                   );
-                }
-                return k.origin(component.name);
-              case ComponentType.Layer:
-                return k.layer(component.name);
-              case ComponentType.Tag:
-                return component.name;
-            }
-          })
+                case ComponentType.Sprite:
+                  return k.sprite(component.id);
+                case ComponentType.Text:
+                  return k.text(component.text, component.size, {
+                    width: component.width,
+                  });
+                case ComponentType.Rect:
+                  return k.rect(component.w, component.h);
+                case ComponentType.Area:
+                  return k.area(
+                    k.vec2(component.p1.x, component.p1.y),
+                    k.vec2(component.p2.x, component.p2.y)
+                  );
+                case ComponentType.Body:
+                  if (isPlaying) {
+                    return k.body({
+                      jumpForce: component.jumpForce,
+                      maxVel: component.maxVel,
+                    });
+                  } else {
+                    const tag = 'skip-tag-' + skipIndex;
+                    skipIndex += 1;
+                    return tag;
+                  }
+                case ComponentType.Solid:
+                  return k.solid();
+                case ComponentType.Origin:
+                  if (
+                    Math.abs(component.custom.x) > 0.001 ||
+                    Math.abs(component.custom.y) > 0.001
+                  ) {
+                    return k.origin(
+                      k.vec2(component.custom.x, component.custom.y)
+                    );
+                  }
+                  return k.origin(component.name);
+                case ComponentType.Tag:
+                  return component.name;
+                case ComponentType.Action:
+                  objActions.push(component);
+                  return null;
+                default:
+                  return null;
+              }
+            })
+            .filter((elt) => !!elt)
         );
+        if (isPlaying) {
+          objActions.forEach((objAction: ComponentAction) => {
+            const act = eval(objAction.code).bind(null, k, obj);
+            obj.on(objAction.eventName, act);
+          });
+        }
       });
   });
 }

@@ -11,6 +11,7 @@ export enum ComponentType {
   Solid = 'solid',
   Origin = 'origin',
   Tag = 'tag',
+  Action = 'action',
 }
 
 export function componentTypeName(componentType: ComponentType): string {
@@ -39,6 +40,8 @@ export function componentTypeName(componentType: ComponentType): string {
       return 'Origin';
     case ComponentType.Tag:
       return 'Tag';
+    case ComponentType.Action:
+      return 'Action';
   }
 }
 
@@ -74,6 +77,13 @@ export function defaultComponentForType(
       return { type: componentType, name: 'center', custom: { x: 0, y: 0 } };
     case ComponentType.Tag:
       return { type: componentType, name: 'tagname' };
+    case ComponentType.Action:
+      return {
+        type: componentType,
+        name: 'Default',
+        eventName: 'update',
+        code: '',
+      };
   }
 }
 
@@ -148,6 +158,13 @@ export type ComponentTag = {
   name: string;
 };
 
+export type ComponentAction = {
+  type: ComponentType.Action;
+  name: string;
+  eventName: string;
+  code: string;
+};
+
 export type Component =
   | ComponentPos
   | ComponentScale
@@ -160,7 +177,8 @@ export type Component =
   | ComponentBody
   | ComponentSolid
   | ComponentOrigin
-  | ComponentTag;
+  | ComponentTag
+  | ComponentAction;
 
 export type GameObject = {
   name: string;
