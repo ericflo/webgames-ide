@@ -78,13 +78,11 @@ const Meta = ({
     ComponentType.Body,
     ComponentType.Solid,
     ComponentType.Origin,
-    ComponentType.Layer,
     ComponentType.Tag,
   ];
 
   gameObject.components.forEach((component: Component) => {
     switch (component.type) {
-      case ComponentType.Layer:
       case ComponentType.Tag:
         break;
       default:

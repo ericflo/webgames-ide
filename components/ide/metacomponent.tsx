@@ -21,7 +21,6 @@ import {
   ComponentBody,
   ComponentSolid,
   ComponentOrigin,
-  ComponentLayer,
   ComponentTag,
   componentTypeName,
 } from '../data';
@@ -515,32 +514,6 @@ const FormOrigin = ({
   );
 };
 
-const FormLayer = ({
-  component,
-  onChange,
-}: {
-  component: ComponentLayer;
-  onChange: (component: Component) => void;
-}) => {
-  const handleNameChange = useCallback(
-    (ev: React.ChangeEvent<HTMLInputElement>) => {
-      component.name = ev.target.value;
-      onChange(component);
-    },
-    [component]
-  );
-  return (
-    <div className="mt-2 mx-2 w-full flex place-items-center justify-between">
-      <label className="mr-2 pointer-events-none select-none">Name:</label>
-      <input
-        type="text"
-        defaultValue={'' + component.name}
-        onChange={handleNameChange}
-      />
-    </div>
-  );
-};
-
 const FormTag = ({
   component,
   onChange,
@@ -633,10 +606,6 @@ function ComponentForm({
           component={component}
           onChange={onChange}
         />
-      );
-    case ComponentType.Layer:
-      return (
-        <FormLayer key="comp-layer" component={component} onChange={onChange} />
       );
     case ComponentType.Tag:
       return (
