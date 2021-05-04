@@ -2,8 +2,6 @@ import React, { useState, useCallback, useEffect } from 'react';
 
 import { useDropzone } from 'react-dropzone';
 
-import { default as MonacoEditor } from '@monaco-editor/react';
-
 import EditorPlayer from './ide/editorplayer';
 import SceneChooser from './ide/scenechooser';
 import Objects from './ide/objects';
@@ -27,6 +25,7 @@ import SceneData, {
 import { useAPI } from './api';
 import TopBar from './ide/topbar';
 import LoadModal from './ide/loadmodal';
+import CodeEditor from './ide/codeeditor';
 
 const IDE = () => {
   const api = useAPI();
@@ -37,7 +36,6 @@ const IDE = () => {
   const [isUploading, setIsUploading] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isShowingLoadingModal, setIsShowingLoadingModal] = useState(false);
-  const [hasCodeChanges, setHasCodeChanges] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
   const [layerIndex, setLayerIndex] = useState(0);
   const [addAssetModalActive, setAddAssetModalActive] = useState(false);
@@ -162,17 +160,10 @@ const IDE = () => {
   const handleEditAction = useCallback(
     (i: number) => {
       const isEditing = editingActionIndex >= 0;
-      if (isEditing && hasCodeChanges) {
-        //api.saveCurrentSceneData('handleEditAction');
-        setHasChanges(true);
-      }
       setEditingActionIndex(isEditing ? -1 : i);
       setIsPlaying(false);
-      if (isEditing) {
-        setHasCodeChanges(false);
-      }
     },
-    [api, editingActionIndex, hasCodeChanges]
+    [api, editingActionIndex]
   );
 
   const handleRequestNewScene = useCallback(() => {
@@ -317,17 +308,27 @@ const IDE = () => {
     setHasChanges(true);
   };
 
-  const handleCodeChange = useCallback(
-    (value: string) => {
-      setHasCodeChanges(true);
+  const handleSaveCodeEditor = useCallback(
+    (code: string) => {
       api.setCurrentSceneData(
-        (sceneData: SceneData): SceneData => {
-          scene.actions[editingActionIndex].code = value;
-          return sceneData;
+        (sd: SceneData): SceneData => {
+          const [_, sceneIndex] = findScene(sd, sd.currentSceneName);
+          const actn = sd.scenes[sceneIndex].actions[editingActionIndex];
+          if (actn.code != code) {
+            // if code is changed
+            setHasChanges(true);
+          }
+          actn.code = code;
+          return sd;
         }
       );
     },
     [api, editingActionIndex]
+  );
+
+  const handleCloseCodeEditor = useCallback(
+    () => setEditingActionIndex(-1),
+    []
   );
 
   const handlePlayClick = useCallback(() => {
@@ -397,11 +398,11 @@ const IDE = () => {
       case ActionType.On:
         if (editingAction.tag) {
           codeValue = `(k, ${editingAction.tag}) => {
-  //${editingAction.tag}.move(k.vec2(0, 10));
+  //${editingAction.tag}.move(k.vec2(750, 0));
 }`;
         } else {
           codeValue = `(k) => {
-  //k.get('tagname').move(k.vec2(0, 10));
+  //k.get('tagname').move(k.vec2(750, 0));
 }`;
         }
         break;
@@ -409,7 +410,7 @@ const IDE = () => {
       case ActionType.Overlaps:
         codeValue = `(k, ${editingAction.tag}, ${editingAction.otherTag}) => {
   //k.destroy(${editingAction.otherTag});
-  //${editingAction.tag || "k.get('tagname')"}.move(k.vec2(0, 10));
+  //${editingAction.tag || "k.get('tagname')"}.move(k.vec2(750, 0));
 }`;
         break;
       case ActionType.KeyDown:
@@ -419,7 +420,7 @@ const IDE = () => {
       case ActionType.MouseClick:
       case ActionType.MouseRelease:
         codeValue = `(k) => {
-  //k.get('tagname').move(k.vec2(0, 10));
+  //k.get('tagname').move(k.vec2(750, 0));
 }`;
         break;
       case ActionType.CharInput:
@@ -427,6 +428,10 @@ const IDE = () => {
   //console.log('Typed:', ch);
 }`;
         break;
+      default:
+        codeValue = `(k) => {
+  //k.get('tagname').move(k.vec2(750, 0));
+}`;
     }
   }
 
@@ -442,7 +447,16 @@ const IDE = () => {
           onClose={() => setIsShowingLoadingModal(false)}
         />
       ) : null}
-      <div className="flex flex-row">
+      {editingActionIndex < 0 ? null : (
+        <CodeEditor
+          initialValue={codeValue}
+          onSave={handleSaveCodeEditor}
+          onClose={handleCloseCodeEditor}
+        />
+      )}
+      <div
+        className={'flex flex-row' + (editingActionIndex < 0 ? '' : ' hidden')}
+      >
         <div className="flex flex-col flex-none h-screen w-96">
           <SceneChooser
             className={
@@ -505,15 +519,12 @@ const IDE = () => {
           <TopBar
             api={api}
             isPlaying={isPlaying}
-            isEditingAction={!!editingAction}
             isLoggedIn={api.loggedIn}
             isSaving={api.saving}
             isLoading={api.loading}
             hasChanges={hasChanges}
-            hasCodeChanges={hasCodeChanges}
             currentFilename={api.currentFilename}
             sceneData={api.currentSceneData}
-            onDoneEditingAction={handleEditAction.bind(null, 0)}
             onPlayClick={handlePlayClick}
             onReloadClick={() => setReloadVersion((v) => v + 1)}
             onSaveClick={handleSaveClick}
@@ -550,14 +561,6 @@ const IDE = () => {
                 assets={api.currentSceneData.assets || []}
                 onChangeComponent={handleChangeComponent}
                 onNameChange={handleObjectNameChange}
-              />
-            ) : null}
-            {editingActionIndex >= 0 ? (
-              <MonacoEditor
-                language="javascript"
-                defaultValue={codeValue}
-                onChange={handleCodeChange}
-                theme="vs-dark"
               />
             ) : null}
           </div>

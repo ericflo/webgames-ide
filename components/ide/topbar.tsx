@@ -18,15 +18,12 @@ import SceneData from '../data';
 type Props = {
   api: API;
   isPlaying: boolean;
-  isEditingAction: boolean;
   isLoggedIn: boolean;
   isSaving: boolean;
   isLoading: boolean;
   hasChanges: boolean;
-  hasCodeChanges: boolean;
   currentFilename: string;
   sceneData: SceneData;
-  onDoneEditingAction: () => void;
   onPlayClick: () => void;
   onReloadClick: () => void;
   onSaveClick: () => void;
@@ -49,15 +46,12 @@ function usePreventDefault(fn: () => void): (ev: React.MouseEvent) => void {
 const TopBar = ({
   api,
   isPlaying,
-  isEditingAction,
   isLoggedIn,
   isSaving,
   isLoading,
   hasChanges,
-  hasCodeChanges,
   currentFilename,
   sceneData,
-  onDoneEditingAction,
   onPlayClick,
   onReloadClick,
   onSaveClick,
@@ -66,7 +60,6 @@ const TopBar = ({
   onNewClick,
   onLoadClick,
 }: Props) => {
-  const handleDoneEditingAction = usePreventDefault(onDoneEditingAction);
   const handlePlayClick = usePreventDefault(onPlayClick);
   const handleReloadClick = usePreventDefault(onReloadClick);
   const handleSaveClick = usePreventDefault(onSaveClick);
@@ -195,87 +188,63 @@ const TopBar = ({
   );
   return (
     <div className="px-4 py-4 h-14 border-b border-black flex place-content-between">
-      {isEditingAction ? (
-        <>
-          <a
-            href="https://kaboomjs.com/"
-            target="_blank"
-            className="text-blue-600"
-          >
-            Documentation
-          </a>
-          <a className="mx-4" onClick={handleDoneEditingAction}>
-            <FontAwesomeIcon
-              className={hasCodeChanges ? 'text-green-600 fill-current' : ''}
-              icon={faCheck}
-            />
-          </a>
-        </>
-      ) : (
-        <>
-          <div>
-            <a className="mr-4" onClick={handlePlayClick}>
-              <FontAwesomeIcon icon={isPlaying ? faStop : faPlay} />
-            </a>
-            <a className="mr-4" onClick={handleReloadClick}>
-              <FontAwesomeIcon icon={faSync} />
-            </a>
-            <a
-              className={
-                'mr-4 ' +
-                (hasChanges
-                  ? ''
-                  : ' cursor-default opacity-50 pointer-events-none select-none')
-              }
-              onClick={handleSaveClick}
-            >
-              <FontAwesomeIcon
-                icon={isSaving ? faCircleNotch : faSave}
-                spin={isSaving}
-              />
-            </a>
-            <a className="mr-4" onClick={handleNewClick}>
-              <FontAwesomeIcon icon={faFileMedical} />
-            </a>
-            <a className="mr-4" onClick={handleLoadClick}>
-              <FontAwesomeIcon
-                icon={isLoading ? faCircleNotch : faFolderOpen}
-                spin={isLoading}
-              />
-            </a>
-            <a className="mr-4" onClick={handleExportClick}>
-              <FontAwesomeIcon icon={faFileExport} />
-            </a>
-            <span className="cursor-default">{currentFilename}</span>
-          </div>
-          {isLoggedIn ? null : (
-            <a
-              href="#"
-              onClick={handleLoginClick}
-              className={
-                isPlaying
-                  ? ' opacity-25 cursor-default pointer-events-none'
-                  : ''
-              }
-            >
-              Log in
-            </a>
-          )}
-          {isLoggedIn ? (
-            <a
-              href="#"
-              onClick={handleLogoutClick}
-              className={
-                isPlaying
-                  ? ' opacity-25 cursor-default pointer-events-none'
-                  : ''
-              }
-            >
-              Logout
-            </a>
-          ) : null}
-        </>
+      <div>
+        <a className="mr-4" onClick={handlePlayClick}>
+          <FontAwesomeIcon icon={isPlaying ? faStop : faPlay} />
+        </a>
+        <a className="mr-4" onClick={handleReloadClick}>
+          <FontAwesomeIcon icon={faSync} />
+        </a>
+        <a
+          className={
+            'mr-4 ' +
+            (hasChanges
+              ? ''
+              : ' cursor-default opacity-50 pointer-events-none select-none')
+          }
+          onClick={handleSaveClick}
+        >
+          <FontAwesomeIcon
+            icon={isSaving ? faCircleNotch : faSave}
+            spin={isSaving}
+          />
+        </a>
+        <a className="mr-4" onClick={handleNewClick}>
+          <FontAwesomeIcon icon={faFileMedical} />
+        </a>
+        <a className="mr-4" onClick={handleLoadClick}>
+          <FontAwesomeIcon
+            icon={isLoading ? faCircleNotch : faFolderOpen}
+            spin={isLoading}
+          />
+        </a>
+        <a className="mr-4" onClick={handleExportClick}>
+          <FontAwesomeIcon icon={faFileExport} />
+        </a>
+        <span className="cursor-default">{currentFilename}</span>
+      </div>
+      {isLoggedIn ? null : (
+        <a
+          href="#"
+          onClick={handleLoginClick}
+          className={
+            isPlaying ? ' opacity-25 cursor-default pointer-events-none' : ''
+          }
+        >
+          Log in
+        </a>
       )}
+      {isLoggedIn ? (
+        <a
+          href="#"
+          onClick={handleLogoutClick}
+          className={
+            isPlaying ? ' opacity-25 cursor-default pointer-events-none' : ''
+          }
+        >
+          Logout
+        </a>
+      ) : null}
     </div>
   );
 };
