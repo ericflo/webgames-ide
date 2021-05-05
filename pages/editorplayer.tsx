@@ -65,6 +65,7 @@ const Player = () => {
       camScale: 1,
       camPos: k.vec2(window.innerWidth * 0.5, window.innerHeight * 0.5),
     };
+    const invCamScale = 1.0 / data.camScale;
     const handleMouseDown = (ev: MouseEvent) => {
       //if (ev.button != 2) {
       //  return;
@@ -76,7 +77,9 @@ const Player = () => {
       if (!data.clicked) {
         return;
       }
-      const pos = data.camPos.clone().sub(k.mousePos().sub(data.startPos));
+      const pos = data.camPos
+        .clone()
+        .sub(k.mousePos().sub(data.startPos).scale(invCamScale));
       k.camPos(pos);
     };
     const handleMouseUp = (ev: MouseEvent) => {
@@ -84,7 +87,9 @@ const Player = () => {
       //  return;
       //}
       data.clicked = false;
-      data.camPos = data.camPos.clone().sub(k.mousePos().sub(data.startPos));
+      data.camPos = data.camPos
+        .clone()
+        .sub(k.mousePos().sub(data.startPos).scale(invCamScale));
     };
     const handleWheel = (ev: WheelEvent) => {
       ev.preventDefault();
@@ -101,7 +106,7 @@ const Player = () => {
       window.removeEventListener('mouseup', handleMouseUp);
       window.removeEventListener('wheel', handleWheel);
     };
-  }, [k]);
+  }, [k, isPlaying]);
 
   /*
   const resizeHandler = useCallback(() => {
