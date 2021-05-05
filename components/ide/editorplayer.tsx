@@ -1,20 +1,24 @@
 import React, { useRef, useEffect, useCallback } from 'react';
 
 import { isProd } from '../buildconfig';
-import { SceneData } from '../data';
+import { GameObject, SceneData } from '../data';
 
 type Props = {
   className?: string;
   sceneData: SceneData;
+  currentObjectIndex: number;
   isPlaying: boolean;
   reloadVersion: number;
+  onUpdateCurrentObjectPos: (x: number, y: number) => void;
 };
 
 const EditorPlayer = ({
   className,
   sceneData,
+  currentObjectIndex,
   isPlaying,
   reloadVersion,
+  onUpdateCurrentObjectPos,
 }: Props) => {
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
@@ -44,6 +48,17 @@ const EditorPlayer = ({
     );
   }, [iframeRef, isPlaying]);
 
+  useEffect(() => {
+    if (!iframeRef.current) {
+      return;
+    }
+    console.log('setting current object index', currentObjectIndex);
+    iframeRef.current.contentWindow.postMessage(
+      { type: 'state.currentObjectIndex', data: currentObjectIndex },
+      '*'
+    );
+  }, [iframeRef, currentObjectIndex]);
+
   const handleEditorMessage = useCallback(
     (ev: MessageEvent) => {
       if (!iframeRef.current) {
@@ -54,6 +69,10 @@ const EditorPlayer = ({
           { type: 'state.sceneData', data: sceneData },
           '*'
         );
+      } else if (ev.data.type === 'state.currentObject.pos') {
+        const x: number = ev.data.x;
+        const y: number = ev.data.y;
+        onUpdateCurrentObjectPos(x, y);
       }
     },
     [iframeRef, sceneData]

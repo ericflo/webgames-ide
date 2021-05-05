@@ -69,14 +69,14 @@ const FormPos = ({
       <input
         className="w-16 text-center"
         type="text"
-        defaultValue={'' + component.x}
+        value={'' + component.x}
         onChange={handleXChange}
       />
       <label className="pointer-events-none select-none">Y:</label>
       <input
         className="w-16 text-center"
         type="text"
-        defaultValue={'' + component.y}
+        value={'' + component.y}
         onChange={handleYChange}
       />
     </div>

@@ -5,6 +5,8 @@ import SceneData, {
   AssetType,
   Component,
   ComponentAction,
+  ComponentPos,
+  ComponentRect,
   ComponentType,
   GameObject,
   GameScore,
@@ -74,11 +76,40 @@ function setupLayers(k: any, sceneData: SceneData) {
   }
 }
 
-function setupScene(k: any, scene: Scene, isPlaying: boolean) {
+function setupScene(
+  k: any,
+  scene: Scene,
+  isPlaying: boolean,
+  currentObjectIndex: number,
+  objectOffset: { x: number; y: number }
+) {
   let skipIndex = 0;
   k.scene(scene.name, () => {
     if (isPlaying) {
       (scene.actions || []).forEach(setupAction.bind(null, k));
+    } else {
+      if (currentObjectIndex >= 0) {
+        const components =
+          scene.layers[0].gameObjects[currentObjectIndex].components;
+        const cPos = components.find(
+          (c) => c.type === ComponentType.Pos
+        ) as ComponentPos;
+        const cRect = components.find(
+          (c) => c.type === ComponentType.Rect
+        ) as ComponentRect;
+        const offset = objectOffset ? objectOffset : { x: 0, y: 0 };
+        k.loadSprite('__movetool__', '/movetool.png').then(() => {
+          k.add([
+            k.pos(
+              cPos.x + offset.x + cRect.w * 0.5,
+              cPos.y + offset.y + cRect.h * 0.5
+            ),
+            k.sprite('__movetool__'),
+            k.origin('center'),
+            '__movetool__',
+          ]);
+        });
+      }
     }
     scene.layers
       .flatMap((layer: Layer): GameObject[] => {
@@ -91,7 +122,14 @@ function setupScene(k: any, scene: Scene, isPlaying: boolean) {
             .map((component: Component) => {
               switch (component.type) {
                 case ComponentType.Pos:
-                  return k.pos(component.x, component.y);
+                  if (i === currentObjectIndex && objectOffset) {
+                    return k.pos(
+                      component.x + objectOffset.x,
+                      component.y + objectOffset.y
+                    );
+                  } else {
+                    return k.pos(component.x, component.y);
+                  }
                 case ComponentType.Scale:
                   return k.scale(component.x, component.y);
                 case ComponentType.Rotate:
@@ -274,20 +312,25 @@ export function create(
   return k;
 }
 
-export function setup(k: any, sceneData: SceneData, isPlaying: boolean) {
+export function setup(
+  k: any,
+  sceneData: SceneData,
+  isPlaying: boolean,
+  currentObjectIndex: number,
+  objectOffset: { x: number; y: number }
+) {
   if (!sceneData || !k) {
     return;
   }
-  //console.log(JSON.stringify(sceneData));
+  const currentSceneName = sceneData.currentSceneName || 'main';
 
   k.go('tmpscene');
 
   setupLayers(k, sceneData);
 
   setupAssets(k, sceneData).then(() => {
-    const currentSceneName = sceneData.currentSceneName || 'main';
     ((sceneData || {}).scenes || []).forEach((scene: Scene) => {
-      setupScene(k, scene, isPlaying);
+      setupScene(k, scene, isPlaying, currentObjectIndex, objectOffset);
       if (scene.name == currentSceneName) {
         k.go(scene.name);
       }

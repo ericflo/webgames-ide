@@ -313,6 +313,24 @@ const IDE = () => {
     setHasChanges(true);
   };
 
+  const handleUpdateCurrentObjectPos = (x: number, y: number) => {
+    api.setCurrentSceneData(
+      (sd: SceneData): SceneData => {
+        const obj = sd.scenes.find((s) => s.name == sd.currentSceneName).layers[
+          layerIndex
+        ].gameObjects[currentObjectIndex];
+        obj.components.forEach((component: Component) => {
+          if (component.type === ComponentType.Pos) {
+            component.x += x;
+            component.y += y;
+          }
+        });
+        return sd;
+      }
+    );
+    setHasChanges(true);
+  };
+
   const handleStartCodeEditor = (i: number, component: Component) => {
     setEditingComponentActionIndex(i);
   };
@@ -580,8 +598,10 @@ const IDE = () => {
               <EditorPlayer
                 className="flex-1 bg-gray-300"
                 sceneData={api.currentSceneData}
+                currentObjectIndex={currentObjectIndex}
                 isPlaying={isPlaying}
                 reloadVersion={reloadVersion}
+                onUpdateCurrentObjectPos={handleUpdateCurrentObjectPos}
               />
               <Console className="flex-none h-36" />
             </div>
