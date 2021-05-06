@@ -75,7 +75,7 @@ const EditorPlayer = ({
         onUpdateCurrentObjectPos(x, y);
       }
     },
-    [iframeRef, sceneData]
+    [iframeRef, sceneData, currentObjectIndex]
   );
 
   useEffect(() => {

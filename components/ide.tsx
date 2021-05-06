@@ -319,7 +319,7 @@ const IDE = () => {
         const obj = sd.scenes.find((s) => s.name == sd.currentSceneName).layers[
           layerIndex
         ].gameObjects[currentObjectIndex];
-        obj.components.forEach((component: Component) => {
+        (obj?.components || []).forEach((component: Component) => {
           if (component.type === ComponentType.Pos) {
             component.x += x;
             component.y += y;

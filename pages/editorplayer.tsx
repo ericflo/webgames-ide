@@ -1,9 +1,9 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import Head from 'next/head';
 
 import SceneData from '../components/data';
-import { clearAssets, create, setup } from '../components/playercommon';
+import { create, setup } from '../components/playercommon';
 
 const Player = () => {
   const [sceneData, setSceneData] = useState(null as SceneData);
@@ -11,6 +11,7 @@ const Player = () => {
   const [latestScore, setLatestScore] = useState(-1);
   const [k, setK] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [objectOffset, setObjectOffset] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
     document.body.classList.add('overflow-hidden');
@@ -52,17 +53,16 @@ const Player = () => {
     }
   }, [latestScore]);
 
-  useEffect(setup.bind(null, k, sceneData, isPlaying, currentObjectIndex), [
-    k,
-    sceneData,
-    isPlaying,
-    currentObjectIndex,
-  ]);
+  useEffect(
+    setup.bind(null, k, sceneData, isPlaying, currentObjectIndex, objectOffset),
+    [k, sceneData, isPlaying, currentObjectIndex, objectOffset]
+  );
 
   useEffect(() => {
-    if (!k) {
+    if (!k || isPlaying) {
       return;
     }
+
     const data = {
       clicked: -1,
       metaPressed: false,
@@ -70,11 +70,14 @@ const Player = () => {
       camScale: 1,
       camPos: k.vec2(window.innerWidth * 0.5, window.innerHeight * 0.5),
     };
+
     const invCamScale = 1.0 / data.camScale;
+
     const handleMouseDown = (ev: MouseEvent) => {
       data.clicked = ev.button;
       data.prevPos = k.mousePos();
     };
+
     const handleMouseMove = (ev: MouseEvent) => {
       if (data.clicked < 0) {
         return;
@@ -88,31 +91,49 @@ const Player = () => {
         k.camPos(data.camPos);
       } else if (isObjectMove) {
         const offset = k.mousePos().sub(data.prevPos).scale(invCamScale);
-        window.top.postMessage(
-          { type: 'state.currentObject.pos', x: offset.x, y: offset.y },
-          '*'
-        );
+        setObjectOffset((totalOffset) => {
+          return { x: totalOffset.x + offset.x, y: totalOffset.y + offset.y };
+        });
+        setSceneData((sd) => JSON.parse(JSON.stringify(sd)));
       }
       data.prevPos = k.mousePos();
     };
+
     const handleMouseUp = (ev: MouseEvent) => {
       data.clicked = -1;
+      setObjectOffset((prevOffset) => {
+        if (prevOffset.x != 0 || prevOffset.y != 0) {
+          const msg = {
+            type: 'state.currentObject.pos',
+            x: prevOffset.x,
+            y: prevOffset.y,
+          };
+          window.top.postMessage(msg, '*');
+        }
+        return { x: 0, y: 0 };
+      });
     };
+
     const handleWheel = (ev: WheelEvent) => {
       ev.preventDefault();
-      data.camScale += Math.max(ev.deltaY, ev.deltaX) * 0.01;
+      data.camScale += ev.deltaY * 0.001;
+      data.camScale = Math.max(Math.min(data.camScale, 10), 0.01);
+      console.log('Setting camScale', data.camScale);
       k.camScale(data.camScale);
     };
+
     const handleKeyDown = (ev: KeyboardEvent) => {
       if (ev.key.toLowerCase() === 'meta') {
         data.metaPressed = true;
       }
     };
+
     const handleKeyUp = (ev: KeyboardEvent) => {
       if (ev.key.toLowerCase() === 'meta') {
         data.metaPressed = false;
       }
     };
+
     window.addEventListener('mousedown', handleMouseDown);
     window.addEventListener('mousemove', handleMouseMove);
     window.addEventListener('mouseup', handleMouseUp);
@@ -127,37 +148,7 @@ const Player = () => {
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('keyup', handleKeyUp);
     };
-  }, [k]);
-
-  /*
-  const resizeHandler = useCallback(() => {
-    // Remove prev stuff
-    const cnv = document.getElementsByTagName('canvas')[0];
-    if (cnv) {
-      k?.destroyAll();
-      cnv.parentElement.removeChild(cnv);
-      clearAssets();
-    }
-
-    // Create next stuff
-    const nextK = create();
-    nextK.scene('tmpscene', () => {});
-    nextK.start('tmpscene');
-    setK(nextK);
-
-    // Request fresh data after 1.5 seconds (why do we need this?)
-    setTimeout(() => {
-      window.top.postMessage({ type: 'request.state.sceneData' }, '*');
-    }, 1500);
-  }, [k]);
-
-  useEffect(() => {
-    window.addEventListener('resize', resizeHandler);
-    return () => {
-      window.removeEventListener('resize', resizeHandler);
-    };
-  }, [resizeHandler]);
-  */
+  }, [k, isPlaying]);
 
   return (
     <>
