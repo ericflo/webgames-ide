@@ -85,7 +85,8 @@ function setupScene(
   scene: Scene,
   isPlaying: boolean,
   currentObjectIndex: number,
-  objectOffset: { x: number; y: number }
+  objectOffset: { x: number; y: number },
+  camConfig: { x: number; y: number; scale: number }
 ) {
   let skipIndex = 0;
   if (!spriteLoaded) {
@@ -103,6 +104,10 @@ function setupScene(
         k.sprite('__mv'),
         '__mv',
       ]);
+    }
+    if (camConfig) {
+      k.camPos(k.vec2(camConfig.x, camConfig.y));
+      k.camScale(camConfig.scale);
     }
     let currentObject: any = null;
     scene.layers
@@ -369,7 +374,8 @@ export function setup(
   sceneData: SceneData,
   isPlaying: boolean,
   currentObjectIndex: number,
-  objectOffset: { x: number; y: number }
+  objectOffset: { x: number; y: number },
+  camConfig: { x: number; y: number; scale: number }
 ) {
   if (!sceneData || !k) {
     return;
@@ -382,7 +388,14 @@ export function setup(
 
   setupAssets(k, sceneData).then(() => {
     ((sceneData || {}).scenes || []).forEach((scene: Scene) => {
-      setupScene(k, scene, isPlaying, currentObjectIndex, objectOffset);
+      setupScene(
+        k,
+        scene,
+        isPlaying,
+        currentObjectIndex,
+        objectOffset,
+        camConfig
+      );
       if (scene.name == currentSceneName) {
         k.go(scene.name);
       }

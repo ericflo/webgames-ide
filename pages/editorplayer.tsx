@@ -10,6 +10,9 @@ const Player = () => {
   const [currentObjectIndex, setCurrentObjectIndex] = useState(-1);
   const [latestScore, setLatestScore] = useState(-1);
   const [k, setK] = useState(null);
+  const [camConfig, setCamConfig] = useState(
+    null as { x: number; y: number; scale: number }
+  );
   const [isPlaying, setIsPlaying] = useState(false);
   const [objectOffset, setObjectOffset] = useState({ x: 0, y: 0 });
 
@@ -35,7 +38,13 @@ const Player = () => {
         setSceneData(ev.data.data);
       } else if (ev.data.type === 'state.isPlaying') {
         setIsPlaying(ev.data.data);
-        if (!ev.data.data) {
+        if (ev.data.data) {
+          setCamConfig({
+            x: window.innerWidth * 0.5,
+            y: window.innerHeight * 0.5,
+            scale: 1,
+          });
+        } else {
           setLatestScore(-1);
         }
       } else if (ev.data.type === 'state.currentObjectIndex') {
@@ -54,8 +63,16 @@ const Player = () => {
   }, [latestScore]);
 
   useEffect(
-    setup.bind(null, k, sceneData, isPlaying, currentObjectIndex, objectOffset),
-    [k, sceneData, isPlaying, currentObjectIndex, objectOffset]
+    setup.bind(
+      null,
+      k,
+      sceneData,
+      isPlaying,
+      currentObjectIndex,
+      objectOffset,
+      camConfig
+    ),
+    [k, sceneData, isPlaying, currentObjectIndex, objectOffset, camConfig]
   );
 
   useEffect(() => {
@@ -88,7 +105,15 @@ const Player = () => {
         data.camPos = data.camPos
           .clone()
           .sub(k.mousePos().sub(data.prevPos).scale(invCamScale));
-        k.camPos(data.camPos);
+        setCamConfig((cc) => {
+          if (cc) {
+            cc = JSON.parse(JSON.stringify(cc));
+            cc.x = data.camPos.x;
+            cc.y = data.camPos.y;
+            return cc;
+          }
+          return { x: data.camPos.x, y: data.camPos.y, scale: data.camScale };
+        });
       } else if (isObjectMove) {
         const offset = k.mousePos().sub(data.prevPos).scale(invCamScale);
         setObjectOffset((totalOffset) => {
@@ -118,8 +143,14 @@ const Player = () => {
       ev.preventDefault();
       data.camScale += ev.deltaY * 0.001;
       data.camScale = Math.max(Math.min(data.camScale, 10), 0.01);
-      console.log('Setting camScale', data.camScale);
-      k.camScale(data.camScale);
+      setCamConfig((cc) => {
+        if (cc) {
+          cc = JSON.parse(JSON.stringify(cc));
+          cc.scale = data.camScale;
+          return cc;
+        }
+        return { x: data.camPos.x, y: data.camPos.y, scale: data.camScale };
+      });
     };
 
     const handleKeyDown = (ev: KeyboardEvent) => {
