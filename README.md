@@ -58,6 +58,6 @@ Format: `{scores: [{score: 123, skylink: "EAB...tLw", ts: 1619686786000}, ...]}`
 
 * Add the ability to import a deployed Skynet project
 * Fix the editor and player so that it works properly on browser resize
-* Allow selection of game objects by clicking the editor window
-* Add controls for dragging game objects around in the editor window
-* Add controls for rotating game objects in the editor window
+* Allow selection of game objects by clicking in the editor window
+* Add scroll/rotate tools to the editor in addition to the current move tool
+* Allow the user to duplicate a game object
