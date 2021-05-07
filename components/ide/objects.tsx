@@ -7,6 +7,7 @@ import {
   faArrowDown,
   faArrowUp,
   faChevronCircleRight,
+  faClone,
   faPlusSquare,
   faTrash,
 } from '@fortawesome/free-solid-svg-icons';
@@ -80,6 +81,24 @@ const Objects = ({
       }
     },
     [currentObjectIndex]
+  );
+  const handleCloneClick = useCallback(
+    (i: number, ev: React.MouseEvent) => {
+      ev.preventDefault();
+      api.setCurrentSceneData(
+        (sceneData: SceneData): SceneData => {
+          const scn = sceneData.scenes.find((s: Scene): boolean => {
+            return s.name == sceneData.currentSceneName;
+          });
+          const objs = scn.layers[layerIndex].gameObjects || [];
+          const next: GameObject = JSON.parse(JSON.stringify(objs[i]));
+          next.name += '*';
+          objs.splice(i, 0, next);
+          return sceneData;
+        }
+      );
+    },
+    [api, layerIndex]
   );
   const handleUpClick = useCallback(
     (i: number, ev: React.MouseEvent) => {
@@ -160,6 +179,12 @@ const Objects = ({
               {gameObject.name}
               {isSelected ? (
                 <div className="float-right flex">
+                  <div
+                    className="mr-2"
+                    onClick={handleCloneClick.bind(null, i)}
+                  >
+                    <FontAwesomeIcon icon={faClone} />
+                  </div>
                   <div className="mr-2" onClick={handleUpClick.bind(null, i)}>
                     <FontAwesomeIcon icon={faArrowUp} />
                   </div>
