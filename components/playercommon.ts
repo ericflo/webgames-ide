@@ -5,6 +5,8 @@ import SceneData, {
   AssetType,
   Component,
   ComponentAction,
+  ComponentPos,
+  ComponentRect,
   ComponentType,
   GameObject,
   GameScore,
@@ -74,12 +76,40 @@ function setupLayers(k: any, sceneData: SceneData) {
   }
 }
 
-function setupScene(k: any, scene: Scene, isPlaying: boolean) {
+let spriteLoaded = false;
+
+globalThis.moveTool = null;
+
+function setupScene(
+  k: any,
+  scene: Scene,
+  isPlaying: boolean,
+  currentObjectIndex: number,
+  objectOffset: { x: number; y: number },
+  camConfig: { x: number; y: number; scale: number }
+) {
   let skipIndex = 0;
+  if (!spriteLoaded) {
+    k.loadSprite('__mv', '/movetool.png').then(() => {
+      spriteLoaded = true;
+    });
+  }
   k.scene(scene.name, () => {
     if (isPlaying) {
       (scene.actions || []).forEach(setupAction.bind(null, k));
+    } else if (currentObjectIndex >= 0) {
+      globalThis.moveTool = k.add([
+        k.pos(160, 160),
+        k.origin('center'),
+        k.sprite('__mv'),
+        '__mv',
+      ]);
     }
+    if (camConfig) {
+      k.camPos(k.vec2(camConfig.x, camConfig.y));
+      k.camScale(camConfig.scale);
+    }
+    let currentObject: any = null;
     scene.layers
       .flatMap((layer: Layer): GameObject[] => {
         return layer.gameObjects;
@@ -91,7 +121,14 @@ function setupScene(k: any, scene: Scene, isPlaying: boolean) {
             .map((component: Component) => {
               switch (component.type) {
                 case ComponentType.Pos:
-                  return k.pos(component.x, component.y);
+                  if (i === currentObjectIndex && objectOffset) {
+                    return k.pos(
+                      component.x + objectOffset.x,
+                      component.y + objectOffset.y
+                    );
+                  } else {
+                    return k.pos(component.x, component.y);
+                  }
                 case ComponentType.Scale:
                   return k.scale(component.x, component.y);
                 case ComponentType.Rotate:
@@ -155,8 +192,66 @@ function setupScene(k: any, scene: Scene, isPlaying: boolean) {
             const act = eval(objAction.code).bind(null, k, obj);
             obj.on(objAction.eventName, act);
           });
+        } else if (currentObjectIndex === i) {
+          currentObject = obj;
         }
       });
+    if (currentObject && globalThis.moveTool) {
+      //console.log('obj', currentObject);
+      const pos = { x: currentObject.pos.x, y: currentObject.pos.y };
+      //if (objectOffset) {
+      //  pos.x += objectOffset.x;
+      //  pos.y += objectOffset.y;
+      //}
+      const halfWidth =
+        currentObject.width * 0.5 * (currentObject.scale?.x || 1);
+      const halfHeight =
+        currentObject.height * 0.5 * (currentObject.scale?.y || 1);
+      switch (currentObject.origin) {
+        case 'topleft':
+          pos.x += halfWidth;
+          pos.y += halfHeight;
+          break;
+        case 'top':
+          pos.y += halfHeight;
+          break;
+        case 'topright':
+          pos.x -= halfWidth;
+          pos.y += halfHeight;
+          break;
+        case 'left':
+          pos.x += halfWidth;
+          break;
+        case 'center':
+          break;
+        case 'right':
+          pos.x -= halfWidth;
+          break;
+        case 'botleft':
+          pos.x += halfWidth;
+          pos.y -= halfHeight;
+          break;
+        case 'bot':
+          pos.y -= halfHeight;
+          break;
+        case 'botright':
+          pos.x -= halfWidth;
+          pos.y -= halfHeight;
+          break;
+        default:
+          if (currentObject.origin) {
+            //console.log('fall through', currentObject.origin.x, currentObject.origin.y);
+            pos.x -= currentObject.origin.x * currentObject.width;
+            pos.y -= currentObject.origin.y * currentObject.height;
+          } else {
+            pos.x += halfWidth;
+            pos.y += halfHeight;
+          }
+      }
+      globalThis.moveTool.pos.x = pos.x;
+      globalThis.moveTool.pos.y = pos.y;
+      k.readd(globalThis.moveTool);
+    }
   });
 }
 
@@ -274,20 +369,33 @@ export function create(
   return k;
 }
 
-export function setup(k: any, sceneData: SceneData, isPlaying: boolean) {
+export function setup(
+  k: any,
+  sceneData: SceneData,
+  isPlaying: boolean,
+  currentObjectIndex: number,
+  objectOffset: { x: number; y: number },
+  camConfig: { x: number; y: number; scale: number }
+) {
   if (!sceneData || !k) {
     return;
   }
-  //console.log(JSON.stringify(sceneData));
+  const currentSceneName = sceneData.currentSceneName || 'main';
 
   k.go('tmpscene');
 
   setupLayers(k, sceneData);
 
   setupAssets(k, sceneData).then(() => {
-    const currentSceneName = sceneData.currentSceneName || 'main';
     ((sceneData || {}).scenes || []).forEach((scene: Scene) => {
-      setupScene(k, scene, isPlaying);
+      setupScene(
+        k,
+        scene,
+        isPlaying,
+        currentObjectIndex,
+        objectOffset,
+        camConfig
+      );
       if (scene.name == currentSceneName) {
         k.go(scene.name);
       }

@@ -103,7 +103,10 @@ const Player = () => {
       });
   }, [loggedIn, api, latestScore]);
 
-  useEffect(setup.bind(null, k, sceneData, true), [k, sceneData]);
+  useEffect(setup.bind(null, k, sceneData, true, -1, null, null), [
+    k,
+    sceneData,
+  ]);
 
   useEffect(() => {
     if (!loggedIn) {
