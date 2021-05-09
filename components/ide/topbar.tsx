@@ -142,7 +142,7 @@ const TopBar = ({
               const metadata = {
                 type: 'PublishedGame',
                 content: { link: resp.skylink },
-                prev: prev?.skylink,
+                prev: prev?.dataLink,
                 uri,
               };
               console.log('Recording new content...', metadata);
@@ -152,16 +152,16 @@ const TopBar = ({
                   console.log('Done recording new content.');
                 });
 
-              if (prev?.skylink) {
+              if (prev?.dataLink) {
                 const metadata = {
                   type: 'Exported',
-                  content: { link: linkPortal + prev.skylink },
+                  content: { link: linkPortal + prev.dataLink },
                   to: resp.skylink,
                   uri: uri,
                 };
                 console.log('Recording interaction...', metadata);
                 api.contentRecord
-                  .recordInteraction({ skylink: prev.skylink, metadata })
+                  .recordInteraction({ skylink: prev.dataLink, metadata })
                   .then((tmp) => {
                     console.log('Done recording export interaction.');
                   });

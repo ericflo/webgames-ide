@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 
 import { MySky, SkynetClient } from 'skynet-js';
-import { ContentRecordDAC } from '../vendor/content-record-library';
+import { ContentRecordDAC } from '@skynetlabs/content-record-library';
 
 import { SceneData, makeDefaultSceneData, Scene } from './data';
 import { isProd, linkPortal } from './buildconfig';
@@ -300,37 +300,37 @@ export class API {
 
       const metadata = {
         type: 'SavedGame',
-        content: { link: linkPortal + curr.skylink },
+        content: { link: linkPortal + curr.dataLink },
         uri: uri,
       };
-      if (prev?.skylink) {
+      if (prev?.dataLink) {
         console.log(
           'Recording interaction with contentRecordDAC',
-          prev.skylink,
+          prev.dataLink,
           '...'
         );
         const updateMeta = {
           action: 'Updated',
-          content: { link: linkPortal + prev.skylink },
-          next: curr.skylink,
+          content: { link: linkPortal + prev.dataLink },
+          next: curr.dataLink,
           uri: uri,
         };
         console.log('Recording update interaction for previous', updateMeta);
         await this.contentRecord.recordInteraction({
-          skylink: prev.skylink,
+          skylink: prev.dataLink,
           metadata: updateMeta,
         });
         console.log('Done.');
-        metadata['prev'] = prev.skylink;
+        metadata['prev'] = prev.dataLink;
       }
       console.log(
         'Recording new content with contentRecordDAC',
-        curr.skylink,
+        curr.dataLink,
         metadata,
         '...'
       );
       await this.contentRecord.recordNewContent({
-        skylink: curr.skylink,
+        skylink: curr.dataLink,
         metadata: metadata,
       });
       console.log('Done.');
