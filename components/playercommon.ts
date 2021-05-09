@@ -21,33 +21,26 @@ export function clearAssets() {
 }
 
 function setupAssets(k: any, sceneData: SceneData): Promise<any> {
-  const inFlight: Promise<any>[] = [];
   const portalUrl = k.ext.portalUrl;
+  if (!portalUrl) {
+    return Promise.all([]);
+  }
+
+  const inFlight: Promise<any>[] = [];
   ((sceneData || {}).assets || []).forEach((asset: Asset) => {
     if (registeredAssets.includes(asset.name)) {
       return;
     }
+
     switch (asset.type) {
       case AssetType.Sound:
         inFlight.push(
-          k.loadSound(
-            asset.name,
-            asset.skylink.replace(
-              'sia:',
-              portalUrl ? portalUrl : 'https://siasky.net/'
-            )
-          )
+          k.loadSound(asset.name, asset.skylink.replace('sia:', portalUrl))
         );
         break;
       case AssetType.Sprite:
         inFlight.push(
-          k.loadSprite(
-            asset.name,
-            asset.skylink.replace(
-              'sia:',
-              portalUrl ? portalUrl : 'https://siasky.net/'
-            )
-          )
+          k.loadSprite(asset.name, asset.skylink.replace('sia:', portalUrl))
         );
         break;
       case AssetType.Font:
@@ -57,6 +50,7 @@ function setupAssets(k: any, sceneData: SceneData): Promise<any> {
 
     registeredAssets.push(asset.name);
   });
+
   return Promise.all(inFlight);
 }
 

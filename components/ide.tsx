@@ -55,7 +55,9 @@ const IDE = () => {
 
   useEffect(() => {
     api.skynetClient.portalUrl().then((nextPortalUrl: string) => {
-      setPortalUrl(cleanPortalUrl(nextPortalUrl));
+      nextPortalUrl = cleanPortalUrl(nextPortalUrl);
+      console.log('Portal URL:', nextPortalUrl);
+      setPortalUrl(nextPortalUrl);
     });
   }, []);
 
