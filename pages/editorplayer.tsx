@@ -5,6 +5,7 @@ import Head from 'next/head';
 import SceneData from '../components/data';
 import { create, setup } from '../components/playercommon';
 import { useAPI } from '../components/api';
+import { cleanPortalUrl } from '../components/buildconfig';
 
 const Player = () => {
   const [sceneData, setSceneData] = useState(null as SceneData);
@@ -12,14 +13,12 @@ const Player = () => {
   const [latestScore, setLatestScore] = useState(-1);
   const [k, setK] = useState(null);
   const api = useAPI();
+  const [portalUrl, setPortalUrl] = useState(null as string);
   const [camConfig, setCamConfig] = useState(
     null as { x: number; y: number; scale: number }
   );
   const [isPlaying, setIsPlaying] = useState(false);
   const [objectOffset, setObjectOffset] = useState({ x: 0, y: 0 });
-  const portalUrl = new URLSearchParams(document.location.search).get(
-    'portalUrl'
-  );
 
   useEffect(() => {
     document.body.classList.add('overflow-hidden');
@@ -68,13 +67,21 @@ const Player = () => {
   }, [latestScore]);
 
   useEffect(() => {
-    if (portalUrl) {
+    api.skynetClient.portalUrl().then((nextPortalUrl: string) => {
+      nextPortalUrl = cleanPortalUrl(nextPortalUrl);
+      console.log('Portal URL:', nextPortalUrl);
+      setPortalUrl(nextPortalUrl);
+    });
+  }, []);
+
+  useEffect(() => {
+    if (k && portalUrl) {
       //k.ext.mySky = api.mySky;
       //k.ext.skynetClient = api.skynetClient;
       //k.ext.skylink = '';
       k.ext.portalUrl = portalUrl;
     }
-  }, [portalUrl]);
+  }, [k, portalUrl]);
 
   useEffect(
     setup.bind(

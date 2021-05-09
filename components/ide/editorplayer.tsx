@@ -5,7 +5,6 @@ import { SceneData } from '../data';
 
 type Props = {
   className?: string;
-  portalUrl: string;
   sceneData: SceneData;
   currentObjectIndex: number;
   isPlaying: boolean;
@@ -15,17 +14,12 @@ type Props = {
 
 const EditorPlayer = ({
   className,
-  portalUrl,
   sceneData,
   currentObjectIndex,
   isPlaying,
   reloadVersion,
   onUpdateCurrentObjectPos,
 }: Props) => {
-  if (!portalUrl) {
-    return null;
-  }
-
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
   useEffect(() => {
@@ -95,11 +89,7 @@ const EditorPlayer = ({
     <iframe
       className={className}
       ref={iframeRef}
-      src={
-        (isProd ? 'editorplayer.html' : '/editorplayer') +
-        '?portalUrl=' +
-        encodeURIComponent(portalUrl)
-      }
+      src={isProd ? 'editorplayer.html' : '/editorplayer'}
     />
   );
 };

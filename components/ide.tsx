@@ -609,7 +609,6 @@ const IDE = () => {
             >
               <EditorPlayer
                 className="flex-1 bg-gray-300"
-                portalUrl={portalUrl}
                 sceneData={api.currentSceneData}
                 currentObjectIndex={currentObjectIndex}
                 isPlaying={isPlaying}
