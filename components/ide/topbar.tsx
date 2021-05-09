@@ -73,9 +73,6 @@ const TopBar = ({
     (ev: React.MouseEvent) => {
       ev.preventDefault();
 
-      const playerUrl = isProd
-        ? '/player.html'
-        : 'http://localhost:3000/player';
       const sd: SceneData = JSON.parse(JSON.stringify(sceneData));
       sd.currentSceneName = 'main';
       const win = window.open('about:blank', '_blank');
@@ -122,7 +119,13 @@ const TopBar = ({
       var playerIframe = document.createElement('iframe');
       document.body.appendChild(playerIframe);
       playerIframe.setAttribute('id', 'player-iframe');
-      playerIframe.setAttribute('src', '${playerUrl}?referrer=' + encodeURIComponent(document.location.href));
+      playerIframe.setAttribute('src', ${
+        isProd
+          ? "window.location.href.replace('https://', 'https://" +
+            DATA_DOMAIN +
+            ".')"
+          : '"http://localhost:3000/player"'
+      } + '?referrer=' + encodeURIComponent(document.location.href));
     </script>
   </body>
 </html>`,
