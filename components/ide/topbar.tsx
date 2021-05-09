@@ -141,7 +141,7 @@ const TopBar = ({
             .then((prev) => {
               const metadata = {
                 type: 'PublishedGame',
-                content: { link: resp.skylink },
+                content: { link: portalUrl + resp.skylink },
                 prev: prev?.dataLink,
                 uri,
               };
@@ -171,7 +171,7 @@ const TopBar = ({
               console.log('Error getting prev: ', err);
               const metadata = {
                 type: 'PublishedGame',
-                content: { link: resp.skylink },
+                content: { link: portalUrl + resp.skylink },
                 prev: null,
                 uri: uri,
               };
