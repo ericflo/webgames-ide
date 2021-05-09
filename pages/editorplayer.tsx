@@ -83,18 +83,26 @@ const Player = () => {
     }
   }, [k, portalUrl]);
 
-  useEffect(
-    setup.bind(
-      null,
-      k,
-      sceneData,
-      isPlaying,
-      currentObjectIndex,
-      objectOffset,
-      camConfig
-    ),
-    [k, sceneData, isPlaying, currentObjectIndex, objectOffset, camConfig]
-  );
+  useEffect(() => {
+    if (portalUrl) {
+      setup(
+        k,
+        sceneData,
+        isPlaying,
+        currentObjectIndex,
+        objectOffset,
+        camConfig
+      );
+    }
+  }, [
+    k,
+    sceneData,
+    isPlaying,
+    currentObjectIndex,
+    objectOffset,
+    camConfig,
+    portalUrl,
+  ]);
 
   useEffect(() => {
     if (!k || isPlaying) {
