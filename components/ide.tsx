@@ -30,6 +30,7 @@ import CodeEditor from './ide/codeeditor';
 
 const IDE = () => {
   const api = useAPI();
+  const [portalUrl, setPortalUrl] = useState('https://siasky.net/');
   const [scene, _] = findScene(
     api.currentSceneData,
     api.currentSceneData.currentSceneName
@@ -50,6 +51,10 @@ const IDE = () => {
   const gameObjects = scene.layers[layerIndex].gameObjects;
   const currentObject = gameObjects[currentObjectIndex];
   const tags = uniquify(tagsFromScene(scene));
+
+  useEffect(() => {
+    api.skynetClient.portalUrl().then(setPortalUrl);
+  }, []);
 
   const deselectAll = useCallback(() => {
     setIsPlaying(false);
@@ -550,6 +555,7 @@ const IDE = () => {
               'flex-1 h-0 border-r border-black ' +
               (isPlaying ? 'opacity-25 cursor-default pointer-events-none' : '')
             }
+            portalUrl={portalUrl}
             assets={api.currentSceneData.assets || []}
             isUploading={isUploading}
             addAssetModalActive={addAssetModalActive}
@@ -573,6 +579,7 @@ const IDE = () => {
         <div className="flex-1 flex flex-col">
           <TopBar
             api={api}
+            portalUrl={portalUrl}
             isPlaying={isPlaying}
             isLoggedIn={api.loggedIn}
             isSaving={api.saving}

@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useCallback } from 'react';
 
 import { isProd } from '../buildconfig';
-import { GameObject, SceneData } from '../data';
+import { SceneData } from '../data';
 
 type Props = {
   className?: string;

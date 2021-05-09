@@ -4,14 +4,14 @@ import { Asset, AssetType } from '../data';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEllipsisV } from '@fortawesome/free-solid-svg-icons';
-import { isProd, isHandshake } from '../buildconfig';
 
 type Props = {
   asset: Asset;
+  portalUrl: string;
   onMoreClick: (asset: Asset) => void;
 };
 
-const AssetRow = ({ asset, onMoreClick }: Props) => {
+const AssetRow = ({ asset, portalUrl, onMoreClick }: Props) => {
   const handleMoreClick = useCallback(
     (ev: React.MouseEvent) => {
       ev.preventDefault();
@@ -23,10 +23,7 @@ const AssetRow = ({ asset, onMoreClick }: Props) => {
     <div className="mb-1 flex place-items-center select-none">
       {asset.type == AssetType.Sprite ? (
         <img
-          src={asset.skylink.replace(
-            'sia:',
-            isProd && isHandshake ? '/' : 'https://siasky.net/'
-          )}
+          src={asset.skylink.replace('sia:', portalUrl)}
           className="w-8 h-8 inline ml-4 flex-none"
         />
       ) : null}

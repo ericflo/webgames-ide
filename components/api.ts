@@ -4,7 +4,7 @@ import { MySky, SkynetClient } from 'skynet-js';
 import { ContentRecordDAC } from '@skynetlabs/content-record-library';
 
 import { SceneData, makeDefaultSceneData, Scene } from './data';
-import { isProd, linkPortal } from './buildconfig';
+import { isProd } from './buildconfig';
 
 const CLIENT = new SkynetClient(
   isProd ? undefined : /*'https://siasky.net/'*/ 'https://eu-ger-1.siasky.net/'
@@ -98,6 +98,10 @@ export class API {
   set initialized(value: boolean) {
     this._initialized = value;
     this._setInitialized(value);
+  }
+
+  get skynetClient(): SkynetClient {
+    return CLIENT;
   }
 
   get mySky(): MySky {
@@ -281,6 +285,8 @@ export class API {
   }
 
   async saveCurrentSceneData(callsite: string) {
+    const portalUrl = await CLIENT.portalUrl();
+
     if (this.saving) {
       this.wantsSave = true;
     } else {
@@ -300,7 +306,7 @@ export class API {
 
       const metadata = {
         type: 'SavedGame',
-        content: { link: linkPortal + curr.dataLink },
+        content: { link: portalUrl + curr.dataLink },
         uri: uri,
       };
       if (prev?.dataLink) {
@@ -311,7 +317,7 @@ export class API {
         );
         const updateMeta = {
           action: 'Updated',
-          content: { link: linkPortal + prev.dataLink },
+          content: { link: portalUrl + prev.dataLink },
           next: curr.dataLink,
           uri: uri,
         };

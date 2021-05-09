@@ -12,11 +12,12 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useCallback } from 'react';
 import { API, DATA_DOMAIN } from '../api';
-import { isHandshake, isProd, linkPortal } from '../buildconfig';
+import { isProd } from '../buildconfig';
 import SceneData from '../data';
 
 type Props = {
   api: API;
+  portalUrl: string;
   isPlaying: boolean;
   isLoggedIn: boolean;
   isSaving: boolean;
@@ -45,6 +46,7 @@ function usePreventDefault(fn: () => void): (ev: React.MouseEvent) => void {
 
 const TopBar = ({
   api,
+  portalUrl,
   isPlaying,
   isLoggedIn,
   isSaving,
@@ -70,6 +72,11 @@ const TopBar = ({
   const handleExportClick = useCallback(
     (ev: React.MouseEvent) => {
       ev.preventDefault();
+
+      const playerUrl = isProd
+        ? portalUrl.replace('https://', `https://${DATA_DOMAIN}.`) +
+          'player.html'
+        : 'http://localhost:3000/player';
       const sd: SceneData = JSON.parse(JSON.stringify(sceneData));
       sd.currentSceneName = 'main';
       const win = window.open('about:blank', '_blank');
@@ -116,11 +123,7 @@ const TopBar = ({
       var playerIframe = document.createElement('iframe');
       document.body.appendChild(playerIframe);
       playerIframe.setAttribute('id', 'player-iframe');
-      playerIframe.setAttribute('src', '${
-        isProd
-          ? 'https://webgames-ide.hns.siasky.net/player.html'
-          : 'http://localhost:3000/player'
-      }?referrer=' + encodeURIComponent(document.location.href));
+      playerIframe.setAttribute('src', '${playerUrl}?referrer=' + encodeURIComponent(document.location.href));
     </script>
   </body>
 </html>`,
@@ -131,10 +134,7 @@ const TopBar = ({
           'game'
         )
         .then((resp) => {
-          win.location.href = resp.skylink.replace(
-            'sia:',
-            /* isProd && isHandshake ? '/' : */ 'https://siasky.net/'
-          );
+          win.location.href = resp.skylink.replace('sia:', portalUrl);
           const uri = `${DATA_DOMAIN}/games/${api.currentFilename}`;
           api.mySky
             .getJSON(uri)
@@ -155,7 +155,7 @@ const TopBar = ({
               if (prev?.dataLink) {
                 const metadata = {
                   type: 'Exported',
-                  content: { link: linkPortal + prev.dataLink },
+                  content: { link: portalUrl + prev.dataLink },
                   to: resp.skylink,
                   uri: uri,
                 };
@@ -171,7 +171,7 @@ const TopBar = ({
               console.log('Error getting prev: ', err);
               const metadata = {
                 type: 'PublishedGame',
-                content: { link: linkPortal + resp.skylink },
+                content: { link: resp.skylink },
                 prev: null,
                 uri: uri,
               };
@@ -184,7 +184,7 @@ const TopBar = ({
             });
         });
     },
-    [sceneData]
+    [sceneData, portalUrl]
   );
   return (
     <div className="px-4 py-4 h-14 border-b border-black flex place-content-between">

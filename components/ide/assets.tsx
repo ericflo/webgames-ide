@@ -11,10 +11,10 @@ import SceneData, { Asset, AssetType } from '../data';
 
 import AssetRow from './assetrow';
 import { API } from '../api';
-import { isProd, isHandshake } from '../buildconfig';
 
 type Props = {
   className?: string;
+  portalUrl: string;
   assets: Asset[];
   isUploading: Boolean;
   addAssetModalActive: Boolean;
@@ -24,6 +24,7 @@ type Props = {
 
 const Assets = ({
   className,
+  portalUrl,
   assets,
   isUploading,
   addAssetModalActive,
@@ -81,10 +82,7 @@ const Assets = ({
         <div className="absolute w-full h-full bg-black bg-opacity-50 flex flex-col place-content-center place-items-center">
           {currentAsset.type == AssetType.Sprite ? (
             <img
-              src={currentAsset.skylink.replace(
-                'sia:',
-                isProd && isHandshake ? '/' : 'https://siasky.net/'
-              )}
+              src={currentAsset.skylink.replace('sia:', portalUrl)}
               className="max-h-16 max-w-6xl inline mb-2 flex-none"
             />
           ) : null}
@@ -109,6 +107,7 @@ const Assets = ({
             <AssetRow
               key={asset.skylink}
               asset={asset}
+              portalUrl={portalUrl}
               onMoreClick={handleMoreClick}
             />
           );

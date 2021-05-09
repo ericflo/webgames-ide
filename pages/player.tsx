@@ -7,7 +7,6 @@ import { create, setup } from '../components/playercommon';
 import { DATA_DOMAIN, useAPI } from '../components/api';
 import { faTimes, faTimesCircle } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { linkPortal } from '../components/buildconfig';
 
 const Player = () => {
   const [barShowing, setBarShowing] = useState(true);
@@ -15,7 +14,15 @@ const Player = () => {
   const [latestScore, setLatestScore] = useState(-1);
   const [k, setK] = useState(null);
   const api = useAPI();
+  const [portalUrl, setPortalUrl] = useState(null as string);
   const loggedIn = api.loggedIn;
+
+  useEffect(() => {
+    api.skynetClient.portalUrl().then((nextPortalUrl: string) => {
+      console.log('Portal URL:', nextPortalUrl);
+      setPortalUrl(nextPortalUrl);
+    });
+  }, []);
 
   const handleLogoutClick = useCallback(
     (ev: React.MouseEvent) => {
@@ -38,11 +45,16 @@ const Player = () => {
     setBarShowing(false);
   }, []);
 
-  const handleHomeClick = useCallback((ev: React.MouseEvent) => {
-    ev.preventDefault();
-    (window.top ? window.top : window).location.href =
-      'https://webgames-ide.hns.siasky.net';
-  }, []);
+  const handleHomeClick = useCallback(
+    (ev: React.MouseEvent) => {
+      ev.preventDefault();
+      (window.top ? window.top : window).location.href = portalUrl.replace(
+        'https://',
+        `https://${DATA_DOMAIN}.`
+      );
+    },
+    [portalUrl]
+  );
 
   useEffect(() => {
     document.body.classList.add('overflow-hidden');
@@ -65,13 +77,18 @@ const Player = () => {
   useEffect(() => {
     const skylink = getSkylinkReferrer();
     if (api && api.mySky && k && skylink) {
-      k.ext.mySky = api.mySky;
-      k.ext.skylink = skylink;
+      api.skynetClient.portalUrl().then((portalUrl: string) => {
+        k.ext.mySky = api.mySky;
+        k.ext.skynetClient = api.skynetClient;
+        k.ext.skylink = skylink;
+        k.ext.portalUrl = portalUrl;
+        console.log('portalUrl', portalUrl);
+      });
     }
   }, [api, k]);
 
   useEffect(() => {
-    if (!loggedIn || !api || latestScore < 0) {
+    if (!loggedIn || !api || !portalUrl || latestScore < 0) {
       return;
     }
     const skylink = getSkylinkReferrer();
@@ -90,7 +107,7 @@ const Player = () => {
     console.log(`Recording score interaction (${latestScore})...`);
     const metadata = {
       action: 'Score',
-      content: { link: linkPortal + skylink },
+      content: { link: portalUrl + skylink },
       score: latestScore,
     };
     api.contentRecord
@@ -101,7 +118,7 @@ const Player = () => {
       .catch((err) => {
         console.log('Could not record score interaction:', err);
       });
-  }, [loggedIn, api, latestScore]);
+  }, [loggedIn, api, latestScore, portalUrl]);
 
   useEffect(setup.bind(null, k, sceneData, true, -1, null, null), [
     k,
@@ -109,7 +126,7 @@ const Player = () => {
   ]);
 
   useEffect(() => {
-    if (!loggedIn) {
+    if (!loggedIn || !portalUrl) {
       return;
     }
     const skylink = getSkylinkReferrer();
@@ -119,7 +136,7 @@ const Player = () => {
     console.log('Recording play interaction...');
     const metadata = {
       action: 'Play',
-      content: { link: linkPortal + skylink },
+      content: { link: portalUrl + skylink },
     };
     api.contentRecord
       .recordInteraction({ skylink, metadata })
@@ -129,7 +146,7 @@ const Player = () => {
       .catch((err) => {
         console.log('Could not record play interaction:', err);
       });
-  }, [loggedIn]);
+  }, [loggedIn, portalUrl]);
 
   return (
     <>

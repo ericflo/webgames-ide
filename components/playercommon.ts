@@ -5,15 +5,12 @@ import SceneData, {
   AssetType,
   Component,
   ComponentAction,
-  ComponentPos,
-  ComponentRect,
   ComponentType,
   GameObject,
   GameScore,
   Layer,
   Scene,
 } from './data';
-import { isProd, isHandshake } from './buildconfig';
 import { MySky } from 'skynet-js';
 import { DATA_DOMAIN } from './api';
 
@@ -25,6 +22,7 @@ export function clearAssets() {
 
 function setupAssets(k: any, sceneData: SceneData): Promise<any> {
   const inFlight: Promise<any>[] = [];
+  const portalUrl = k.ext.portalUrl;
   ((sceneData || {}).assets || []).forEach((asset: Asset) => {
     if (registeredAssets.includes(asset.name)) {
       return;
@@ -36,7 +34,7 @@ function setupAssets(k: any, sceneData: SceneData): Promise<any> {
             asset.name,
             asset.skylink.replace(
               'sia:',
-              isProd && isHandshake ? '/' : 'https://siasky.net/'
+              portalUrl ? portalUrl : 'https://siasky.net/'
             )
           )
         );
@@ -47,7 +45,7 @@ function setupAssets(k: any, sceneData: SceneData): Promise<any> {
             asset.name,
             asset.skylink.replace(
               'sia:',
-              isProd && isHandshake ? '/' : 'https://siasky.net/'
+              portalUrl ? portalUrl : 'https://siasky.net/'
             )
           )
         );
@@ -312,7 +310,9 @@ function addExt(
   let latestScore: GameScore = null;
   k.ext = {
     mySky: null,
+    skynetClient: null,
     skylink: '',
+    portalUrl: '',
     data: {},
     scores: {
       submit: (score: number) => {
