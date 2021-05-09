@@ -31,7 +31,7 @@ import { cleanPortalUrl } from './buildconfig';
 
 const IDE = () => {
   const api = useAPI();
-  const [portalUrl, setPortalUrl] = useState('https://siasky.net/');
+  const [portalUrl, setPortalUrl] = useState(null as string);
   const [scene, _] = findScene(
     api.currentSceneData,
     api.currentSceneData.currentSceneName
@@ -609,6 +609,7 @@ const IDE = () => {
             >
               <EditorPlayer
                 className="flex-1 bg-gray-300"
+                portalUrl={portalUrl}
                 sceneData={api.currentSceneData}
                 currentObjectIndex={currentObjectIndex}
                 isPlaying={isPlaying}

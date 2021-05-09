@@ -4,17 +4,22 @@ import Head from 'next/head';
 
 import SceneData from '../components/data';
 import { create, setup } from '../components/playercommon';
+import { useAPI } from '../components/api';
 
 const Player = () => {
   const [sceneData, setSceneData] = useState(null as SceneData);
   const [currentObjectIndex, setCurrentObjectIndex] = useState(-1);
   const [latestScore, setLatestScore] = useState(-1);
   const [k, setK] = useState(null);
+  const api = useAPI();
   const [camConfig, setCamConfig] = useState(
     null as { x: number; y: number; scale: number }
   );
   const [isPlaying, setIsPlaying] = useState(false);
   const [objectOffset, setObjectOffset] = useState({ x: 0, y: 0 });
+  const portalUrl = new URLSearchParams(document.location.search).get(
+    'portalUrl'
+  );
 
   useEffect(() => {
     document.body.classList.add('overflow-hidden');
@@ -61,6 +66,15 @@ const Player = () => {
       );
     }
   }, [latestScore]);
+
+  useEffect(() => {
+    if (portalUrl) {
+      //k.ext.mySky = api.mySky;
+      //k.ext.skynetClient = api.skynetClient;
+      //k.ext.skylink = '';
+      k.ext.portalUrl = portalUrl;
+    }
+  }, [portalUrl]);
 
   useEffect(
     setup.bind(
