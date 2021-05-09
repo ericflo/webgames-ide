@@ -77,11 +77,10 @@ const Player = () => {
   }, []);
 
   useEffect(() => {
-    const skylink = getSkylinkReferrer();
-    if (api && api.mySky && k && skylink && portalUrl) {
+    if (api && api.mySky && k && portalUrl) {
       k.ext.mySky = api.mySky;
       k.ext.skynetClient = api.skynetClient;
-      k.ext.skylink = skylink;
+      k.ext.skylink = getSkylinkReferrer();
       k.ext.portalUrl = portalUrl;
     }
   }, [api, k, portalUrl]);
@@ -121,6 +120,7 @@ const Player = () => {
 
   useEffect(() => {
     if (portalUrl) {
+      k.ext.portalUrl = portalUrl; // Shouldn't have to do this here again, oh well
       setup(k, sceneData, true, -1, null, null);
     }
   }, [k, sceneData, portalUrl]);

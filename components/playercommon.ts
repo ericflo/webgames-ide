@@ -23,7 +23,7 @@ export function clearAssets() {
 function setupAssets(k: any, sceneData: SceneData): Promise<any> {
   const portalUrl = k.ext.portalUrl;
   if (!portalUrl) {
-    return Promise.all([]);
+    return Promise.resolve([]);
   }
 
   const inFlight: Promise<any>[] = [];
