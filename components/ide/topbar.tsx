@@ -121,9 +121,7 @@ const TopBar = ({
       playerIframe.setAttribute('id', 'player-iframe');
       playerIframe.setAttribute('src', ${
         isProd
-          ? "window.location.href.replace('https://', 'https://" +
-            DATA_DOMAIN +
-            ".')"
+          ? "'https://" + DATA_DOMAIN + "' + window.hostname + '/player.html'"
           : '"http://localhost:3000/player"'
       } + '?referrer=' + encodeURIComponent(document.location.href));
     </script>
