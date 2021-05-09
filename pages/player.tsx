@@ -119,10 +119,11 @@ const Player = () => {
       });
   }, [loggedIn, api, latestScore, portalUrl]);
 
-  useEffect(setup.bind(null, k, sceneData, true, -1, null, null), [
-    k,
-    sceneData,
-  ]);
+  useEffect(() => {
+    if (portalUrl) {
+      setup(k, sceneData, true, -1, null, null);
+    }
+  }, [k, sceneData, portalUrl]);
 
   useEffect(() => {
     if (!loggedIn || !portalUrl) {

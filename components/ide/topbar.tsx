@@ -74,8 +74,7 @@ const TopBar = ({
       ev.preventDefault();
 
       const playerUrl = isProd
-        ? portalUrl.replace('https://', `https://${DATA_DOMAIN}.`) +
-          'player.html'
+        ? '/player.html'
         : 'http://localhost:3000/player';
       const sd: SceneData = JSON.parse(JSON.stringify(sceneData));
       sd.currentSceneName = 'main';
