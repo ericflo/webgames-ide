@@ -27,6 +27,7 @@ import { useAPI } from './api';
 import TopBar from './ide/topbar';
 import LoadModal from './ide/loadmodal';
 import CodeEditor from './ide/codeeditor';
+import { cleanPortalUrl } from './buildconfig';
 
 const IDE = () => {
   const api = useAPI();
@@ -53,7 +54,9 @@ const IDE = () => {
   const tags = uniquify(tagsFromScene(scene));
 
   useEffect(() => {
-    api.skynetClient.portalUrl().then(setPortalUrl);
+    api.skynetClient.portalUrl().then((nextPortalUrl: string) => {
+      setPortalUrl(cleanPortalUrl(nextPortalUrl));
+    });
   }, []);
 
   const deselectAll = useCallback(() => {

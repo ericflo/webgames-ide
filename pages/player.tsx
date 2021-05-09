@@ -5,8 +5,9 @@ import Head from 'next/head';
 import SceneData, { GameScore } from '../components/data';
 import { create, setup } from '../components/playercommon';
 import { DATA_DOMAIN, useAPI } from '../components/api';
-import { faTimes, faTimesCircle } from '@fortawesome/free-solid-svg-icons';
+import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { cleanPortalUrl } from '../components/buildconfig';
 
 const Player = () => {
   const [barShowing, setBarShowing] = useState(true);
@@ -19,6 +20,7 @@ const Player = () => {
 
   useEffect(() => {
     api.skynetClient.portalUrl().then((nextPortalUrl: string) => {
+      nextPortalUrl = cleanPortalUrl(nextPortalUrl);
       console.log('Portal URL:', nextPortalUrl);
       setPortalUrl(nextPortalUrl);
     });
@@ -76,16 +78,13 @@ const Player = () => {
 
   useEffect(() => {
     const skylink = getSkylinkReferrer();
-    if (api && api.mySky && k && skylink) {
-      api.skynetClient.portalUrl().then((portalUrl: string) => {
-        k.ext.mySky = api.mySky;
-        k.ext.skynetClient = api.skynetClient;
-        k.ext.skylink = skylink;
-        k.ext.portalUrl = portalUrl;
-        console.log('portalUrl', portalUrl);
-      });
+    if (api && api.mySky && k && skylink && portalUrl) {
+      k.ext.mySky = api.mySky;
+      k.ext.skynetClient = api.skynetClient;
+      k.ext.skylink = skylink;
+      k.ext.portalUrl = portalUrl;
     }
-  }, [api, k]);
+  }, [api, k, portalUrl]);
 
   useEffect(() => {
     if (!loggedIn || !api || !portalUrl || latestScore < 0) {

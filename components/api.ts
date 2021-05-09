@@ -4,7 +4,7 @@ import { MySky, SkynetClient } from 'skynet-js';
 import { ContentRecordDAC } from '@skynetlabs/content-record-library';
 
 import { SceneData, makeDefaultSceneData, Scene } from './data';
-import { isProd } from './buildconfig';
+import { cleanPortalUrl, isProd } from './buildconfig';
 
 const CLIENT = new SkynetClient(
   isProd ? undefined : /*'https://siasky.net/'*/ 'https://eu-ger-1.siasky.net/'
@@ -285,7 +285,7 @@ export class API {
   }
 
   async saveCurrentSceneData(callsite: string) {
-    const portalUrl = await CLIENT.portalUrl();
+    const portalUrl = cleanPortalUrl(await CLIENT.portalUrl());
 
     if (this.saving) {
       this.wantsSave = true;
